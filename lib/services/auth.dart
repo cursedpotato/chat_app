@@ -31,9 +31,8 @@ class AuthMethods {
 
     User? userDetails = result?.user;
 
-    if (result == null) {
-      debugPrint('This thing is null $result');     
-    } else {
-    }
+    if (result != null) {
+          
+    } 
   }
 }
