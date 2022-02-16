@@ -18,7 +18,6 @@ class AuthMethods {
     final GoogleSignInAccount? _googleSignInAccount = await _googleSingIn.signIn();
     //NOTE: It may throw null and the the type may have to refactored as such: GoogleSingInAuthentication?  
     final GoogleSignInAuthentication googleSignInAuthentication = await _googleSignInAccount!.authentication;
-
     final AuthCredential credential = GoogleAuthProvider.credential(accessToken: googleSignInAuthentication.idToken, idToken: googleSignInAuthentication.accessToken, );
   }
 }
