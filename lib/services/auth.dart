@@ -1,5 +1,6 @@
 
 
+import 'package:chat_app/helperfunctions/sharedpreferences_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -32,7 +33,10 @@ class AuthMethods {
     User? userDetails = result?.user;
 
     if (result != null) {
-          
+      SharedPreferencesHelper().saveUserId(userDetails!.uid);
+      SharedPreferencesHelper().saveUserEmail(userDetails.email);
+      SharedPreferencesHelper().saveDisplayName(userDetails.displayName);
+      SharedPreferencesHelper().saveUserProfile(userDetails.photoURL);
     } 
   }
 }
