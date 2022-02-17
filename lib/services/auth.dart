@@ -36,7 +36,7 @@ class AuthMethods extends ChangeNotifier{
     );
     // Uploading that credential to firebase
     final UserCredential? result = await FirebaseAuth.instance.signInWithCredential(credential);
-    notifyListeners();  
+    
     User? userDetails = result?.user;
 
      if (result != null) {
@@ -56,8 +56,8 @@ class AuthMethods extends ChangeNotifier{
            (value) => Navigator.pushReplacement(context,
                MaterialPageRoute(builder: (context) => const HomeScreen())));
      }
-    
-
-    
+    notifyListeners();  
   }
+
+  
 }
