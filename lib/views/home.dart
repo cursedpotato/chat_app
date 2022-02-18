@@ -10,7 +10,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   bool isSearching = false;
   @override
   Widget build(BuildContext context) {
@@ -38,21 +37,27 @@ class _HomeScreenState extends State<HomeScreen> {
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 1.0,
-                  style: BorderStyle.solid,
-                ),
-                borderRadius: BorderRadius.circular(24)
-              ),
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 1.0,
+                    style: BorderStyle.solid,
+                  ),
+                  borderRadius: BorderRadius.circular(24)),
               child: Row(
-                children: const [
-                  Expanded(
+                children: [
+                  const Padding(
+                      padding: EdgeInsets.only(right: 12),
+                      child: Icon(Icons.arrow_back)),
+                  const Expanded(
                       child: TextField(
                     decoration: InputDecoration(
                         border: InputBorder.none, hintText: "username"),
                   )),
-                  Icon(Icons.search)
+                  GestureDetector(
+                      onTap: () {
+                        setState(() => isSearching = true);
+                      },
+                      child: const Icon(Icons.search))
                 ],
               ),
             )

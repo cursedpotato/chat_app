@@ -9,7 +9,12 @@ class DatabaseMethods {
         .set(userInfoMap);
   }
 
-  getUserByUsername (String username) {
-    FirebaseFirestore.instance.collection("users").where('username', isEqualTo: username );
+  Future<Stream<QuerySnapshot<Map<String,dynamic>>>> getUserByUsername(String username) async{
+    // Add await if it cause trouble
+    
+    return FirebaseFirestore.instance
+        .collection("users")
+        .where('username', isEqualTo: username)
+        .snapshots();
   }
 }
