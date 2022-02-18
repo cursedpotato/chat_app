@@ -11,12 +11,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isSearching = false;
+
+  TextEditingController searchUsername = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Capybara chat"),
           actions: [
+            // May change to icon button
             InkWell(
               onTap: () {
                 AuthMethods().signOut().then((_) {
@@ -33,33 +36,50 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.grey,
-                    width: 1.0,
-                    style: BorderStyle.solid,
+            Row(
+              children: [
+                isSearching
+                    ? Container(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: GestureDetector(
+                          onTap: () {
+                            isSearching = false;
+                            searchUsername.text = "";
+                            setState(() {});
+                          },
+                          child: const Icon(Icons.arrow_back),
+                        ),
+                      )
+                    : Container(),
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                        borderRadius: BorderRadius.circular(24)),
+                    child: TextField(
+                      controller: searchUsername,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "username",
+                        suffixIcon: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isSearching = true;
+                            });
+                          },
+                          child: const Icon(Icons.search),
+                        ),
+                      ),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(24)),
-              child: Row(
-                children: [
-                  const Padding(
-                      padding: EdgeInsets.only(right: 12),
-                      child: Icon(Icons.arrow_back)),
-                  const Expanded(
-                      child: TextField(
-                    decoration: InputDecoration(
-                        border: InputBorder.none, hintText: "username"),
-                  )),
-                  GestureDetector(
-                      onTap: () {
-                        setState(() => isSearching = true);
-                      },
-                      child: const Icon(Icons.search))
-                ],
-              ),
+                ),
+              ],
             )
           ],
         ));
