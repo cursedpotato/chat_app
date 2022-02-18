@@ -1,4 +1,5 @@
 import 'package:chat_app/services/auth.dart';
+import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/signin.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +12,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isSearching = false;
+  
+  Stream? usersStream;
 
   TextEditingController searchUsername = TextEditingController();
+
+  onSearch () async{
+    usersStream = await 
+    DatabaseMethods().getUserByUsername(searchUsername.text);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         suffixIcon: GestureDetector(
                           onTap: () {
                             setState(() {
-                              isSearching = true;
+                              if (searchUsername.text != "") {
+                                
+                              }
                             });
                           },
                           child: const Icon(Icons.search),
