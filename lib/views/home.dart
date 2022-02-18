@@ -10,6 +10,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  bool isSearching = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,6 +32,31 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           ],
         ),
-        body: Container());
+        body: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.grey,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ),
+                borderRadius: BorderRadius.circular(24)
+              ),
+              child: Row(
+                children: const [
+                  Expanded(
+                      child: TextField(
+                    decoration: InputDecoration(
+                        border: InputBorder.none, hintText: "username"),
+                  )),
+                  Icon(Icons.search)
+                ],
+              ),
+            )
+          ],
+        ));
   }
 }
