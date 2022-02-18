@@ -1,7 +1,6 @@
 import 'package:chat_app/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
+
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -14,20 +13,29 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Messenger clone"),
-      ),
-      body: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-            primary: Colors.white,
-            onPrimary: Colors.black,
-            minimumSize: const Size(double.infinity, 50)),
-        onPressed: () {
-          final provider = Provider.of<AuthMethods>(context, listen: false);
-          provider.googleSignIn;
-        },
-        icon: const FaIcon(FontAwesomeIcons.google),
-        label: const Text("Sign up with Google"),
+
+      appBar: AppBar(title: const Text("Messenger clone"),),
+      body: Center(
+        child: GestureDetector(
+          onTap: () {
+            AuthMethods().signInWithGoogle(context);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              color: Colors.red,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: const Text(
+              "Sign in with google",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+
       ),
     );
   }
