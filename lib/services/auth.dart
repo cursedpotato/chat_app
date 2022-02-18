@@ -1,6 +1,7 @@
 import 'package:chat_app/helperfunctions/sharedpreferences_helper.dart';
 import 'package:chat_app/services/database.dart';
-import 'package:chat_app/views/chat_screen.dart';
+
+import 'package:chat_app/views/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
@@ -51,7 +52,9 @@ class AuthMethods {
         "imgUrl": userDetails.photoURL,
       };
 
-      DatabaseMethods().addUserInfoTodb(userDetails.uid, userInfoMap).then(
+      
+
+      await DatabaseMethods().addUserInfoTodb(userDetails.uid, userInfoMap).then(
           (value) => Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => const HomeScreen())));
     }
