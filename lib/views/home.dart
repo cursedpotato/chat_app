@@ -1,6 +1,8 @@
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/signin.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,15 +14,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isSearching = false;
-  
-  Stream? usersStream;
+
+  Stream<QuerySnapshot>? usersStream;
 
   TextEditingController searchUsername = TextEditingController();
 
-  onSearch () async{
-    usersStream = await 
-    DatabaseMethods().getUserByUsername(searchUsername.text);
+  onSearch() async {
+    isSearching = true;
+    usersStream =
+        await DatabaseMethods().getUserByUsername(searchUsername.text);
+    setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,53 +50,87 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Column(
           children: [
             Row(
-              children: [
-                isSearching
-                    ? Container(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: GestureDetector(
-                          onTap: () {
-                            isSearching = false;
-                            searchUsername.text = "";
-                            setState(() {});
-                          },
-                          child: const Icon(Icons.arrow_back),
-                        ),
-                      )
-                    : Container(),
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ),
-                        borderRadius: BorderRadius.circular(24)),
-                    child: TextField(
-                      controller: searchUsername,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "username",
-                        suffixIcon: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (searchUsername.text != "") {
-                                
-                              }
-                            });
-                          },
-                          child: const Icon(Icons.search),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
+              children: [_searchEraseBtn(), _searchBar()],
+            ),
+            isSearching ? _searchUsersList() : _chatRoomList()
           ],
         ));
+  }
+
+  Widget _searchEraseBtn() {
+    return isSearching
+        ? Container(
+            padding: const EdgeInsets.only(right: 12),
+            child: GestureDetector(
+              onTap: () {
+                isSearching = false;
+                searchUsername.text = "";
+                setState(() {});
+              },
+              child: const Icon(Icons.arrow_back),
+            ),
+          )
+        : Container();
+  }
+
+  Widget _searchBar() {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.grey,
+              width: 1.0,
+              style: BorderStyle.solid,
+            ),
+            borderRadius: BorderRadius.circular(24)),
+        child: TextField(
+          controller: searchUsername,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: "username",
+            suffixIcon: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (searchUsername.text != "") {
+                    onSearch();
+                  }
+                });
+              },
+              child: const Icon(Icons.search),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _searchUsersList() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: usersStream,
+      builder: (_, AsyncSnapshot snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+                shrinkWrap: true,
+                itemCount: snapshot.data.docs   ,
+                itemBuilder: (BuildContext context, int index) {
+                  DocumentSnapshot ds = snapshot.data.docs[index];
+                  return Image.network(
+                    ds["imgUrl"],
+                    height: 30,
+                    width: 30,
+                  );
+                },
+              )
+            : const Center(
+                child: CircularProgressIndicator(),
+              );
+      },
+    );
+  }
+
+  Widget _chatRoomList() {
+    return Container();
   }
 }

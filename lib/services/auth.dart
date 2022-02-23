@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthMethods {
+class AuthMethods extends ChangeNotifier{
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   getCurrentUser()async {

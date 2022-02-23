@@ -4,6 +4,7 @@ import 'package:chat_app/views/home.dart';
 import 'package:chat_app/views/signin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,21 +17,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: FutureBuilder(
-        future: AuthMethods().getCurrentUser(),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.hasData) {
-            return const HomeScreen();
-          } else {
-            return const SignIn();
-          }
-        },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthMethods(), lazy: false,)
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData.dark(),
+        home: FutureBuilder(
+          future: AuthMethods().getCurrentUser(),
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.hasData) {
+              return const HomeScreen();
+            } else {
+              return const SignIn();
+            }
+          },
+        ),
       ),
     );
   }
