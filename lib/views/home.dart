@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _userTile(DocumentSnapshot ds) {
-    // TODO: add a a better way to represent the user
+    
     String name = ds["name"];
     String username = ds["username"];
     return ListTile(
