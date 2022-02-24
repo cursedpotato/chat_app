@@ -1,3 +1,4 @@
+import 'package:chat_app/helperfunctions/sharedpreferences_helper.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/chat_screen.dart';
@@ -20,6 +21,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   TextEditingController searchUsername = TextEditingController();
 
+  String? myName, myProfilePic, myUserName, myEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    getInfoFromSharePreference();
+  }
+
   onSearch() async {
     isSearching = true;
     usersStream =
@@ -27,6 +36,24 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
+  getInfoFromSharePreference() async {
+    myName = await SharedPreferencesHelper().getDisplayName();
+    myProfilePic = await SharedPreferencesHelper().getUserProfile();
+    myUserName = await SharedPreferencesHelper().getUserName();
+    myEmail = await SharedPreferencesHelper().getUserEmail();
+
+    
+  }
+  
+  String getChatRoomId(String? a, String? b) {
+    if (a!.substring(0, 1).codeUnitAt(0) > b!.substring(0, 1).codeUnitAt(0)) {
+      // ignore: unnecessary_string_escapes
+      return "$b\_$a";
+    } else {
+      // ignore: unnecessary_string_escapes
+      return "$a\_$b";
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,6 +150,11 @@ class _HomeScreenState extends State<HomeScreen> {
       title: Text(name),
       subtitle: Text(username),
       onTap: () {
+        
+        var chatRoomId = getChatRoomId(myName, name);
+        Map<String, dynamic> chatRoomInfoMap = {
+          "users" : [myName, name],
+        };
         Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(chatwithUsername: username, name: name,)));      
       },
     );
