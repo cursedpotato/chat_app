@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesHelper {
@@ -7,6 +8,8 @@ class SharedPreferencesHelper {
   static String displayNameKey = "USERDISPLAYNAMEKEY";
   static String userEmailKey =  "USEREMAILKEY";
   static String userProfileKey = "USERPROFILEKEY";
+
+  final user = FirebaseAuth.instance.currentUser!;
 
   // NOTE: I think the following code can be optimized to a single function with a switch case
   // WARNING: this code may throw a null safe operator used in null value or something like that
@@ -39,26 +42,26 @@ class SharedPreferencesHelper {
   // Get data
   Future<String?> getUserId () async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return preferences.getString(userIdKey); 
+    return preferences.getString(userIdKey) ?? user.uid; 
   }
   Future<String?> getUserName () async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return preferences.getString(userNameKey); 
+    return preferences.getString(userNameKey) ?? user.email!.replaceAll("@gmail.com", ""); 
   }
 
   Future<String?> getDisplayName () async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return preferences.getString(displayNameKey); 
+    return preferences.getString(displayNameKey) ?? user.displayName; 
   }
 
   Future<String?> getUserEmail () async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return preferences.getString(userEmailKey); 
+    return preferences.getString(userEmailKey) ?? user.email ; 
   }
 
   Future<String?> getUserProfile () async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return preferences.getString(userProfileKey); 
+    return preferences.getString(userProfileKey) ?? user.photoURL; 
   }
    
 }

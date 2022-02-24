@@ -15,11 +15,11 @@ class _ChatScreenState extends State<ChatScreen> {
   String? chatRoomId, messageId;
   String? myName, myProfilePic, myUserName, myEmail;
 
-  void getInfoFromSharePreference() async {
+  getInfoFromSharePreference() async {
     myName = await SharedPreferencesHelper().getDisplayName();
     myProfilePic = await SharedPreferencesHelper().getUserProfile();
     myUserName = await SharedPreferencesHelper().getUserName();
-    myName = await SharedPreferencesHelper().getUserEmail();
+    myEmail = await SharedPreferencesHelper().getUserEmail();
 
     chatRoomId = getChatRoomId(widget.chatwithUsername, myUserName);
   }
@@ -34,11 +34,32 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  getAndSetMessage() async {}
+
+  doThisOnLauch() async {
+    await getInfoFromSharePreference();
+    getAndSetMessage();
+  }
+
+  @override
+  void initState() {
+    doThisOnLauch();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-      title: Text(widget.name),
-    ));
+      appBar: AppBar(
+        title: Text(widget.name),
+      ),
+      body: Stack(
+        children: [
+          Row(
+            children: const [Expanded(child: TextField())],
+          )
+        ],
+      ),
+    );
   }
 }
