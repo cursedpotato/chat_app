@@ -1,5 +1,6 @@
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:chat_app/views/chat_screen.dart';
 import 'package:chat_app/views/signin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -106,26 +107,39 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _userTile(DocumentSnapshot ds) {
+    return ListTile(
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(40),
+        child: Image.network(
+          ds["imgUrl"],
+          height: 30,
+          width: 30,
+        ),
+      ),
+      title: Text(ds["name"]),
+      subtitle: Text(ds["username"]),
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatScreen()));
+      },
+    );
+  }
+
   Widget _searchUsersList() {
     return StreamBuilder<QuerySnapshot>(
       stream: usersStream,
-      builder: (_, AsyncSnapshot snapshot) {
-        return snapshot.hasData
-            ? ListView.builder(
-                shrinkWrap: true,
-                itemCount: snapshot.data.docs   ,
-                itemBuilder: (BuildContext context, int index) {
-                  DocumentSnapshot ds = snapshot.data.docs[index];
-                  return Image.network(
-                    ds["imgUrl"],
-                    height: 30,
-                    width: 30,
-                  );
-                },
-              )
-            : const Center(
-                child: CircularProgressIndicator(),
-              );
+      builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+              shrinkWrap: true,
+              itemCount: snapshot.data!.size,
+              itemBuilder: (BuildContext context, int index) {
+                DocumentSnapshot ds = snapshot.data!.docs[index];
+                return _userTile(ds);
+              });
+        } else {
+          return const CircularProgressIndicator();
+        }
       },
     );
   }
