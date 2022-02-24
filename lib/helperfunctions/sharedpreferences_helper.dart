@@ -61,7 +61,8 @@ class SharedPreferencesHelper {
 
   Future<String?> getUserProfile () async{
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    return preferences.getString(userProfileKey) ?? user.photoURL; 
+    return preferences.getString(userProfileKey) ?? user.photoURL
+     ; 
   }
    
 }
