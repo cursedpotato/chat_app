@@ -1,4 +1,5 @@
 import 'package:chat_app/helperfunctions/sharedpreferences_helper.dart';
+import 'package:chat_app/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:random_string/random_string.dart';
 
@@ -14,7 +15,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController messageController = TextEditingController();
-  String? chatRoomId, messageId;
+  String? chatroomId, messageId;
   String? myName, myProfilePic, myUserName, myEmail;
 
   getInfoFromSharePreference() async {
@@ -23,7 +24,7 @@ class _ChatScreenState extends State<ChatScreen> {
     myUserName = await SharedPreferencesHelper().getUserName();
     myEmail = await SharedPreferencesHelper().getUserEmail();
 
-    chatRoomId = getChatRoomId(widget.chatwithUsername, myUserName);
+    chatroomId = getChatRoomId(widget.chatwithUsername, myUserName);
   }
 
   String getChatRoomId(String? a, String? b) {
@@ -45,16 +46,25 @@ class _ChatScreenState extends State<ChatScreen> {
       var lastMessageTs = DateTime.now();
 
       Map<String, dynamic> messageInfoMap = {
-        "message" : message,
-        "sendBy" : myUserName,
-        "ts" : lastMessageTs,
-        "imgUrl": myProfilePic,  
+        "message": message,
+        "sendBy": myUserName,
+        "ts": lastMessageTs,
+        "imgUrl": myProfilePic,
       };
 
       if (messageId == "") {
-        messageId = randomAlphaNumeric(12); 
+        messageId = randomAlphaNumeric(12);
       }
-      
+
+      DatabaseMethods()
+          .addMessage(chatroomId!, messageId!, messageInfoMap)
+          .then((value) {
+        Map<String, dynamic> lastMessageInfo = {
+          "lastMessage": message,
+          "lastMessageSendTs": lastMessageTs,
+          "lastMessageSendBy": myUserName,
+        };
+      });
     }
   }
 
@@ -84,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: messageController,
-                    decoration:const InputDecoration(
+                    decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: "Type a message",
                         hintStyle: TextStyle(fontWeight: FontWeight.w500)),

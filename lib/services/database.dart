@@ -11,7 +11,17 @@ class DatabaseMethods {
 
   Future<Stream<QuerySnapshot>> getUserByUsername(String username) async {
     return FirebaseFirestore.instance
-        .collection("users").where("username", isEqualTo: username)
+        .collection("users")
+        .where("username", isEqualTo: username)
         .snapshots();
+  }
+
+  Future addMessage(String chatroomId, String messageId, Map<String, dynamic> messageInfoMap) {
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatroomId)
+        .collection("chats")
+        .doc(messageId)
+        .set(messageInfoMap);
   }
 }
