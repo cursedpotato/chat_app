@@ -40,8 +40,13 @@ class DatabaseMethods {
         .doc(chatRoomId)
         .get();
 
-        if (snapShot.exists == false) {
-          return FirebaseFirestore.instance.collection("chatrooms").doc(chatRoomId).set(chatRoomInfo);
-        }
+    if (snapShot.exists) {
+      return true;
+    } else {
+      return FirebaseFirestore.instance
+          .collection("chatrooms")
+          .doc(chatRoomId)
+          .set(chatRoomInfo);
+    }
   }
 }

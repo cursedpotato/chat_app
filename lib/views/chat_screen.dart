@@ -102,6 +102,9 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 Expanded(
                   child: TextField(
+                    onChanged: (value) {
+                      addMessage(false);
+                    },
                     controller: messageController,
                     decoration: const InputDecoration(
                         border: InputBorder.none,
@@ -109,7 +112,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         hintStyle: TextStyle(fontWeight: FontWeight.w500)),
                   ),
                 ),
-                const Icon(Icons.send)
+                GestureDetector(onTap: () {addMessage(true);}, child: const Icon(Icons.send))
               ],
             ),
           )
