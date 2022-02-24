@@ -1,6 +1,5 @@
 import 'package:chat_app/helperfunctions/sharedpreferences_helper.dart';
 import 'package:chat_app/services/database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:random_string/random_string.dart';
 
@@ -65,6 +64,8 @@ class _ChatScreenState extends State<ChatScreen> {
           "lastMessageSendTs": lastMessageTs,
           "lastMessageSendBy": myUserName, 
         };
+
+        DatabaseMethods().updateLastMessageSend(chatroomId!, lastMessageInfo);
       });
     }
   }

@@ -27,10 +27,10 @@ class DatabaseMethods {
   }
 
   updateLastMessageSend(
-      String chatroomId, Map<String, dynamic> lastMessageSend) {
+      String chatroomId, Map<String, dynamic> lastMessageInfo) {
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatroomId)
-        .update(lastMessageSend);
+        .update(lastMessageInfo);
   }
 }
