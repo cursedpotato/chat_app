@@ -16,12 +16,21 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  Future addMessage(String chatroomId, String messageId, Map<String, dynamic> messageInfoMap) {
+  Future addMessage(String chatroomId, String messageId,
+      Map<String, dynamic> messageInfoMap) {
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatroomId)
         .collection("chats")
         .doc(messageId)
         .set(messageInfoMap);
+  }
+
+  updateLastMessageSend(
+      String chatroomId, Map<String, dynamic> lastMessageSend) {
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatroomId)
+        .update(lastMessageSend);
   }
 }
