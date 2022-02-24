@@ -41,10 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
     myProfilePic = await SharedPreferencesHelper().getUserProfile();
     myUserName = await SharedPreferencesHelper().getUserName();
     myEmail = await SharedPreferencesHelper().getUserEmail();
-
-    
   }
-  
+
   String getChatRoomId(String? a, String? b) {
     if (a!.substring(0, 1).codeUnitAt(0) > b!.substring(0, 1).codeUnitAt(0)) {
       // ignore: unnecessary_string_escapes
@@ -54,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return "$a\_$b";
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,7 +134,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _userTile(DocumentSnapshot ds) {
-    
     String name = ds["name"];
     String username = ds["username"];
     return ListTile(
@@ -150,12 +148,19 @@ class _HomeScreenState extends State<HomeScreen> {
       title: Text(name),
       subtitle: Text(username),
       onTap: () {
-        
         var chatRoomId = getChatRoomId(myName, name);
-        Map<String, dynamic> chatRoomInfoMap = {
-          "users" : [myName, name],
+        Map<String, dynamic> chatRoomInfo = {
+          "users": [myName, name],
         };
-        Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(chatwithUsername: username, name: name,)));      
+
+        DatabaseMethods().createChatRoom(chatRoomId, chatRoomInfo);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ChatScreen(
+                      chatwithUsername: username,
+                      name: name,
+                    )));
       },
     );
   }

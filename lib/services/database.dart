@@ -33,4 +33,15 @@ class DatabaseMethods {
         .doc(chatroomId)
         .update(lastMessageInfo);
   }
+
+  createChatRoom(String chatRoomId, Map<String, dynamic> chatRoomInfo) async {
+    final snapShot = await FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatRoomId)
+        .get();
+
+        if (snapShot.exists == false) {
+          return FirebaseFirestore.instance.collection("chatrooms").doc(chatRoomId).set(chatRoomInfo);
+        }
+  }
 }
