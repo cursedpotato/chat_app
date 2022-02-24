@@ -108,6 +108,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _userTile(DocumentSnapshot ds) {
+    // TODO: add a a better way to represent the user
+    String name = ds["name"];
+    String username = ds["username"];
     return ListTile(
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(40),
@@ -117,10 +120,10 @@ class _HomeScreenState extends State<HomeScreen> {
           width: 30,
         ),
       ),
-      title: Text(ds["name"]),
-      subtitle: Text(ds["username"]),
+      title: Text(name),
+      subtitle: Text(username),
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(chatwithUsername: username, name: name,)));      
       },
     );
   }
