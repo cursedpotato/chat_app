@@ -18,6 +18,8 @@ class _ChatScreenState extends State<ChatScreen> {
   String? chatroomId, messageId;
   String? myName, myProfilePic, myUserName, myEmail;
 
+  Stream? messageStream;
+
   getInfoFromSharePreference() async {
     myName = await SharedPreferencesHelper().getDisplayName();
     myProfilePic = await SharedPreferencesHelper().getUserProfile();
@@ -37,7 +39,9 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  getAndSetMessage() async {}
+  getAndSetMessage() async {
+    
+  }
 
   addMessage(bool sendClicked) {
     if (messageController.text != "") {
@@ -52,9 +56,7 @@ class _ChatScreenState extends State<ChatScreen> {
         "imgUrl": myProfilePic,
       };
 
-      if (messageId == "") {
-        messageId = randomAlphaNumeric(12);
-      }
+      messageId ??= randomAlphaNumeric(12).toString();
 
       DatabaseMethods()
           .addMessage(chatroomId!, messageId!, messageInfoMap)
@@ -65,7 +67,11 @@ class _ChatScreenState extends State<ChatScreen> {
           "lastMessageSendBy": myUserName,
         };
 
+        
+
         DatabaseMethods().updateLastMessageSend(chatroomId!, lastMessageInfo);
+
+        
 
         if (sendClicked) {
           // remove the text in the message input field
@@ -102,9 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    onChanged: (value) {
-                      addMessage(false);
-                    },
+                    onChanged: addMessage(false),
                     controller: messageController,
                     decoration: const InputDecoration(
                         border: InputBorder.none,
@@ -112,7 +116,11 @@ class _ChatScreenState extends State<ChatScreen> {
                         hintStyle: TextStyle(fontWeight: FontWeight.w500)),
                   ),
                 ),
-                GestureDetector(onTap: () {addMessage(true);}, child: const Icon(Icons.send))
+                GestureDetector(
+                    onTap: () {
+                      addMessage(true);
+                    },
+                    child: const Icon(Icons.send))
               ],
             ),
           )

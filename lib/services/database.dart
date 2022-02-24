@@ -27,11 +27,21 @@ class DatabaseMethods {
   }
 
   updateLastMessageSend(
-      String chatroomId, Map<String, dynamic> lastMessageInfo) {
-    return FirebaseFirestore.instance
-        .collection("chatrooms")
-        .doc(chatroomId)
-        .update(lastMessageInfo);
+      String chatRoomId, Map<String, dynamic> lastMessageInfo) {
+    Future.delayed(const Duration(milliseconds: 100), () async {
+      final snapShot = await FirebaseFirestore.instance
+          .collection("chatrooms")
+          .doc(chatRoomId)
+          .get();
+      if (snapShot.exists) {
+        return FirebaseFirestore.instance
+          .collection("chatrooms")
+          .doc(chatRoomId)
+          .update(lastMessageInfo);
+      }
+    
+      
+    });
   }
 
   createChatRoom(String chatRoomId, Map<String, dynamic> chatRoomInfo) async {
