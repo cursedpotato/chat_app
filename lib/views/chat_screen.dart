@@ -62,14 +62,20 @@ class _ChatScreenState extends State<ChatScreen> {
         Map<String, dynamic> lastMessageInfo = {
           "lastMessage": message,
           "lastMessageSendTs": lastMessageTs,
-          "lastMessageSendBy": myUserName, 
+          "lastMessageSendBy": myUserName,
         };
 
         DatabaseMethods().updateLastMessageSend(chatroomId!, lastMessageInfo);
+
+        if (sendClicked) {
+          // remove the text in the message input field
+          messageController.text = "";
+          // make message id blank to get regenerated on next message send
+          messageId = "";
+        }
       });
     }
   }
-
 
   doThisOnLauch() async {
     await getInfoFromSharePreference();
