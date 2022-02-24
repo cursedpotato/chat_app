@@ -42,6 +42,7 @@ class AuthMethods extends ChangeNotifier{
       // Saving user data locally
       SharedPreferencesHelper().saveUserId(userDetails!.uid);
       SharedPreferencesHelper().saveUserEmail(userDetails.email);
+      SharedPreferencesHelper().saveUserName(userDetails.email!.replaceAll("@gmail.com", ""));
       SharedPreferencesHelper().saveDisplayName(userDetails.displayName);
       SharedPreferencesHelper().saveUserProfile(userDetails.photoURL);
       // Mapping data to add user to firebase
