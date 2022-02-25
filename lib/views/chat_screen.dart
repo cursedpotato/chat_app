@@ -40,13 +40,27 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Widget messageTile(DocumentSnapshot ds) {
+  Widget messageTile(DocumentSnapshot ds, bool sendByme) {
     String message = ds["message"];
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      color: Colors.indigo,
-      padding: const EdgeInsets.all(16),
-      child: Text(message),
+    return Row(
+      mainAxisAlignment: sendByme ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            
+            borderRadius: BorderRadius.only(
+             topRight: const Radius.circular(24), 
+             topLeft: const Radius.circular(24),
+             bottomRight: sendByme ? const Radius.circular(0) : const Radius.circular(24),
+             bottomLeft: sendByme ? const Radius.circular(24) : const Radius.circular(0),
+            ),
+            color: sendByme ? Colors.indigo : Colors.indigo[400],
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.all(16),
+          child: Text(message),
+        ),
+      ],
     );
   }
 
@@ -61,10 +75,7 @@ class _ChatScreenState extends State<ChatScreen> {
               reverse: true,
               itemBuilder: (BuildContext context, int index) {
                 DocumentSnapshot ds = snapshot.data!.docs[index];
-                return Text(
-                  ds["message"],
-                  style: const TextStyle(color: Colors.red),
-                );
+                return messageTile(ds,  myUserName == ds["sendBy"]);
               });
         } else {
           return const CircularProgressIndicator();
