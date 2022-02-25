@@ -40,14 +40,25 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Widget messageTile(DocumentSnapshot ds) {
+    String message = ds["message"];
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      color: Colors.indigo,
+      padding: const EdgeInsets.all(16),
+      child: Text(message),
+    );
+  }
+
   Widget chatMessages() {
     return StreamBuilder<QuerySnapshot>(
       stream: messageStream,
       builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
-              shrinkWrap: true,
+              padding: const EdgeInsets.only(bottom: 70, top: 16),
               itemCount: snapshot.data!.docs.length,
+              reverse: true,
               itemBuilder: (BuildContext context, int index) {
                 DocumentSnapshot ds = snapshot.data!.docs[index];
                 return Text(
