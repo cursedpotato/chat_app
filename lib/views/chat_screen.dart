@@ -1,5 +1,6 @@
 import 'package:chat_app/helperfunctions/sharedpreferences_helper.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:random_string/random_string.dart';
 
@@ -18,7 +19,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String? chatroomId, messageId;
   String? myName, myProfilePic, myUserName, myEmail;
 
-  Stream? messageStream;
+  Stream<QuerySnapshot>? messageStream;
 
   getInfoFromSharePreference() async {
     myName = await SharedPreferencesHelper().getDisplayName();
@@ -39,8 +40,31 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Widget chatMessages() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: messageStream,
+      builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+              shrinkWrap: true,
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (BuildContext context, int index) {
+                DocumentSnapshot ds = snapshot.data!.docs[index];
+                return Text(
+                  ds["message"],
+                  style: const TextStyle(color: Colors.red),
+                );
+              });
+        } else {
+          return const CircularProgressIndicator();
+        }
+      },
+    );
+  }
+
   getAndSetMessage() async {
-    
+    messageStream = await DatabaseMethods().getChatRoomMessages(chatroomId!);
+    setState(() {});
   }
 
   addMessage(bool sendClicked) {
@@ -67,17 +91,16 @@ class _ChatScreenState extends State<ChatScreen> {
           "lastMessageSendBy": myUserName,
         };
 
-        
-
         DatabaseMethods().updateLastMessageSend(chatroomId!, lastMessageInfo);
-
-        
 
         if (sendClicked) {
           // remove the text in the message input field
-          messageController.text = "";
+          messageController.clear();
           // make message id blank to get regenerated on next message send
           messageId = "";
+          setState(() {
+            messageId = randomAlphaNumeric(12).toString();
+          });
         }
       });
     }
@@ -102,6 +125,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Stack(
         children: [
+          chatMessages(),
           Container(
             alignment: Alignment.bottomCenter,
             child: Row(
