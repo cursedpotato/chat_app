@@ -192,6 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
       stream: chatRoomStream,
       builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
         return ListView.builder(
+          shrinkWrap: true,
           itemCount: snapshot.data!.docs.length,
           itemBuilder: (_, int index) {
             if (snapshot.hasData) {
