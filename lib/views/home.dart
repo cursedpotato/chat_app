@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isSearching = false;
 
-  Stream<QuerySnapshot>? usersStream;
+  Stream<QuerySnapshot>? usersStream, chatRoomStream;
 
   TextEditingController searchUsername = TextEditingController();
 
@@ -27,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     getInfoFromSharePreference();
+    () async => chatRoomStream = await DatabaseMethods().getChatRooms();
   }
 
   onSearch() async {
@@ -187,6 +188,24 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _chatRoomList() {
-    return Container();
+    return StreamBuilder<QuerySnapshot>(
+      stream: chatRoomStream,
+      builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
+        return ListView.builder(
+          itemCount: snapshot.data!.docs.length,
+          itemBuilder: (_, int index) {
+            if (snapshot.hasData) {
+              DocumentSnapshot ds = snapshot.data!.docs[index];
+              return Text(ds.id.replaceAll(myName!, "").replaceAll("_", ""));  
+            }
+            else{ 
+              return  const CircularProgressIndicator();
+            }
+            
+            
+          },
+        );
+      },
+    );
   }
 }
