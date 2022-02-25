@@ -1,3 +1,4 @@
+import 'package:chat_app/helperfunctions/sharedpreferences_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseMethods {
@@ -64,6 +65,15 @@ class DatabaseMethods {
         .doc(chatRoomId)
         .collection("chats")
         .orderBy("ts", descending: true)
+        .snapshots();
+  }
+
+  getChatRooms() async {
+    String myName = SharedPreferencesHelper.userNameKey;
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .orderBy("lastMessageSendTs", descending: true)
+        .where("users", arrayContains: myName)
         .snapshots();
   }
 }
