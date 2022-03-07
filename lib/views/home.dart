@@ -134,8 +134,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
-
   Widget _userTile(DocumentSnapshot ds) {
     String name = ds["name"];
     String username = ds["username"];
@@ -193,20 +191,39 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
         return ListView.builder(
           shrinkWrap: true,
-          itemCount: snapshot.data!.docs.length,
+          itemCount: snapshot.data?.docs.length,
           itemBuilder: (_, int index) {
             if (snapshot.hasData) {
               DocumentSnapshot ds = snapshot.data!.docs[index];
-              return Text(ds.id.replaceAll(myName!, "").replaceAll("_", ""));  
+              username = ds.id.replaceAll(myName!, "").replaceAll("_", "");
+              return Text(username!);
+            } else {
+              return const CircularProgressIndicator();
             }
-            else{ 
-              return  const CircularProgressIndicator();
-            }
-            
-            
           },
         );
       },
+    );
+  }
+
+  String? username, name, profilePicUrl;
+  getThisUserInfo(DocumentSnapshot ds) async {
+    username = ds.id.replaceAll(myName!, "").replaceAll("_", "");
+    // QuerySnapshot querySnapshot =
+    //     await DatabaseMethods().getUserInfo(username!);
+    // name = querySnapshot.docs[0]["name"];
+    // profilePicUrl = querySnapshot.docs[0]["imgUrl"];
+  }
+
+  Widget chatroomTile(DocumentSnapshot ds) {
+    String lastMessage = ds["lastMessage"];
+    
+    // TODO: add time stamp  of last message
+    return ListTile(
+      //leading: Image.network(profilePicUrl),
+      title: const Text(""),
+      subtitle: Text(lastMessage),
+      onTap: () {},
     );
   }
 }

@@ -77,10 +77,7 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  getUserInfo(String username) async {
-    return await FirebaseFirestore.instance
-        .collection("users")
-        .where("username", isEqualTo: username)
-        .get();
+  getchatInfo(String username) async {
+    
   }
 }
