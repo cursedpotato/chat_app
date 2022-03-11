@@ -69,7 +69,7 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
-    String myName = SharedPreferencesHelper.userNameKey;
+    String? myName = await SharedPreferencesHelper().getUserName();
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .orderBy("lastMessageSendTs", descending: true)

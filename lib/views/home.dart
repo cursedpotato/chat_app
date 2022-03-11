@@ -29,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
     () async => chatRoomStream = await DatabaseMethods().getChatRooms();
   }
 
-
   onSearch() async {
     isSearching = true;
     usersStream =
@@ -57,32 +56,31 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("CapyChat"),
-        actions: [
-          IconButton(
-            onPressed: () {
-              AuthMethods().signOut().then((_) {
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (_) => const SignIn()));
-              });
-            },
-            icon: const Icon(Icons.exit_to_app),
-          )
-        ],
-      ),
-      body: Column(
+        appBar: AppBar(
+          title: const Text("CapyChat"),
+          actions: [
+            IconButton(
+              onPressed: () {
+                AuthMethods().signOut().then((_) {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (_) => const SignIn()));
+                });
+              },
+              icon: const Icon(Icons.exit_to_app),
+            )
+          ],
+        ),
+        body: Column(
           children: [
             Row(
               children: [_searchEraseBtn(), _searchBar()],
             ),
             isSearching ? _searchUsersList() : _chatRoomList()
           ],
-        )
-    );
+        ));
   }
 
-   Widget _searchUsersList() {
+  Widget _searchUsersList() {
     return StreamBuilder<QuerySnapshot>(
       stream: usersStream,
       builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -182,7 +180,25 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  String? username;
   Widget _chatRoomList() {
-    return Container();
+    return StreamBuilder<QuerySnapshot>(
+      stream: chatRoomStream,
+      builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: snapshot.data?.docs.length,
+          itemBuilder: (_, int index) {
+            if (snapshot.hasData) {
+              DocumentSnapshot ds = snapshot.data!.docs[index];
+              username = ds.id.replaceAll(myName!, "").replaceAll("_", "");
+              return Text(username!);
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        );
+      },
+    );
   }
 }
