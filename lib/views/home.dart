@@ -1,11 +1,11 @@
-import 'package:chat_app/helperfunctions/sharedpreferences_helper.dart';
-import 'package:chat_app/services/auth.dart';
-import 'package:chat_app/services/database.dart';
-import 'package:chat_app/views/chat_screen.dart';
 import 'package:chat_app/views/signin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:flutter/material.dart';
+
+import '../helperfunctions/sharedpreferences_helper.dart';
+import '../services/auth.dart';
+import '../services/database.dart';
+import 'chat_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,13 +22,13 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController searchUsername = TextEditingController();
 
   String? myName, myProfilePic, myUserName, myEmail;
-
   @override
   void initState() {
     super.initState();
     getInfoFromSharePreference();
     () async => chatRoomStream = await DatabaseMethods().getChatRooms();
   }
+
 
   onSearch() async {
     isSearching = true;
@@ -57,32 +57,80 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Capybara chat"),
-          actions: [
-            // May change to icon button
-            InkWell(
-              onTap: () {
-                AuthMethods().signOut().then((_) {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (_) => const SignIn()));
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: const Icon(Icons.exit_to_app),
-              ),
-            )
-          ],
-        ),
-        body: Column(
+      appBar: AppBar(
+        title: const Text("CapyChat"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              AuthMethods().signOut().then((_) {
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (_) => const SignIn()));
+              });
+            },
+            icon: const Icon(Icons.exit_to_app),
+          )
+        ],
+      ),
+      body: Column(
           children: [
             Row(
               children: [_searchEraseBtn(), _searchBar()],
             ),
             isSearching ? _searchUsersList() : _chatRoomList()
           ],
-        ));
+        )
+    );
+  }
+
+   Widget _searchUsersList() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: usersStream,
+      builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+              shrinkWrap: true,
+              itemCount: snapshot.data!.size,
+              itemBuilder: (BuildContext context, int index) {
+                DocumentSnapshot ds = snapshot.data!.docs[index];
+                return _userTile(ds);
+              });
+        } else {
+          return const CircularProgressIndicator();
+        }
+      },
+    );
+  }
+
+  Widget _userTile(DocumentSnapshot ds) {
+    String name = ds["name"];
+    String username = ds["username"];
+    return ListTile(
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(40),
+        child: Image.network(
+          ds["imgUrl"],
+          height: 30,
+          width: 30,
+        ),
+      ),
+      title: Text(name),
+      subtitle: Text(username),
+      onTap: () {
+        var chatRoomId = getChatRoomId(myName, name);
+        Map<String, dynamic> chatRoomInfo = {
+          "users": [myName, name],
+        };
+
+        DatabaseMethods().createChatRoom(chatRoomId, chatRoomInfo);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ChatScreen(
+                      chatwithUsername: username,
+                      name: name,
+                    )));
+      },
+    );
   }
 
   Widget _searchEraseBtn() {
@@ -134,96 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _userTile(DocumentSnapshot ds) {
-    String name = ds["name"];
-    String username = ds["username"];
-    return ListTile(
-      leading: ClipRRect(
-        borderRadius: BorderRadius.circular(40),
-        child: Image.network(
-          ds["imgUrl"],
-          height: 30,
-          width: 30,
-        ),
-      ),
-      title: Text(name),
-      subtitle: Text(username),
-      onTap: () {
-        var chatRoomId = getChatRoomId(myName, name);
-        Map<String, dynamic> chatRoomInfo = {
-          "users": [myName, name],
-        };
-
-        DatabaseMethods().createChatRoom(chatRoomId, chatRoomInfo);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => ChatScreen(
-                      chatwithUsername: username,
-                      name: name,
-                    )));
-      },
-    );
-  }
-
-  Widget _searchUsersList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: usersStream,
-      builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasData) {
-          return ListView.builder(
-              shrinkWrap: true,
-              itemCount: snapshot.data!.size,
-              itemBuilder: (BuildContext context, int index) {
-                DocumentSnapshot ds = snapshot.data!.docs[index];
-                return _userTile(ds);
-              });
-        } else {
-          return const CircularProgressIndicator();
-        }
-      },
-    );
-  }
-
   Widget _chatRoomList() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: chatRoomStream,
-      builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: snapshot.data?.docs.length,
-          itemBuilder: (_, int index) {
-            if (snapshot.hasData) {
-              DocumentSnapshot ds = snapshot.data!.docs[index];
-              username = ds.id.replaceAll(myName!, "").replaceAll("_", "");
-              return Text(username!);
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
-        );
-      },
-    );
-  }
-
-  String? username, name, profilePicUrl;
-  getThisUserInfo(DocumentSnapshot ds) async {
-    username = ds.id.replaceAll(myName!, "").replaceAll("_", "");
-    // QuerySnapshot querySnapshot =
-    //     await DatabaseMethods().getUserInfo(username!);
-    // name = querySnapshot.docs[0]["name"];
-    // profilePicUrl = querySnapshot.docs[0]["imgUrl"];
-  }
-
-  Widget chatroomTile(DocumentSnapshot ds) {
-    String lastMessage = ds["lastMessage"];
-    
-    // TODO: add time stamp  of last message
-    return ListTile(
-      //leading: Image.network(profilePicUrl),
-      title: const Text(""),
-      subtitle: Text(lastMessage),
-      onTap: () {},
-    );
+    return Container();
   }
 }

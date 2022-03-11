@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData.dark(),
+        //home: const HomeScreen(),
         home: FutureBuilder(
           future: AuthMethods().getCurrentUser(),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
