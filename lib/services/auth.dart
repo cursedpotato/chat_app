@@ -1,63 +1,58 @@
-import 'package:chat_app/helperfunctions/sharedpreferences_helper.dart';
-import 'package:chat_app/services/database.dart';
-
-import 'package:chat_app/views/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:messenger_clone/helperfunctions/sharedpref_helper.dart';
+import 'package:messenger_clone/services/database.dart';
+import 'package:messenger_clone/views/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthMethods extends ChangeNotifier{
+class AuthMethods {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-  getCurrentUser()async {
-    // ignore: await_only_futures
+  getCurrentUser() async {
     return await auth.currentUser;
   }
 
   signInWithGoogle(BuildContext context) async {
     final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-    // Creating a var for easily accesing the instance of a class
-    final GoogleSignIn _googleSingIn = GoogleSignIn();
-    //NOTE: Seems that this may need a try and and catch in the future
-    // Accesing to a method of the class which returns a future
-    final GoogleSignInAccount? _googleSignInAccount =
-        await _googleSingIn.signIn();
-    //NOTE: It may throw null and the the type may have to refactored as such: GoogleSingInAuthentication?
-    // Calling the api to give auth params
+    final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+    final GoogleSignInAccount googleSignInAccount =
+        await _googleSignIn.signIn();
+
     final GoogleSignInAuthentication googleSignInAuthentication =
-        await _googleSignInAccount!.authentication;
-    // Using those params to create a credential
+        await googleSignInAccount.authentication;
+
     final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken);
-    // Using that credential to sign in
-    final UserCredential? result =
+        idToken: googleSignInAuthentication.idToken,
+        accessToken: googleSignInAuthentication.accessToken);
+
+    UserCredential result =
         await _firebaseAuth.signInWithCredential(credential);
 
-    User? userDetails = result?.user;
+    User userDetails = result.user;
 
     if (result != null) {
-      // Saving user data locally
-      SharedPreferencesHelper().saveUserId(userDetails!.uid);
-      SharedPreferencesHelper().saveUserEmail(userDetails.email);
-      SharedPreferencesHelper().saveUserName(userDetails.email!.replaceAll("@gmail.com", ""));
-      SharedPreferencesHelper().saveDisplayName(userDetails.displayName);
-      SharedPreferencesHelper().saveUserProfile(userDetails.photoURL);
-      // Mapping data to add user to firebase
+      SharedPreferenceHelper().saveUserEmail(userDetails.email);
+      SharedPreferenceHelper().saveUserId(userDetails.uid);
+      SharedPreferenceHelper()
+          .saveUserName(userDetails.email.replaceAll("@gmail.com", ""));
+      SharedPreferenceHelper().saveDisplayName(userDetails.displayName);
+      SharedPreferenceHelper().saveUserProfileUrl(userDetails.photoURL);
+
       Map<String, dynamic> userInfoMap = {
         "email": userDetails.email,
-        "username": userDetails.email!.replaceAll("@gmail.com", ""),
+        "username": userDetails.email.replaceAll("@gmail.com", ""),
         "name": userDetails.displayName,
-        "imgUrl": userDetails.photoURL,
+        "imgUrl": userDetails.photoURL
       };
 
-      
-
-      await DatabaseMethods().addUserInfoTodb(userDetails.uid, userInfoMap).then(
-          (value) => Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const HomeScreen())));
+      DatabaseMethods()
+          .addUserInfoToDB(userDetails.uid, userInfoMap)
+          .then((value) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Home()));
+      });
     }
   }
 

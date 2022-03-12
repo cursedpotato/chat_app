@@ -1,8 +1,8 @@
-import 'package:chat_app/helperfunctions/sharedpreferences_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:messenger_clone/helperfunctions/sharedpref_helper.dart';
 
 class DatabaseMethods {
-  Future addUserInfoTodb(
+  Future addUserInfoToDB(
       String userId, Map<String, dynamic> userInfoMap) async {
     return FirebaseFirestore.instance
         .collection("users")
@@ -10,56 +10,49 @@ class DatabaseMethods {
         .set(userInfoMap);
   }
 
-  Future<Stream<QuerySnapshot>> getUserByUsername(String username) async {
+  Future<Stream<QuerySnapshot>> getUserByUserName(String username) async {
     return FirebaseFirestore.instance
         .collection("users")
         .where("username", isEqualTo: username)
         .snapshots();
   }
 
-  Future addMessage(String chatroomId, String messageId,
-      Map<String, dynamic> messageInfoMap) {
+  Future addMessage(
+      String chatRoomId, String messageId, Map messageInfoMap) async {
     return FirebaseFirestore.instance
         .collection("chatrooms")
-        .doc(chatroomId)
+        .doc(chatRoomId)
         .collection("chats")
         .doc(messageId)
         .set(messageInfoMap);
   }
 
-  updateLastMessageSend(
-      String chatRoomId, Map<String, dynamic> lastMessageInfo) {
-    Future.delayed(const Duration(milliseconds: 100), () async {
-      final snapShot = await FirebaseFirestore.instance
-          .collection("chatrooms")
-          .doc(chatRoomId)
-          .get();
-      if (snapShot.exists) {
-        return FirebaseFirestore.instance
-            .collection("chatrooms")
-            .doc(chatRoomId)
-            .update(lastMessageInfo);
-      }
-    });
+  updateLastMessageSend(String chatRoomId, Map lastMessageInfoMap) {
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatRoomId)
+        .update(lastMessageInfoMap);
   }
 
-  createChatRoom(String chatRoomId, Map<String, dynamic> chatRoomInfo) async {
+  createChatRoom(String chatRoomId, Map chatRoomInfoMap) async {
     final snapShot = await FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatRoomId)
         .get();
 
     if (snapShot.exists) {
+      // chatroom already exists
       return true;
     } else {
+      // chatroom does not exists
       return FirebaseFirestore.instance
           .collection("chatrooms")
           .doc(chatRoomId)
-          .set(chatRoomInfo);
+          .set(chatRoomInfoMap);
     }
   }
 
-  Future<Stream<QuerySnapshot>> getChatRoomMessages(String chatRoomId) async {
+  Future<Stream<QuerySnapshot>> getChatRoomMessages(chatRoomId) async {
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatRoomId)
@@ -69,11 +62,11 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
-    String? myName = await SharedPreferencesHelper().getUserName();
+    String myUsername = await SharedPreferenceHelper().getUserName();
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .orderBy("lastMessageSendTs", descending: true)
-        .where("users", arrayContains: myName)
+        .where("users", arrayContains: myUsername)
         .snapshots();
   }
 
