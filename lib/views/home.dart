@@ -202,3 +202,70 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+class ChatRoomListTile extends StatefulWidget {
+  final String lastMessage, chatRoomId, myUsername;
+  const ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername, {Key? key}) : super(key: key);
+
+  @override
+  _ChatRoomListTileState createState() => _ChatRoomListTileState();
+}
+
+class _ChatRoomListTileState extends State<ChatRoomListTile> {
+  String profilePicUrl = "", name = "", username = "";
+
+  getThisUserInfo() async {
+    username =
+        widget.chatRoomId.replaceAll(widget.myUsername, "").replaceAll("_", "");
+    QuerySnapshot querySnapshot = await DatabaseMethods().getUserInfo(username);
+    
+    name = "${querySnapshot.docs[0]["name"]}";
+    profilePicUrl = "${querySnapshot.docs[0]["imgUrl"]}";
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    getThisUserInfo();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatScreen(chatwithUsername: username, name: name)));
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Image.network(
+                profilePicUrl,
+                height: 40,
+                width: 40,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 3),
+                Text(widget.lastMessage)
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
