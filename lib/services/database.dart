@@ -1,5 +1,5 @@
+import 'package:chat_app/helperfunctions/sharedpref_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:messenger_clone/helperfunctions/sharedpref_helper.dart';
 
 class DatabaseMethods {
   Future addUserInfoToDB(
@@ -17,8 +17,8 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  Future addMessage(
-      String chatRoomId, String messageId, Map messageInfoMap) async {
+  Future addMessage(String chatRoomId, String messageId,
+      Map<String, dynamic> messageInfoMap) async {
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatRoomId)
@@ -27,14 +27,14 @@ class DatabaseMethods {
         .set(messageInfoMap);
   }
 
-  updateLastMessageSend(String chatRoomId, Map lastMessageInfoMap) {
+  updateLastMessageSend(String chatRoomId, Map<String, dynamic> lastMessageInfoMap) {
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatRoomId)
         .update(lastMessageInfoMap);
   }
 
-  createChatRoom(String chatRoomId, Map chatRoomInfoMap) async {
+  createChatRoom(String chatRoomId, Map<String, dynamic> chatRoomInfoMap) async {
     final snapShot = await FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatRoomId)
@@ -62,7 +62,7 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
-    String myUsername = await SharedPreferenceHelper().getUserName();
+    String?  myUsername = await SharedPreferenceHelper().getUserName();
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .orderBy("lastMessageSendTs", descending: true)

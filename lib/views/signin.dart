@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:messenger_clone/services/auth.dart';
+
+import '../services/auth.dart';
+
 
 class SignIn extends StatefulWidget {
+  const SignIn({Key? key}) : super(key: key);
+
   @override
   _SignInState createState() => _SignInState();
 }
@@ -11,7 +15,7 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Messenger Clone"),
+        title: const Text("Messenger Clone"),
       ),
       body: Center(
         child: GestureDetector(
@@ -21,10 +25,10 @@ class _SignInState extends State<SignIn> {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
-              color: Color(0xffDB4437),
+              color: const Color(0xffDB4437),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: const Text(
               "Sign In with Google",
               style: TextStyle(fontSize: 16, color: Colors.white),
             ),

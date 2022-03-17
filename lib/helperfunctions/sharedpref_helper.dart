@@ -8,53 +8,53 @@ class SharedPreferenceHelper {
   static String userProfilePicKey = "USERPROFILEPICKEY";
 
   //save data
-  Future<bool> saveUserName(String getUserName) async {
+  Future<bool> saveUserName(String? getUserName) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setString(userNameKey, getUserName);
+    return prefs.setString(userNameKey, getUserName!);
   }
 
-  Future<bool> saveUserEmail(String getUseremail) async {
+  Future<bool> saveUserEmail(String? getUseremail) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setString(userEmailKey, getUseremail);
+    return prefs.setString(userEmailKey, getUseremail!);
   }
 
-  Future<bool> saveUserId(String getUserId) async {
+  Future<bool> saveUserId(String? getUserId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setString(userIdKey, getUserId);
+    return prefs.setString(userIdKey, getUserId!);
   }
 
-  Future<bool> saveDisplayName(String getDisplayName) async {
+  Future<bool> saveDisplayName(String? getDisplayName) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setString(displayNameKey, getDisplayName);
+    return prefs.setString(displayNameKey, getDisplayName!);
   }
 
-  Future<bool> saveUserProfileUrl(String getUserProfile) async {
+  Future<bool> saveUserProfileUrl(String? getUserProfile) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setString(userProfilePicKey, getUserProfile);
+    return prefs.setString(userProfilePicKey, getUserProfile!);
   }
 
   // get data
-  Future<String> getUserName() async {
+  Future<String?> getUserName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userNameKey);
   }
 
-  Future<String> getUserEmail() async {
+  Future<String?> getUserEmail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userEmailKey);
   }
 
-  Future<String> getUserId() async {
+  Future<String?> getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userIdKey);
   }
 
-  Future<String> getDisplayName() async {
+  Future<String?> getDisplayName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(displayNameKey);
   }
 
-  Future<String> getUserProfileUrl() async {
+  Future<String?> getUserProfileUrl() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(userProfilePicKey);
   }

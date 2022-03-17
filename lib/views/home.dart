@@ -1,20 +1,24 @@
+import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:messenger_clone/helperfunctions/sharedpref_helper.dart';
-import 'package:messenger_clone/services/auth.dart';
-import 'package:messenger_clone/services/database.dart';
-import 'package:messenger_clone/views/chatscreen.dart';
-import 'package:messenger_clone/views/signin.dart';
+
+import '../helperfunctions/sharedpref_helper.dart';
+import '../services/auth.dart';
+import 'chatscreen.dart';
+import 'signin.dart';
+
 
 class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
   bool isSearching = false;
-  String myName, myProfilePic, myUserName, myEmail;
-  Stream usersStream, chatRoomsStream;
+  String? myName, myProfilePic, myUserName, myEmail;
+  Stream<QuerySnapshot>? usersStream, chatRoomsStream;
 
   TextEditingController searchUsernameEditingController =
       TextEditingController();
@@ -29,8 +33,10 @@ class _HomeState extends State<Home> {
 
   getChatRoomIdByUsernames(String a, String b) {
     if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+      // ignore: unnecessary_string_escapes
       return "$b\_$a";
     } else {
+      // ignore: unnecessary_string_escapes
       return "$a\_$b";
     }
   }
@@ -45,26 +51,26 @@ class _HomeState extends State<Home> {
   }
 
   Widget chatRoomsList() {
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot>(
       stream: chatRoomsStream,
-      builder: (context, snapshot) {
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return snapshot.hasData
             ? ListView.builder(
-                itemCount: snapshot.data.docs.length,
+                itemCount: snapshot.data!.docs.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  DocumentSnapshot ds = snapshot.data.docs[index];
-                  return ChatRoomListTile(ds["lastMessage"], ds.id, myUserName);
+                  DocumentSnapshot ds = snapshot.data!.docs[index];
+                  return ChatRoomListTile(ds["lastMessage"], ds.id, myUserName!);
                 })
-            : Center(child: CircularProgressIndicator());
+            : const Center(child: CircularProgressIndicator());
       },
     );
   }
 
-  Widget searchListUserTile({String profileUrl, name, username, email}) {
+  Widget searchListUserTile({String? profileUrl, name, username, email}) {
     return GestureDetector(
       onTap: () {
-        var chatRoomId = getChatRoomIdByUsernames(myUserName, username);
+        var chatRoomId = getChatRoomIdByUsernames(myUserName!, username);
         Map<String, dynamic> chatRoomInfoMap = {
           "users": [myUserName, username]
         };
@@ -75,18 +81,18 @@ class _HomeState extends State<Home> {
                 builder: (context) => ChatScreen(username, name)));
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(40),
               child: Image.network(
-                profileUrl,
+                profileUrl!,
                 height: 40,
                 width: 40,
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [Text(name), Text(email)])
@@ -97,15 +103,15 @@ class _HomeState extends State<Home> {
   }
 
   Widget searchUsersList() {
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot>(
       stream: usersStream,
       builder: (context, snapshot) {
         return snapshot.hasData
             ? ListView.builder(
-                itemCount: snapshot.data.docs.length,
+                itemCount: snapshot.data!.docs.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  DocumentSnapshot ds = snapshot.data.docs[index];
+                  DocumentSnapshot ds = snapshot.data!.docs[index];
                   return searchListUserTile(
                       profileUrl: ds["imgUrl"],
                       name: ds["name"],
@@ -113,7 +119,7 @@ class _HomeState extends State<Home> {
                       username: ds["username"]);
                 },
               )
-            : Center(
+            : const Center(
                 child: CircularProgressIndicator(),
               );
       },
@@ -140,23 +146,23 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Messenger Clone"),
+        title: const Text("Messenger Clone"),
         actions: [
           InkWell(
             onTap: () {
               AuthMethods().signOut().then((s) {
                 Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => SignIn()));
+                    context, MaterialPageRoute(builder: (context) => const SignIn()));
               });
             },
             child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Icon(Icons.exit_to_app)),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: const Icon(Icons.exit_to_app)),
           )
         ],
       ),
       body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 20),
+        margin: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             Row(
@@ -168,15 +174,15 @@ class _HomeState extends State<Home> {
                           searchUsernameEditingController.text = "";
                           setState(() {});
                         },
-                        child: Padding(
+                        child: const Padding(
                             padding: EdgeInsets.only(right: 12),
                             child: Icon(Icons.arrow_back)),
                       )
                     : Container(),
                 Expanded(
                   child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 16),
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    margin: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
                         border: Border.all(
                             color: Colors.grey,
@@ -188,7 +194,7 @@ class _HomeState extends State<Home> {
                         Expanded(
                             child: TextField(
                           controller: searchUsernameEditingController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               border: InputBorder.none, hintText: "username"),
                         )),
                         GestureDetector(
@@ -197,7 +203,7 @@ class _HomeState extends State<Home> {
                                 onSearchBtnClick();
                               }
                             },
-                            child: Icon(Icons.search))
+                            child: const Icon(Icons.search))
                       ],
                     ),
                   ),
@@ -214,7 +220,7 @@ class _HomeState extends State<Home> {
 
 class ChatRoomListTile extends StatefulWidget {
   final String lastMessage, chatRoomId, myUsername;
-  ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername);
+  const ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername, {Key? key}) : super(key: key);
 
   @override
   _ChatRoomListTileState createState() => _ChatRoomListTileState();
@@ -227,6 +233,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     username =
         widget.chatRoomId.replaceAll(widget.myUsername, "").replaceAll("_", "");
     QuerySnapshot querySnapshot = await DatabaseMethods().getUserInfo(username);
+    // ignore: avoid_print
     print(
         "something bla bla ${querySnapshot.docs[0].id} ${querySnapshot.docs[0]["name"]}  ${querySnapshot.docs[0]["imgUrl"]}");
     name = "${querySnapshot.docs[0]["name"]}";
@@ -250,7 +257,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                 builder: (context) => ChatScreen(username, name)));
       },
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
             ClipRRect(
@@ -261,15 +268,15 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                 width: 40,
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   name,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
-                SizedBox(height: 3),
+                const SizedBox(height: 3),
                 Text(widget.lastMessage)
               ],
             )

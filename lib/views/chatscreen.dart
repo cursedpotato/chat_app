@@ -1,20 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:messenger_clone/helperfunctions/sharedpref_helper.dart';
-import 'package:messenger_clone/services/database.dart';
+
 import 'package:random_string/random_string.dart';
+
+import '../helperfunctions/sharedpref_helper.dart';
+import '../services/database.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatWithUsername, name;
-  ChatScreen(this.chatWithUsername, this.name);
+  const ChatScreen(this.chatWithUsername, this.name, {Key? key})
+      : super(key: key);
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  String chatRoomId, messageId = "";
-  Stream messageStream;
-  String myName, myProfilePic, myUserName, myEmail;
+  String? chatRoomId, messageId = "";
+  Stream<QuerySnapshot>? messageStream;
+  String? myName, myProfilePic, myUserName, myEmail;
   TextEditingController messageTextEdittingController = TextEditingController();
 
   getMyInfoFromSharedPreference() async {
@@ -23,13 +26,15 @@ class _ChatScreenState extends State<ChatScreen> {
     myUserName = await SharedPreferenceHelper().getUserName();
     myEmail = await SharedPreferenceHelper().getUserEmail();
 
-    chatRoomId = getChatRoomIdByUsernames(widget.chatWithUsername, myUserName);
+    chatRoomId = getChatRoomIdByUsernames(widget.chatWithUsername, myUserName!);
   }
 
   getChatRoomIdByUsernames(String a, String b) {
     if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+      // ignore: unnecessary_string_escapes
       return "$b\_$a";
     } else {
+      // ignore: unnecessary_string_escapes
       return "$a\_$b";
     }
   }
@@ -53,7 +58,7 @@ class _ChatScreenState extends State<ChatScreen> {
       }
 
       DatabaseMethods()
-          .addMessage(chatRoomId, messageId, messageInfoMap)
+          .addMessage(chatRoomId!, messageId!, messageInfoMap)
           .then((value) {
         Map<String, dynamic> lastMessageInfoMap = {
           "lastMessage": message,
@@ -61,7 +66,8 @@ class _ChatScreenState extends State<ChatScreen> {
           "lastMessageSendBy": myUserName
         };
 
-        DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+        DatabaseMethods()
+            .updateLastMessageSend(chatRoomId!, lastMessageInfoMap);
 
         if (sendClicked) {
           // remove the text in the message input field
@@ -80,22 +86,24 @@ class _ChatScreenState extends State<ChatScreen> {
       children: [
         Flexible(
           child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  bottomRight:
-                      sendByMe ? Radius.circular(0) : Radius.circular(24),
-                  topRight: Radius.circular(24),
-                  bottomLeft:
-                      sendByMe ? Radius.circular(24) : Radius.circular(0),
+                  topLeft: const Radius.circular(24),
+                  bottomRight: sendByMe
+                      ? const Radius.circular(0)
+                      : const Radius.circular(24),
+                  topRight: const Radius.circular(24),
+                  bottomLeft: sendByMe
+                      ? const Radius.circular(24)
+                      : const Radius.circular(0),
                 ),
-                color: sendByMe ? Colors.blue : Color(0xfff1f0f0),
+                color: sendByMe ? Colors.blue : const Color(0xfff1f0f0),
               ),
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Text(
                 message,
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               )),
         ),
       ],
@@ -103,20 +111,20 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget chatMessages() {
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot>(
       stream: messageStream,
-      builder: (context, snapshot) {
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         return snapshot.hasData
             ? ListView.builder(
-                padding: EdgeInsets.only(bottom: 70, top: 16),
-                itemCount: snapshot.data.docs.length,
+                padding: const EdgeInsets.only(bottom: 70, top: 16),
+                itemCount: snapshot.data!.docs.length,
                 reverse: true,
                 itemBuilder: (context, index) {
-                  DocumentSnapshot ds = snapshot.data.docs[index];
+                  DocumentSnapshot ds = snapshot.data!.docs[index];
                   return chatMessageTile(
                       ds["message"], myUserName == ds["sendBy"]);
                 })
-            : Center(child: CircularProgressIndicator());
+            : const Center(child: CircularProgressIndicator());
       },
     );
   }
@@ -143,45 +151,43 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Text(widget.name),
       ),
-      body: Container(
-        child: Stack(
-          children: [
-            chatMessages(),
-            Container(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                color: Colors.black.withOpacity(0.8),
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: TextField(
-                      controller: messageTextEdittingController,
-                      onChanged: (value) {
-                        addMessage(false);
-                      },
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "type a message",
-                          hintStyle:
-                              TextStyle(color: Colors.white.withOpacity(0.6))),
-                    )),
-                    GestureDetector(
-                      onTap: () {
-                        addMessage(true);
-                      },
-                      child: Icon(
-                        Icons.send,
-                        color: Colors.white,
-                      ),
-                    )
-                  ],
-                ),
+      body: Stack(
+        children: [
+          chatMessages(),
+          Container(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              color: Colors.black.withOpacity(0.8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: TextField(
+                    controller: messageTextEdittingController,
+                    onChanged: (value) {
+                      addMessage(false);
+                    },
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "type a message",
+                        hintStyle:
+                            TextStyle(color: Colors.white.withOpacity(0.6))),
+                  )),
+                  GestureDetector(
+                    onTap: () {
+                      addMessage(true);
+                    },
+                    child: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                    ),
+                  )
+                ],
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }
