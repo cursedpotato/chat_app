@@ -273,12 +273,10 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: CachedNetworkImage(
-                progressIndicatorBuilder: (context, url, progress) => Center(
-                  child: CircularProgressIndicator(
-                    value: progress.progress,
-                  ),
-                ),
                 imageUrl: profilePicUrl,
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
               // child: Image.network(
               //   profilePicUrl,
