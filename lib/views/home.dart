@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import '../helperfunctions/sharedpref_helper.dart';
 import '../services/auth.dart';
 import 'chatscreen.dart';
 import 'signin.dart';
-
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -60,14 +60,23 @@ class _HomeState extends State<Home> {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   DocumentSnapshot ds = snapshot.data!.docs[index];
-                  return ChatRoomListTile(ds["lastMessage"], ds.id, myUserName!);
+                  try {
+                    return ChatRoomListTile(
+                        ds["lastMessage"], ds.id, myUserName!);
+                  } catch (e) {
+                    return Text(e.toString());
+                  }
                 })
             : const Center(child: CircularProgressIndicator());
       },
     );
   }
 
-  Widget searchListUserTile({String? profileUrl, name, username, email}) {
+  Widget searchListUserTile(DocumentSnapshot ds) {
+    final profileUrl = ds["imgUrl"] ?? "";
+    final name = ds["name"];
+    final email = ds["email"];
+    final username = ds["username"];
     return GestureDetector(
       onTap: () {
         var chatRoomId = getChatRoomIdByUsernames(myUserName!, username);
@@ -112,13 +121,13 @@ class _HomeState extends State<Home> {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   DocumentSnapshot ds = snapshot.data!.docs[index];
-                  return searchListUserTile(
-                      profileUrl: ds["imgUrl"],
-                      name: ds["name"],
-                      email: ds["email"],
-                      username: ds["username"]);
-                },
-              )
+
+                  if (ds["imgUrl"].toString().isNotEmpty) {
+                    return searchListUserTile(ds);
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                })
             : const Center(
                 child: CircularProgressIndicator(),
               );
@@ -151,8 +160,8 @@ class _HomeState extends State<Home> {
           InkWell(
             onTap: () {
               AuthMethods().signOut().then((s) {
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => const SignIn()));
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const SignIn()));
               });
             },
             child: Container(
@@ -220,7 +229,9 @@ class _HomeState extends State<Home> {
 
 class ChatRoomListTile extends StatefulWidget {
   final String lastMessage, chatRoomId, myUsername;
-  const ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername, {Key? key}) : super(key: key);
+  const ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername,
+      {Key? key})
+      : super(key: key);
 
   @override
   _ChatRoomListTileState createState() => _ChatRoomListTileState();
@@ -232,12 +243,11 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
   getThisUserInfo() async {
     username =
         widget.chatRoomId.replaceAll(widget.myUsername, "").replaceAll("_", "");
-    QuerySnapshot querySnapshot = await DatabaseMethods().getUserInfo(username);
-    // ignore: avoid_print
-    print(
-        "something bla bla ${querySnapshot.docs[0].id} ${querySnapshot.docs[0]["name"]}  ${querySnapshot.docs[0]["imgUrl"]}");
-    name = "${querySnapshot.docs[0]["name"]}";
-    profilePicUrl = "${querySnapshot.docs[0]["imgUrl"]}";
+    DatabaseMethods().getUserInfo(username).then((value) {
+      name = "${value.docs[0]["name"]}";
+      profilePicUrl = "${value.docs[0]["imgUrl"]}";
+    });
+
     setState(() {});
   }
 
@@ -262,11 +272,19 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(30),
-              child: Image.network(
-                profilePicUrl,
-                height: 40,
-                width: 40,
+              child: CachedNetworkImage(
+                progressIndicatorBuilder: (context, url, progress) => Center(
+                  child: CircularProgressIndicator(
+                    value: progress.progress,
+                  ),
+                ),
+                imageUrl: profilePicUrl,
               ),
+              // child: Image.network(
+              //   profilePicUrl,
+              //   height: 40,
+              //   width: 40,
+              // ),
             ),
             const SizedBox(width: 12),
             Column(
