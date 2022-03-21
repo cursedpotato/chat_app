@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -72,11 +71,12 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget searchListUserTile(DocumentSnapshot ds) {
-    final profileUrl = ds["imgUrl"] ?? "";
-    final name = ds["name"];
-    final email = ds["email"];
-    final username = ds["username"];
+  Widget searchListUserTile({
+    required String username,
+    required String name,
+    required String email,
+    required String profileUrl,
+  }) {
     return GestureDetector(
       onTap: () {
         var chatRoomId = getChatRoomIdByUsernames(myUserName!, username);
@@ -96,7 +96,7 @@ class _HomeState extends State<Home> {
             ClipRRect(
               borderRadius: BorderRadius.circular(40),
               child: Image.network(
-                profileUrl!,
+                profileUrl,
                 height: 40,
                 width: 40,
               ),
@@ -114,23 +114,30 @@ class _HomeState extends State<Home> {
   Widget searchUsersList() {
     return StreamBuilder<QuerySnapshot>(
       stream: usersStream,
-      builder: (context, snapshot) {
-        return snapshot.hasData
-            ? ListView.builder(
+      builder: (context, AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
+        return ListView.builder(
                 itemCount: snapshot.data!.docs.length,
                 shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  DocumentSnapshot ds = snapshot.data!.docs[index];
+                itemBuilder: (context, index)  {
+                  
 
-                  if (ds["imgUrl"].toString().isNotEmpty) {
-                    return searchListUserTile(ds);
+                  if (snapshot.hasData && snapshot.connectionState == ConnectionState.active) {
+                    DocumentSnapshot ds = snapshot.data!.docs[index];
+                    final profileUrl = ds["imgUrl"];
+                    final name = ds["name"];
+                    final email = ds["email"];
+                    final username = ds["username"];
+                    return searchListUserTile(
+                      username: username,
+                      name: name,
+                      email: email,
+                      profileUrl: profileUrl,
+                    );
                   } else {
-                    return const CircularProgressIndicator();
+                    return const LinearProgressIndicator();
                   }
-                })
-            : const Center(
-                child: CircularProgressIndicator(),
-              );
+                });
+           
       },
     );
   }
@@ -240,15 +247,10 @@ class ChatRoomListTile extends StatefulWidget {
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
   String profilePicUrl = "", name = "", username = "";
 
-  getThisUserInfo() async {
+  Future<QuerySnapshot> getThisUserInfo() async {
     username =
         widget.chatRoomId.replaceAll(widget.myUsername, "").replaceAll("_", "");
-    DatabaseMethods().getUserInfo(username).then((value) {
-      name = "${value.docs[0]["name"]}";
-      profilePicUrl = "${value.docs[0]["imgUrl"]}";
-    });
-
-    setState(() {});
+    return await DatabaseMethods().getUserInfo(username);
   }
 
   @override
@@ -259,46 +261,51 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatScreen(username, name)));
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: CachedNetworkImage(
-                imageUrl: profilePicUrl,
-                placeholder: (context, url) =>
-                    const CircularProgressIndicator(),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
+    return FutureBuilder<QuerySnapshot>(
+      future: getThisUserInfo(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasData) {
+          name = snapshot.data!.docs[0]["name"];
+          profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ChatScreen(username, name)));
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: Image.network(
+                      profilePicUrl,
+                      height: 40,
+                      width: 40,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(widget.lastMessage)
+                    ],
+                  )
+                ],
               ),
-              // child: Image.network(
-              //   profilePicUrl,
-              //   height: 40,
-              //   width: 40,
-              // ),
             ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 3),
-                Text(widget.lastMessage)
-              ],
-            )
-          ],
-        ),
-      ),
+          );
+        } else {
+          return const CircularProgressIndicator();
+        }
+      },
     );
   }
 }
