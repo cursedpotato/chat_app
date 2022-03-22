@@ -41,8 +41,8 @@ dependencies:
 
   # Google Icon
   font_awesome_flutter: 
-  cached_network_image: ^3.2.0
-  flutter_cache_manager: ^3.3.0
+  
+  timeago: ^3.2.2
 
 
   # The following adds the Cupertino Icons font to your application.

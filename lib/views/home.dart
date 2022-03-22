@@ -1,7 +1,7 @@
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
+import 'package:timeago/timeago.dart' as timeago;
 import '../helperfunctions/sharedpref_helper.dart';
 import '../services/auth.dart';
 import 'chatscreen.dart';
@@ -61,7 +61,7 @@ class _HomeState extends State<Home> {
                   DocumentSnapshot ds = snapshot.data!.docs[index];
                   try {
                     return ChatRoomListTile(
-                        ds["lastMessage"], ds.id, myUserName!);
+                        myUserName!, ds: ds,);
                   } catch (e) {
                     return Text(e.toString());
                   }
@@ -235,9 +235,10 @@ class _HomeState extends State<Home> {
 }
 
 class ChatRoomListTile extends StatefulWidget {
-  final String lastMessage, chatRoomId, myUsername;
-  const ChatRoomListTile(this.lastMessage, this.chatRoomId, this.myUsername,
-      {Key? key})
+  final String myUsername;
+  final DocumentSnapshot ds;
+  const ChatRoomListTile(this.myUsername,
+      {Key? key, required this.ds})
       : super(key: key);
 
   @override
@@ -245,11 +246,14 @@ class ChatRoomListTile extends StatefulWidget {
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String profilePicUrl = "", name = "", username = "";
+  String profilePicUrl = "", name = "", username = "", lastMessage = "", date = "";
+  Timestamp? timeOflastM;
+
+  
 
   Future<QuerySnapshot> getThisUserInfo() async {
     username =
-        widget.chatRoomId.replaceAll(widget.myUsername, "").replaceAll("_", "");
+        widget.ds.id.replaceAll(widget.myUsername, "").replaceAll("_", "");
     return await DatabaseMethods().getUserInfo(username);
   }
 
@@ -267,6 +271,11 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
         if (snapshot.hasData) {
           name = snapshot.data!.docs[0]["name"];
           profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
+          lastMessage = widget.ds["lastMessage"];
+          timeOflastM = widget.ds["lastMessageSendTs"];
+          date = timeago.format(timeOflastM!.toDate(),);
+          
+          
           return GestureDetector(
             onTap: () {
               Navigator.push(
@@ -295,7 +304,9 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                         style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(height: 3),
-                      Text(widget.lastMessage)
+
+                      
+                      Text("$lastMessage $date")
                     ],
                   )
                 ],
@@ -303,7 +314,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             ),
           );
         } else {
-          return const CircularProgressIndicator();
+          return const LinearProgressIndicator();
         }
       },
     );
