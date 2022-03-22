@@ -19,6 +19,7 @@ class _SignInState extends State<SignIn> {
       ),
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             const Text(
               "Welcome to Capychat",

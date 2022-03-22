@@ -61,7 +61,9 @@ class _HomeState extends State<Home> {
                   DocumentSnapshot ds = snapshot.data!.docs[index];
                   try {
                     return ChatRoomListTile(
-                        myUserName!, ds: ds,);
+                      myUserName!,
+                      ds: ds,
+                    );
                   } catch (e) {
                     return Text(e.toString());
                   }
@@ -116,28 +118,26 @@ class _HomeState extends State<Home> {
       stream: usersStream,
       builder: (context, AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
         return ListView.builder(
-                itemCount: snapshot.data!.docs.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index)  {
-                  
-
-                  if (snapshot.hasData && snapshot.connectionState == ConnectionState.active) {
-                    DocumentSnapshot ds = snapshot.data!.docs[index];
-                    final profileUrl = ds["imgUrl"];
-                    final name = ds["name"];
-                    final email = ds["email"];
-                    final username = ds["username"];
-                    return searchListUserTile(
-                      username: username,
-                      name: name,
-                      email: email,
-                      profileUrl: profileUrl,
-                    );
-                  } else {
-                    return const LinearProgressIndicator();
-                  }
-                });
-           
+            itemCount: snapshot.data!.docs.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              if (snapshot.hasData &&
+                  snapshot.connectionState == ConnectionState.active) {
+                DocumentSnapshot ds = snapshot.data!.docs[index];
+                final profileUrl = ds["imgUrl"];
+                final name = ds["name"];
+                final email = ds["email"];
+                final username = ds["username"];
+                return searchListUserTile(
+                  username: username,
+                  name: name,
+                  email: email,
+                  profileUrl: profileUrl,
+                );
+              } else {
+                return const LinearProgressIndicator();
+              }
+            });
       },
     );
   }
@@ -237,8 +237,7 @@ class _HomeState extends State<Home> {
 class ChatRoomListTile extends StatefulWidget {
   final String myUsername;
   final DocumentSnapshot ds;
-  const ChatRoomListTile(this.myUsername,
-      {Key? key, required this.ds})
+  const ChatRoomListTile(this.myUsername, {Key? key, required this.ds})
       : super(key: key);
 
   @override
@@ -246,10 +245,12 @@ class ChatRoomListTile extends StatefulWidget {
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String profilePicUrl = "", name = "", username = "", lastMessage = "", date = "";
+  String profilePicUrl = "",
+      name = "",
+      username = "",
+      lastMessage = "",
+      date = "";
   Timestamp? timeOflastM;
-
-  
 
   Future<QuerySnapshot> getThisUserInfo() async {
     username =
@@ -273,46 +274,62 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
           profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
           lastMessage = widget.ds["lastMessage"];
           timeOflastM = widget.ds["lastMessageSendTs"];
-          date = timeago.format(timeOflastM!.toDate(),);
-          
-          
-          return GestureDetector(
+          date = timeago.format(
+            timeOflastM!.toDate(),
+          );
+
+          return ListTile(
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Image.network(
+                profilePicUrl,
+                height: 40,
+                width: 40,
+              ),
+            ),
+            title: Text(name),
+            subtitle: Text(lastMessage),
+            trailing: Text(date),
             onTap: () {
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => ChatScreen(username, name)));
             },
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: Image.network(
-                      profilePicUrl,
-                      height: 40,
-                      width: 40,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 3),
-
-                      
-                      Text("$lastMessage $date")
-                    ],
-                  )
-                ],
-              ),
-            ),
           );
+          // return GestureDetector(
+          //   onTap: () {
+          //
+          //   },
+          //   child: Container(
+          //     margin: const EdgeInsets.symmetric(vertical: 8),
+          //     child: Row(
+          //       children: [
+          //         ClipRRect(
+          //           borderRadius: BorderRadius.circular(30),
+          //           child: Image.network(
+          //             profilePicUrl,
+          //             height: 40,
+          //             width: 40,
+          //           ),
+          //         ),
+          //         const SizedBox(width: 12),
+          //         Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: [
+          //             Text(
+          //               name,
+          //               style: const TextStyle(fontSize: 16),
+          //             ),
+          //             const SizedBox(height: 3),
+
+          //             Text("$lastMessage $date")
+          //           ],
+          //         )
+          //       ],
+          //     ),
+          //   ),
+          // );
         } else {
           return const LinearProgressIndicator();
         }
