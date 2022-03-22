@@ -98,7 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ? const Radius.circular(24)
                       : const Radius.circular(0),
                 ),
-                color: sendByMe ? Colors.blue : const Color(0xfff1f0f0),
+                color: sendByMe ? Colors.indigo[400] : Colors.indigo[600],
               ),
               padding: const EdgeInsets.all(16),
               child: Text(
