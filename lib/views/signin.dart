@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../services/auth.dart';
-
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -20,23 +20,22 @@ class _SignInState extends State<SignIn> {
       body: Center(
         child: Column(
           children: [
-            Text("Welcome to Capychat", style: TextStyle(fontSize: 20),),
-            GestureDetector(
-              onTap: () {
+            const Text(
+              "Welcome to Capychat",
+              style: TextStyle(fontSize: 60, fontWeight: FontWeight.w800),
+            ),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.white,
+                onPrimary: Colors.black,
+                minimumSize: const Size(double.infinity, 50)
+              ),
+              icon: const Icon(FontAwesomeIcons.google, color:  Colors.red,),
+              label: const Text("Sign in with Google"),
+              onPressed: () {
                 AuthMethods().signInWithGoogle(context);
               },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  color: const Color(0xffDB4437),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: const Text(
-                  "Sign In with Google",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ),
-            ),
+            )
           ],
         ),
       ),

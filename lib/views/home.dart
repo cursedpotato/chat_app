@@ -162,7 +162,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Messenger Clone"),
+        title: const Text("Capychat"),
         actions: [
           InkWell(
             onTap: () {
