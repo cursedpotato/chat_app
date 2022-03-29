@@ -297,39 +297,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                       builder: (context) => ChatScreen(username, name)));
             },
           );
-          // return GestureDetector(
-          //   onTap: () {
-          //
-          //   },
-          //   child: Container(
-          //     margin: const EdgeInsets.symmetric(vertical: 8),
-          //     child: Row(
-          //       children: [
-          //         ClipRRect(
-          //           borderRadius: BorderRadius.circular(30),
-          //           child: Image.network(
-          //             profilePicUrl,
-          //             height: 40,
-          //             width: 40,
-          //           ),
-          //         ),
-          //         const SizedBox(width: 12),
-          //         Column(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           children: [
-          //             Text(
-          //               name,
-          //               style: const TextStyle(fontSize: 16),
-          //             ),
-          //             const SizedBox(height: 3),
-
-          //             Text("$lastMessage $date")
-          //           ],
-          //         )
-          //       ],
-          //     ),
-          //   ),
-          // );
+         
         } else {
           return const LinearProgressIndicator();
         }
