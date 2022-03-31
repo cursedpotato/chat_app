@@ -1,11 +1,13 @@
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
 import 'package:timeago/timeago.dart' as timeago;
 import '../helperfunctions/sharedpref_helper.dart';
 import '../services/auth.dart';
 import 'chatscreen.dart';
 import 'signin.dart';
+
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -18,7 +20,7 @@ class _HomeState extends State<Home> {
   bool isSearching = false;
   String? myName, myProfilePic, myUserName, myEmail;
   Stream<QuerySnapshot>? usersStream, chatRoomsStream;
-
+  
   TextEditingController searchUsernameEditingController =
       TextEditingController();
 
@@ -72,6 +74,8 @@ class _HomeState extends State<Home> {
       },
     );
   }
+
+  
 
   Widget searchListUserTile({
     required String username,
@@ -290,7 +294,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             title: Text(name),
             subtitle: Text(lastMessage),
             trailing: Text(date),
-            onTap: () {
+            onTap: () {  
               Navigator.push(
                   context,
                   MaterialPageRoute(

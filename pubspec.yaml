@@ -38,11 +38,13 @@ dependencies:
   shared_preferences: ^2.0.13
   random_string:
   # Notifications
-  flutter_local_notifications: ^9.4.0
+  awesome_notifications: ^0.6.21
+
   # Google Icon
   font_awesome_flutter: 
   #Timestamp format
   timeago: ^3.2.2
+  
 
 
   
