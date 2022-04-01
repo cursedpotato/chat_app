@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,6 @@ import '../helperfunctions/sharedpref_helper.dart';
 import '../services/auth.dart';
 import 'chatscreen.dart';
 import 'signin.dart';
-
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -20,7 +20,7 @@ class _HomeState extends State<Home> {
   bool isSearching = false;
   String? myName, myProfilePic, myUserName, myEmail;
   Stream<QuerySnapshot>? usersStream, chatRoomsStream;
-  
+
   TextEditingController searchUsernameEditingController =
       TextEditingController();
 
@@ -74,8 +74,6 @@ class _HomeState extends State<Home> {
       },
     );
   }
-
-  
 
   Widget searchListUserTile({
     required String username,
@@ -159,6 +157,39 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     onScreenLoaded();
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Allow Notifications"),
+            content: const Text("Our app would like to send you notifications"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "Don't allow",
+                  style: TextStyle(color: Colors.grey, fontSize: 18),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  AwesomeNotifications().requestPermissionToSendNotifications().then((_) => Navigator.pop(context));
+                },
+                child: const Text(
+                  "Allow",
+                  style: TextStyle(color: Colors.indigo, fontSize: 18, fontWeight: FontWeight.bold,),
+                ),
+              ),
+              
+            ],
+          ),
+        );
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
     super.initState();
   }
 
@@ -294,14 +325,13 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
             title: Text(name),
             subtitle: Text(lastMessage),
             trailing: Text(date),
-            onTap: () {  
+            onTap: () {
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => ChatScreen(username, name)));
             },
           );
-         
         } else {
           return const LinearProgressIndicator();
         }
