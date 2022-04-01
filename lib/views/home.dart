@@ -1,5 +1,6 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:chat_app/services/notifications_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -55,22 +56,40 @@ class _HomeState extends State<Home> {
     return StreamBuilder<QuerySnapshot>(
       stream: chatRoomsStream,
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return snapshot.hasData
-            ? ListView.builder(
-                itemCount: snapshot.data!.docs.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  DocumentSnapshot ds = snapshot.data!.docs[index];
-                  try {
-                    return ChatRoomListTile(
-                      myUserName!,
-                      ds: ds,
-                    );
-                  } catch (e) {
-                    return Text(e.toString());
-                  }
-                })
-            : const Center(child: CircularProgressIndicator());
+        if (snapshot.hasData) {
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              if (snapshot.connectionState == ConnectionState.active &&
+                  snapshot.hasData) {
+                DocumentSnapshot ds = snapshot.data!.docs[index];
+
+                String lastMessageSendBy = ds["lastMessageSendBy"];
+                String user = ds["users"][1];
+                String lastMessage = ds["lastMessage"];
+                String time = ds["lastMessageSendTs"];
+                if (lastMessageSendBy == user) {
+                  createNotification(user, lastMessage, time);
+                  return ChatRoomListTile(
+                    myUserName!,
+                    ds: ds,
+                  );
+                } else {
+                  debugPrint("idk man this ain't working");
+                  return ChatRoomListTile(
+                    myUserName!,
+                    ds: ds,
+                  );
+                }
+              } else {
+                return const LinearProgressIndicator();
+              }
+            },
+          );
+        } else {
+          return const LinearProgressIndicator();
+        }
       },
     );
   }
@@ -176,14 +195,19 @@ class _HomeState extends State<Home> {
               ),
               TextButton(
                 onPressed: () {
-                  AwesomeNotifications().requestPermissionToSendNotifications().then((_) => Navigator.pop(context));
+                  AwesomeNotifications()
+                      .requestPermissionToSendNotifications()
+                      .then((_) => Navigator.pop(context));
                 },
                 child: const Text(
                   "Allow",
-                  style: TextStyle(color: Colors.indigo, fontSize: 18, fontWeight: FontWeight.bold,),
+                  style: TextStyle(
+                    color: Colors.indigo,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              
             ],
           ),
         );

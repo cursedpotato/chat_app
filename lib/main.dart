@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 void main() async {
   AwesomeNotifications().initialize(
   // set the icon to null if you want to use the default app icon
-  'resource://drawable/res_app_icon',
+  'resource://drawable/logo',
   [
     NotificationChannel(
         channelGroupKey: 'basic_channel_group',
