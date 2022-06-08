@@ -1,4 +1,5 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:chat_app/pages/signin.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/services/notifications_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +9,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../helperfunctions/sharedpref_helper.dart';
 import '../services/auth.dart';
 import 'chatscreen.dart';
-import 'signin.dart';
+
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -68,9 +69,9 @@ class _HomeState extends State<Home> {
                 String lastMessageSendBy = ds["lastMessageSendBy"];
                 String user = ds["users"][1];
                 String lastMessage = ds["lastMessage"];
-                String time = ds["lastMessageSendTs"];
+                
                 if (lastMessageSendBy == user) {
-                  createNotification(user, lastMessage, time);
+                  createNotification(user, lastMessage);
                   return ChatRoomListTile(
                     myUserName!,
                     ds: ds,

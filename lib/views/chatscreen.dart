@@ -165,7 +165,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: TextField(
                     controller: messageTextEdittingController,
                     onChanged: (value) {
-                      addMessage(false);
+                      addMessage(true);
                     },
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
