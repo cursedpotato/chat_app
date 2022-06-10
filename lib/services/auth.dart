@@ -15,45 +15,22 @@ class AuthMethods {
     return auth.currentUser;
   }
 
-  signInWithGoogle(BuildContext context) async {
-    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    final GoogleSignInAccount? googleSignInAccount =
-        await _googleSignIn.signIn();
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
 
-    final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount!.authentication;
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
 
-    final AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleSignInAuthentication.idToken,
-        accessToken: googleSignInAuthentication.accessToken);
-
-    UserCredential? result =
-        await _firebaseAuth.signInWithCredential(credential);
-
-    User? userDetails = result.user;
-
-    SharedPreferenceHelper().saveUserId(userDetails!.uid);
-    SharedPreferenceHelper().saveUserEmail(userDetails.email);
-    SharedPreferenceHelper()
-        .saveUserName(userDetails.email!.replaceAll("@gmail.com", ""));
-    SharedPreferenceHelper().saveDisplayName(userDetails.displayName);
-    SharedPreferenceHelper().saveUserProfileUrl(userDetails.photoURL);
-
-    Map<String, dynamic> userInfoMap = {
-      "email": userDetails.email,
-      "username": userDetails.email!.replaceAll("@gmail.com", ""),
-      "name": userDetails.displayName,
-      "imgUrl": userDetails.photoURL
-    };
-
-    DatabaseMethods()
-        .addUserInfoToDB(userDetails.uid, userInfoMap)
-        .then((value) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const Home()));
-    });
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   Future signOut() async {
