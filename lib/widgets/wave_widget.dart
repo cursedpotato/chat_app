@@ -8,7 +8,7 @@ class WaveWidget extends StatefulWidget {
   final double yOffset;
   final Color color;
 
-  WaveWidget({
+  const WaveWidget({
     Key? key,
     required this.size,
     required this.yOffset,
@@ -28,7 +28,7 @@ class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
     super.initState();
 
     animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 5000))
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 5000))
           ..addListener(() {
             wavePoints.clear();
 

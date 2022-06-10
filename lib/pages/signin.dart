@@ -25,7 +25,7 @@ class SignIn extends StatelessWidget {
             color: Colors.blue,
           ),
           AnimatedPositioned(
-            duration: Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 500),
             curve: Curves.easeOutQuad,
             top: keyboardOpen ? -size.height / 3.7 : 0.0,
             child: WaveWidget(
