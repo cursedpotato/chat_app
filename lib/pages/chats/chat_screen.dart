@@ -14,7 +14,7 @@ class ChatScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: kPrimaryColor,
-        child: Icon(Icons.person_add_alt_1),
+        child: const Icon(Icons.person_add_alt_1),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [

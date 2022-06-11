@@ -1,6 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:chat_app/modelview/signin_modelview.dart';
-import 'package:chat_app/pages/chats/chat_screen.dart';
+
+import 'package:chat_app/pages/messages/messages.dart';
 
 import 'package:chat_app/theme.dart';
 
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: lightThemeData(context),
       darkTheme: darkThemeData(context),
-      home: const ChatScreen(),
+      home: const MessagesScreen(),
     );
   }
 }
