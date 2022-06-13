@@ -1,5 +1,6 @@
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/pages/messages/chat_input_field.dart';
+import 'package:chat_app/pages/messages/text_message.dart';
 import 'package:flutter/material.dart';
 
 enum ChatMessageType { text, audio, image, video }
@@ -100,50 +101,24 @@ class Message extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment:
-          message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        if (!message.isSender) ...[
-          const CircleAvatar(
-            radius: 12,
-            backgroundImage: NetworkImage("https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"),
-          )
+
+    return Padding(
+      padding: EdgeInsets.only(top: kDefaultPadding),
+      child: Row(
+        mainAxisAlignment:
+            message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          if (!message.isSender) ...[
+            const CircleAvatar(
+              radius: 12,
+              backgroundImage: NetworkImage("https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"),
+            )
+          ],
+          TextMessage(message: message),
         ],
-        TextMessage(message: message),
-      ],
-    );
-  }
-}
-
-class TextMessage extends StatelessWidget {
-  const TextMessage({
-    Key? key,
-    required this.message,
-  }) : super(key: key);
-
-  final ChatMessage message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: kDefaultPadding),
-      padding: const EdgeInsets.symmetric(
-        horizontal: kDefaultPadding * 0.75,
-        vertical: kDefaultPadding / 2,
-      ),
-      decoration: BoxDecoration(
-        color: kPrimaryColor.withOpacity(message.isSender ? 1 : 0.1),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Text(
-        "Data",
-        style: TextStyle(
-          color: message.isSender
-              ? Colors.white
-              : Theme.of(context).textTheme.bodyText1?.color,
-        ),
       ),
     );
   }
 }
+
+
