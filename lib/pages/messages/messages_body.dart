@@ -101,9 +101,19 @@ class Message extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget messageContent(ChatMessage message) {
+      switch (message.messageType) {
+        case ChatMessageType.text:
+          return TextMessage(message: message);
+        case ChatMessageType.audio:
+          return AudioMessage(message: message);
+        default:
+          return const SizedBox();
+      }
+    }
 
     return Padding(
-      padding: EdgeInsets.only(top: kDefaultPadding),
+      padding: const EdgeInsets.only(top: kDefaultPadding),
       child: Row(
         mainAxisAlignment:
             message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -111,14 +121,50 @@ class Message extends StatelessWidget {
           if (!message.isSender) ...[
             const CircleAvatar(
               radius: 12,
-              backgroundImage: NetworkImage("https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"),
+              backgroundImage: NetworkImage(
+                  "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"),
             )
           ],
-          TextMessage(message: message),
+          messageContent(message)
         ],
       ),
     );
   }
 }
 
+class AudioMessage extends StatelessWidget {
+  final ChatMessage message;
+  const AudioMessage({Key? key, required this.message}) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.55,
+      height: 30,
+      padding: const EdgeInsets.symmetric(
+        horizontal: kDefaultPadding * 0.75,
+        vertical: kDefaultPadding / 2.5,
+      ),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          color: kPrimaryColor.withOpacity(message.isSender ? 1 : 0.1)),
+      child: Row(
+        children: [
+          Icon(Icons.play_arrow,
+              color: message.isSender ? Colors.white : kPrimaryColor),
+          Expanded(
+            child: Stack(
+              children: [
+                Container(
+                  width: double.infinity,
+                  height: 2,
+                  color: kPrimaryColor.withOpacity(0.4),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
