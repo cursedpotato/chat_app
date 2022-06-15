@@ -160,6 +160,14 @@ class AudioMessage extends StatelessWidget {
                   height: 2,
                   color: kPrimaryColor.withOpacity(0.4),
                 ),
+                Container(
+                  height: 8,
+                  width: 8,
+                  decoration: BoxDecoration(
+                    color: kPrimaryColor,
+                    shape: BoxShape.circle
+                  ),
+                )
               ],
             ),
           )
