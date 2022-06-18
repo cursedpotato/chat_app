@@ -130,11 +130,37 @@ class Message extends StatelessWidget {
                   "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"),
             )
           ],
-          messageContent(message)
+          messageContent(message),
+          if (message.isSender)
+            MessageStatusDot(
+              status: message.messageStatus,
+            ),
         ],
       ),
     );
   }
 }
 
+class MessageStatusDot extends StatelessWidget {
+  final MessageStatus status;
+  const MessageStatusDot({Key? key, required this.status}) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    Color dotColor(MessageStatus status) {
+      if(status == MessageStatus.not_sent) kErrorColor;
+    }
+
+    return Container(
+      margin: EdgeInsets.only(left: kDefaultPadding / 2),
+      height: 12,
+      width: 12,
+      decoration: BoxDecoration(color: kPrimaryColor, shape: BoxShape.circle),
+      child: Icon(
+        status == MessageStatus.not_sent ? Icons.close : Icons.done,
+        size: 8,
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
+    );
+  }
+}
