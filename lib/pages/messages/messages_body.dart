@@ -1,6 +1,7 @@
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/pages/messages/chat_input_field.dart';
 import 'package:chat_app/pages/messages/text_message.dart';
+import 'package:chat_app/pages/messages/video_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'audio_message.dart';
@@ -109,6 +110,8 @@ class Message extends StatelessWidget {
           return TextMessage(message: message);
         case ChatMessageType.audio:
           return AudioMessage(message: message);
+        case ChatMessageType.video:
+          return VideoWidget();
         default:
           return const SizedBox();
       }
