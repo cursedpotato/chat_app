@@ -18,9 +18,9 @@ class ButtonWidget extends StatelessWidget {
       child: Ink(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
-          color: Colors.blue,
+          color: Color(0xFF087949),
           border:Border.all(
-            color: Colors.blue,
+            color: Color(0xFF087949),
             width: 1.0
           ) 
         ),

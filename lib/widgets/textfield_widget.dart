@@ -26,7 +26,7 @@ class TextFieldWidget extends StatelessWidget {
       obscureText: obscureText,
       style: const TextStyle(
         // TODO: Assign color theme
-        color: Colors.blue,
+        color: Color(0xFF087949),
         fontSize: 14,
       ),
       decoration: InputDecoration(
@@ -36,7 +36,7 @@ class TextFieldWidget extends StatelessWidget {
           prefixIconData,
           size: 18,
           // TODO: Assign color theme
-          color: Colors.blue,
+          color: Color(0xFF087949),
         ),
         filled: true,
         enabledBorder: UnderlineInputBorder(
@@ -55,12 +55,12 @@ class TextFieldWidget extends StatelessWidget {
             suffixIconData,
             size: 18,
             // TODO: Assign color theme
-            color: Colors.blue,
+            color: Color(0xFF087949),
           ),
         ),
         // TODO: Assign color theme
-        labelStyle: const TextStyle(color: Colors.blue),
-        focusColor: Colors.blue,
+        labelStyle: const TextStyle(color: Color(0xFF087949)),
+        focusColor: Color(0xFF087949),
       ),
     );
   }
