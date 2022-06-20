@@ -5,6 +5,7 @@ import 'package:chat_app/pages/messages/video_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'audio_message.dart';
+import 'dot_indicator.dart';
 
 enum ChatMessageType { text, audio, image, video }
 enum MessageStatus { not_sent, not_view, viewed }
@@ -122,6 +123,7 @@ class Message extends StatelessWidget {
       child: Row(
         mainAxisAlignment:
             message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
+
         children: [
           if (!message.isSender) ...[
             const CircleAvatar(
@@ -141,26 +143,4 @@ class Message extends StatelessWidget {
   }
 }
 
-class MessageStatusDot extends StatelessWidget {
-  final MessageStatus status;
-  const MessageStatusDot({Key? key, required this.status}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    Color dotColor(MessageStatus status) {
-      if(status == MessageStatus.not_sent) kErrorColor;
-    }
-
-    return Container(
-      margin: EdgeInsets.only(left: kDefaultPadding / 2),
-      height: 12,
-      width: 12,
-      decoration: BoxDecoration(color: kPrimaryColor, shape: BoxShape.circle),
-      child: Icon(
-        status == MessageStatus.not_sent ? Icons.close : Icons.done,
-        size: 8,
-        color: Theme.of(context).scaffoldBackgroundColor,
-      ),
-    );
-  }
-}
