@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/pages/messages/chat_input_field.dart';
 import 'package:chat_app/pages/messages/text_message.dart';
@@ -112,7 +114,7 @@ class Message extends StatelessWidget {
         case ChatMessageType.audio:
           return AudioMessage(message: message);
         case ChatMessageType.video:
-          return VideoWidget();
+          return const VideoWidget();
         default:
           return const SizedBox();
       }

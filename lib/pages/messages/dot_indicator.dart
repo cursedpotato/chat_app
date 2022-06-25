@@ -23,7 +23,7 @@ class MessageStatusDot extends StatelessWidget {
     }
 
     return Container(
-      margin: EdgeInsets.only(left: kDefaultPadding / 2),
+      margin: const EdgeInsets.only(left: kDefaultPadding / 2),
       height: 12,
       width: 12,
       decoration: BoxDecoration(
