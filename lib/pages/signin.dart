@@ -1,4 +1,5 @@
 import 'package:chat_app/modelview/signin_modelview.dart';
+import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/widgets/button_widget.dart';
 import 'package:chat_app/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
@@ -7,19 +8,32 @@ import 'package:provider/provider.dart';
 
 import '../widgets/wave_widget.dart';
 
-class SignIn extends StatelessWidget {
+class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
 
+  @override
+  State<SignIn> createState() => _SignInState();
+}
+
+class _SignInState extends State<SignIn> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     final model = Provider.of<SingInModel>(context);
     final bool keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          
           Container(
             height: size.height - 200,
             color: const Color(0xFF087949),
@@ -34,13 +48,13 @@ class SignIn extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          _loginBox(model),
+          _loginBox(model, context),
         ],
       ),
     );
   }
 
-  Widget _loginBox(SingInModel model) {
+  Widget _loginBox(SingInModel model, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(30.0),
       child: Column(
@@ -49,12 +63,14 @@ class SignIn extends StatelessWidget {
           TextFieldWidget(
             hintText: "Email",
             suffixIconData: model.isValid ? Icons.check : null,
+            controller: _emailController,
             prefixIconData: Icons.mail_outline,
             obscureText: false,
           ),
           const SizedBox(height: 10.0),
           TextFieldWidget(
             hintText: "Password",
+            controller: _passwordController,
             prefixIconData: Icons.lock_outline,
             obscureText: model.isVisible ? false : true,
             suffixIconData:
@@ -70,7 +86,10 @@ class SignIn extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               FlutterSocialButton(
-                onTap: () {},
+                onTap: () {
+                  // TODO: add authMehods
+                  // AuthMethods().signInWithGoogle(context);
+                },
                 mini: true,
                 buttonType: ButtonType.google,
               ),

@@ -6,6 +6,7 @@ class TextFieldWidget extends StatelessWidget {
   final String hintText;
   final IconData prefixIconData;
   final IconData? suffixIconData;
+  final TextEditingController controller;
   final bool obscureText;
   final Function(String)? onChanged;
 
@@ -13,15 +14,17 @@ class TextFieldWidget extends StatelessWidget {
     Key? key,
     required this.hintText,
     required this.prefixIconData,
+    this.onChanged, 
+    required this.controller,
     this.suffixIconData,
     required this.obscureText,
-    this.onChanged,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final model = Provider.of<SingInModel>(context);
     return TextField(
+      controller: controller,
       onChanged: onChanged,
       obscureText: obscureText,
       style: const TextStyle(
