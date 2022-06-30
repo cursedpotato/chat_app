@@ -88,7 +88,7 @@ class _SignInState extends State<SignIn> {
               FlutterSocialButton(
                 onTap: () {
                   // TODO: add authMehods
-                  // AuthMethods().signInWithGoogle(context);
+                  AuthMethods().signInWithGoogle();
                 },
                 mini: true,
                 buttonType: ButtonType.google,
