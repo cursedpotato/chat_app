@@ -83,31 +83,18 @@ class _SignInState extends State<SignIn> {
           ),
           const SizedBox(height: 20.0),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              FlutterSocialButton(
-                onTap: () {
-                  // TODO: add authMehods
-                  AuthMethods().signInWithGoogle();
-                },
-                mini: true,
-                buttonType: ButtonType.google,
+              Container(
+                width: 200,
+                child: FlutterSocialButton(
+                  onTap: () {
+                    // TODO: add authMehods
+                    AuthMethods().signInWithGoogle();
+                  },
+                  buttonType: ButtonType.google,
+                ),
               ),
-              FlutterSocialButton(
-                onTap: () {},
-                mini: true,
-                buttonType: ButtonType.apple,
-              ),
-              FlutterSocialButton(
-                onTap: () {},
-                mini: true,
-                buttonType: ButtonType.facebook,
-              ),
-              FlutterSocialButton(
-                onTap: () {},
-                mini: true,
-                buttonType: ButtonType.twitter,
-              ),
+              
             ],
           )
         ],
