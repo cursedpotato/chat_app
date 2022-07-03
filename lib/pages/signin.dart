@@ -79,12 +79,14 @@ class _SignInState extends State<SignIn> {
           const SizedBox(height: 20.0),
           ButtonWidget(
             title: "Sign in",
-            onTap: () {},
+            onTap: () {
+              AuthMethods().signInWithMail(_emailController.text , _passwordController.text);
+            },
           ),
           const SizedBox(height: 20.0),
           Row(
             children: [
-              Container(
+              SizedBox(
                 width: 200,
                 child: FlutterSocialButton(
                   onTap: () {
