@@ -83,7 +83,7 @@ class _BodyState extends State<Body> {
           ),
         ),
         StreamBuilder<QuerySnapshot>(
-          stream: usersStream,
+          stream: chatRoomsStream,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             bool isLoading =
                 snapshot.connectionState == ConnectionState.waiting;
@@ -100,9 +100,9 @@ class _BodyState extends State<Body> {
             if (hasData) {
               return Expanded(
                 child: ListView.builder(
-                    itemCount: 10,
+                    itemCount: snapshot.data!.docs.length,
                     itemBuilder: (BuildContext context, int index) =>
-                        const ChatCard()),
+                        ChatCard(documentSnapshot: snapshot.data!.docs[index],)),
               );
             }
             return const Text("Something is wrong");
@@ -114,7 +114,11 @@ class _BodyState extends State<Body> {
 }
 
 class ChatCard extends StatelessWidget {
-  const ChatCard({Key? key}) : super(key: key);
+  final DocumentSnapshot documentSnapshot;
+  const ChatCard({
+    Key? key,
+    required this.documentSnapshot,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
