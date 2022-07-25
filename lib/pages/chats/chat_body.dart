@@ -3,6 +3,7 @@ import 'package:chat_app/services/database.dart';
 import 'package:chat_app/widgets/filledout_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 import '../../helperfunctions/sharedpref_helper.dart';
 
@@ -101,8 +102,10 @@ class _BodyState extends State<Body> {
               return Expanded(
                 child: ListView.builder(
                     itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (BuildContext context, int index) =>
-                        ChatCard(documentSnapshot: snapshot.data!.docs[index],)),
+                    itemBuilder: (BuildContext context, int index) => ChatCard(
+                          documentSnapshot: snapshot.data!.docs[index],
+                          myUsername: myUserName!,
+                        )),
               );
             }
             return const Text("Something is wrong");
@@ -113,73 +116,116 @@ class _BodyState extends State<Body> {
   }
 }
 
-class ChatCard extends StatelessWidget {
+class ChatCard extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
+  final String myUsername;
   const ChatCard({
     Key? key,
     required this.documentSnapshot,
+    required this.myUsername,
   }) : super(key: key);
 
   @override
+  State<ChatCard> createState() => _ChatCardState();
+}
+
+class _ChatCardState extends State<ChatCard> {
+  String profilePicUrl = "",
+      name = "",
+      username = "",
+      lastMessage = "",
+      date = "";
+  Future<QuerySnapshot> getThisUserInfo() async {
+    username = widget.documentSnapshot.id
+        .replaceAll(widget.myUsername, "")
+        .replaceAll("_", "");
+    return await DatabaseMethods().getUserInfo(username);
+  }
+
+  @override
+  void initState() {
+    getThisUserInfo();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: kDefaultPadding, vertical: kDefaultPadding * 0.75),
-      child: Row(
-        children: [
-          Stack(
-            children: [
-              const CircleAvatar(
-                radius: 24,
-                backgroundImage: NetworkImage(
-                    "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"),
-              ),
-              // TODO: add conditional to check if user is active
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  height: 16,
-                  width: 16,
-                  decoration: BoxDecoration(
-                      color: kPrimaryColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                      )),
-                ),
-              )
-            ],
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    "name",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(height: 8),
-                  Opacity(
-                    opacity: 0.64,
-                    child: Text(
-                      "lastmessage",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+    Timestamp? timeOflastM;
+    return FutureBuilder(
+      future: getThisUserInfo(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        name = snapshot.data!.docs[0]["name"];
+        profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
+        lastMessage = widget.documentSnapshot["lastMessage"];
+        timeOflastM = widget.documentSnapshot["lastMessageSendTs"];
+        date = timeago.format(
+          timeOflastM!.toDate(),
+        );
+        bool hasData = snapshot.hasData;
+        if (hasData) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: kDefaultPadding, vertical: kDefaultPadding * 0.75),
+            child: Row(
+              children: [
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundImage: NetworkImage(profilePicUrl),
                     ),
-                  )
-                ],
-              ),
+                    // TODO: add conditional to check if user is active
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        height: 16,
+                        width: 16,
+                        decoration: BoxDecoration(
+                            color: kPrimaryColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                            )),
+                      ),
+                    )
+                  ],
+                ),
+                Expanded(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          style: const TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 8),
+                        Opacity(
+                          opacity: 0.64,
+                          child: Text(
+                            lastMessage,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Opacity(
+                  opacity: 0.64,
+                  child: Text(date),
+                )
+              ],
             ),
-          ),
-          const Opacity(
-            opacity: 0.64,
-            child: Text("time"),
-          )
-        ],
-      ),
+          );
+        }
+        return const LinearProgressIndicator();
+      },
     );
   }
 }
