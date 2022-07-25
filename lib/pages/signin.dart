@@ -3,7 +3,6 @@ import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/widgets/button_widget.dart';
 import 'package:chat_app/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_social_button/flutter_social_button.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/wave_widget.dart';
@@ -24,6 +23,7 @@ class _SignInState extends State<SignIn> {
     _passwordController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final model = Provider.of<SingInModel>(context);
@@ -78,25 +78,31 @@ class _SignInState extends State<SignIn> {
           ),
           const SizedBox(height: 20.0),
           ButtonWidget(
+            color: Color(0xFF087949),
             title: "Sign in",
             onTap: () {
-              AuthMethods().signInWithMail(_emailController.text , _passwordController.text);
+              AuthMethods().signInWithMail(
+                  _emailController.text, _passwordController.text);
             },
           ),
           const SizedBox(height: 20.0),
           Row(
             children: [
-              SizedBox(
-                width: 200,
-                child: FlutterSocialButton(
-                  onTap: () {
-                    // TODO: add authMehods
-                    AuthMethods().signInWithGoogle();
-                  },
-                  buttonType: ButtonType.google,
-                ),
+              ButtonWidget(
+                color: Color.fromRGBO(219, 68, 55, 1),
+                title: "Google",
+                onTap: () {
+                  AuthMethods().signInWithGoogle(context);
+                },
               ),
-              
+              SizedBox(
+                width: 10,
+              ),
+              ButtonWidget(
+                color: Color.fromRGBO(66, 103, 178, 1),
+                title: "Facebook",
+                onTap: () {},
+              )
             ],
           )
         ],

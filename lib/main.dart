@@ -56,15 +56,16 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: lightThemeData(context),
       darkTheme: darkThemeData(context),
-      home: FutureBuilder(
-        future: getCurrentUser(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData) {
-            return const SignIn();
-          }
-          return const ChatScreen();
-        },
-      ),
+      home: SignIn(),
+      // home: FutureBuilder(
+      //   future: getCurrentUser(),
+      //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+      //     if (!snapshot.hasData) {
+      //       return const SignIn();
+      //     }
+      //     return const ChatScreen();
+      //   },
+      // ),
     );
   }
 }

@@ -101,11 +101,12 @@ class _BodyState extends State<Body> {
             if (hasData) {
               return Expanded(
                 child: ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (BuildContext context, int index) => ChatCard(
-                          documentSnapshot: snapshot.data!.docs[index],
-                          myUsername: myUserName!,
-                        )),
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (BuildContext context, int index) => ChatCard(
+                    documentSnapshot: snapshot.data!.docs[index],
+                    myUsername: myUserName!,
+                  ),
+                ),
               );
             }
             return const Text("Something is wrong");
@@ -163,64 +164,73 @@ class _ChatCardState extends State<ChatCard> {
         );
         bool hasData = snapshot.hasData;
         if (hasData) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: kDefaultPadding, vertical: kDefaultPadding * 0.75),
-            child: Row(
-              children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundImage: NetworkImage(profilePicUrl),
-                    ),
-                    // TODO: add conditional to check if user is active
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        height: 16,
-                        width: 16,
-                        decoration: BoxDecoration(
+          return GestureDetector(
+            onTap: () {
+
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: kDefaultPadding,
+                  vertical: kDefaultPadding * 0.75),
+              child: Row(
+                children: [
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundImage: NetworkImage(profilePicUrl),
+                      ),
+                      // TODO: add conditional to check if user is active
+                      
+
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          height: 16,
+                          width: 16,
+                          decoration: BoxDecoration(
                             color: kPrimaryColor,
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Theme.of(context).scaffoldBackgroundColor,
-                            )),
-                      ),
-                    )
-                  ],
-                ),
-                Expanded(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w500),
-                        ),
-                        const SizedBox(height: 8),
-                        Opacity(
-                          opacity: 0.64,
-                          child: Text(
-                            lastMessage,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        )
-                      ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: kDefaultPadding),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: const TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(height: 8),
+                          Opacity(
+                            opacity: 0.64,
+                            child: Text(
+                              lastMessage,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Opacity(
-                  opacity: 0.64,
-                  child: Text(date),
-                )
-              ],
+                  Opacity(
+                    opacity: 0.64,
+                    child: Text(date),
+                  )
+                ],
+              ),
             ),
           );
         }

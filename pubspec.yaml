@@ -44,7 +44,7 @@ dependencies:
   font_awesome_flutter: 
   #Timestamp format
   timeago: ^3.2.2
-  flutter_social_button: ^1.1.4
+ 
   email_validator: ^2.0.1
   provider: ^6.0.3
   google_fonts: ^3.0.1

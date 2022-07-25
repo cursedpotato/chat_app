@@ -39,7 +39,7 @@ class TextFieldWidget extends StatelessWidget {
           prefixIconData,
           size: 18,
           // TODO: Assign color theme
-          color: Color(0xFF087949),
+          color: const Color(0xFF087949),
         ),
         filled: true,
         enabledBorder: UnderlineInputBorder(
@@ -58,12 +58,12 @@ class TextFieldWidget extends StatelessWidget {
             suffixIconData,
             size: 18,
             // TODO: Assign color theme
-            color: Color(0xFF087949),
+            color: const Color(0xFF087949),
           ),
         ),
         // TODO: Assign color theme
         labelStyle: const TextStyle(color: Color(0xFF087949)),
-        focusColor: Color(0xFF087949),
+        focusColor: const Color(0xFF087949),
       ),
     );
   }
