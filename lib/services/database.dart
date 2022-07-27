@@ -1,7 +1,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import '../helperfunctions/sharedpref_helper.dart';
+
 
 class DatabaseMethods {
   Future addUserInfoToDB(
@@ -64,7 +65,8 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
-    String?  myUsername = await SharedPreferenceHelper().getUserName();
+    // ignore: await_only_futures
+    String?  myUsername = await FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .orderBy("lastMessageSendTs", descending: true)

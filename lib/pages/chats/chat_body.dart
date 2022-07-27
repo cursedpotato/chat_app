@@ -2,10 +2,11 @@ import 'package:chat_app/globals.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/widgets/filledout_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-import '../../helperfunctions/sharedpref_helper.dart';
+
 
 class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
@@ -18,15 +19,16 @@ class _BodyState extends State<Body> {
   bool isSearching = false;
   String? myName, myProfilePic, myUserName, myEmail;
   Stream<QuerySnapshot>? usersStream, chatRoomsStream;
+  final User? currentUser = FirebaseAuth.instance.currentUser;
 
   TextEditingController searchUsernameEditingController =
       TextEditingController();
 
   getMyInfoFromSharedPreference() async {
-    myName = await SharedPreferenceHelper().getDisplayName();
-    myProfilePic = await SharedPreferenceHelper().getUserProfileUrl();
-    myUserName = await SharedPreferenceHelper().getUserName();
-    myEmail = await SharedPreferenceHelper().getUserEmail();
+    myName = currentUser!.displayName;
+    myProfilePic = currentUser!.photoURL;
+    myUserName = currentUser!.displayName;
+    myEmail = currentUser!.email;
     setState(() {});
   }
 
@@ -166,7 +168,7 @@ class _ChatCardState extends State<ChatCard> {
         if (hasData) {
           return GestureDetector(
             onTap: () {
-
+              print("hahhaha");
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(
