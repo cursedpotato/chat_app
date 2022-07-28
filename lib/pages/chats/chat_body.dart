@@ -56,37 +56,24 @@ class _BodyState extends State<Body> {
             ],
           ),
         ),
-        StreamBuilder<QuerySnapshot>(
+        StreamBuilder(
           stream: chatRoomsStream,
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            bool isLoading =
-                snapshot.connectionState == ConnectionState.waiting;
-            if (isLoading) {
-              return const Text("loading...");
-            }
-            bool isError = snapshot.connectionState == ConnectionState.none;
-            if (isError) {
-              return const Text("ERROR");
-            }
-            bool hasData = snapshot.connectionState == ConnectionState.done &&
-                    snapshot.hasData ||
-                snapshot.connectionState == ConnectionState.active;
+            bool hasData = snapshot.hasData;
             if (hasData) {
               List documentSnapshot = snapshot.data!.docs;
+              print(
+                  "This is the length of the list ${documentSnapshot.length}");
               myUserName = currentUser!.displayName;
-              print("I have data");
-              // return Expanded(
-              //   child: ListView.builder(
-              //     itemCount: documentSnapshot.length,
-              //     itemBuilder: (BuildContext context, int index) => ChatCard(
-              //       documentSnapshot: documentSnapshot[index],
-              //       myUsername: myUserName!,
-              //     ),
-              //   ),
-              // );
+              return Expanded(
+                child: ListView.builder(
+                    itemCount: documentSnapshot.length,
+                    itemBuilder: (BuildContext context, int index) => ChatCard()
+                    ),
+              );
             }
-            return const Text("Something is wrong");
+            return Text("ah fuck");
           },
         ),
       ],
@@ -95,12 +82,8 @@ class _BodyState extends State<Body> {
 }
 
 class ChatCard extends StatefulWidget {
-  final DocumentSnapshot documentSnapshot;
-  final String myUsername;
   const ChatCard({
     Key? key,
-    required this.documentSnapshot,
-    required this.myUsername,
   }) : super(key: key);
 
   @override
@@ -113,106 +96,87 @@ class _ChatCardState extends State<ChatCard> {
       username = "",
       lastMessage = "",
       date = "";
-  Future<QuerySnapshot> getThisUserInfo() async {
-    username = widget.documentSnapshot.id
-        .replaceAll(widget.myUsername, "")
-        .replaceAll("_", "");
-    return await DatabaseMethods().getUserInfo(username);
-  }
+  // Future<QuerySnapshot> getThisUserInfo() async {
+  //   username = widget.documentSnapshot.id
+  //       .replaceAll(widget.myUsername, "")
+  //       .replaceAll("_", "");
+  //   return await DatabaseMethods().getUserInfo(username);
+  // }
 
-  @override
-  void initState() {
-    getThisUserInfo();
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   getThisUserInfo();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    Timestamp? timeOflastM;
-    return FutureBuilder(
-      future: getThisUserInfo(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        bool hasData = snapshot.hasData;
-        bool isConnected = snapshot.connectionState == ConnectionState.done;
-        if (hasData && isConnected) {
-          name = snapshot.data!.docs[0]["name"];
-          profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
-          lastMessage = widget.documentSnapshot["lastMessage"];
-          timeOflastM = widget.documentSnapshot["lastMessageSendTs"];
-          date = timeago.format(
-            timeOflastM!.toDate(),
-          );
-          return GestureDetector(
-            onTap: () {
-              print("hahhaha");
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding,
-                  vertical: kDefaultPadding * 0.75),
-              child: Row(
-                children: [
-                  Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundImage: NetworkImage(profilePicUrl),
-                      ),
-                      // TODO: add conditional to check if user is active
-
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          height: 16,
-                          width: 16,
-                          decoration: BoxDecoration(
-                            color: kPrimaryColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+    return GestureDetector(
+      onTap: () {},
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: kDefaultPadding, vertical: kDefaultPadding * 0.75),
+        child: Row(
+          children: [
+            Stack(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundImage: NetworkImage(
+                    'https://masterclassenglish.com/wp-content/uploads/2019/05/noimage-placeholderpng.png',
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: kDefaultPadding),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(height: 8),
-                          Opacity(
-                            opacity: 0.64,
-                            child: Text(
-                              lastMessage,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
-                        ],
+                ),
+                // TODO: add conditional to check if user is active
+
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    height: 16,
+                    width: 16,
+                    decoration: BoxDecoration(
+                      color: kPrimaryColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).scaffoldBackgroundColor,
                       ),
                     ),
                   ),
-                  Opacity(
-                    opacity: 0.64,
-                    child: Text(date),
-                  )
-                ],
+                ),
+              ],
+            ),
+            Expanded(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 8),
+                    Opacity(
+                      opacity: 0.64,
+                      child: Text(
+                        lastMessage,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
-          );
-        }
-        return const LinearProgressIndicator();
-      },
+            Opacity(
+              opacity: 0.64,
+              child: Text(date),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
