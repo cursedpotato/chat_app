@@ -78,7 +78,7 @@ class _SignInState extends State<SignIn> {
           ),
           const SizedBox(height: 20.0),
           ButtonWidget(
-            color: Color(0xFF087949),
+            color: const Color(0xFF087949),
             title: "Sign in",
             onTap: () {
               AuthMethods().signInWithMail(
@@ -89,17 +89,17 @@ class _SignInState extends State<SignIn> {
           Row(
             children: [
               ButtonWidget(
-                color: Color.fromRGBO(219, 68, 55, 1),
+                color: const Color.fromRGBO(219, 68, 55, 1),
                 title: "Google",
                 onTap: () {
-                  AuthMethods().signInWithGoogle(context);
+                  AuthMethods().signInWithGoogle();
                 },
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               ButtonWidget(
-                color: Color.fromRGBO(66, 103, 178, 1),
+                color: const Color.fromRGBO(66, 103, 178, 1),
                 title: "Facebook",
                 onTap: () {},
               )

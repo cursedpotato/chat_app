@@ -6,8 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-
-
 class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
 
@@ -16,45 +14,18 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  bool isSearching = false;
-  String? myName, myProfilePic, myUserName, myEmail;
-  Stream<QuerySnapshot>? usersStream, chatRoomsStream;
+  String? myUserName;
+  Stream<QuerySnapshot>? chatRoomsStream;
   final User? currentUser = FirebaseAuth.instance.currentUser;
-
-  TextEditingController searchUsernameEditingController =
-      TextEditingController();
-
-  getMyInfoFromSharedPreference() async {
-    myName = currentUser!.displayName;
-    myProfilePic = currentUser!.photoURL;
-    myUserName = currentUser!.displayName;
-    myEmail = currentUser!.email;
-    setState(() {});
-  }
-
-  getChatRoomIdByUsernames(String a, String b) {
-    if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
-      // ignore: unnecessary_string_escapes
-      return "$b\_$a";
-    } else {
-      // ignore: unnecessary_string_escapes
-      return "$a\_$b";
-    }
-  }
 
   getChatRooms() async {
     chatRoomsStream = await DatabaseMethods().getChatRooms();
     setState(() {});
   }
 
-  onScreenLoaded() async {
-    await getMyInfoFromSharedPreference();
-    getChatRooms();
-  }
-
   @override
   void initState() {
-    onScreenLoaded();
+    getChatRooms();
     super.initState();
   }
 
@@ -87,7 +58,8 @@ class _BodyState extends State<Body> {
         ),
         StreamBuilder<QuerySnapshot>(
           stream: chatRoomsStream,
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             bool isLoading =
                 snapshot.connectionState == ConnectionState.waiting;
             if (isLoading) {
@@ -101,15 +73,18 @@ class _BodyState extends State<Body> {
                     snapshot.hasData ||
                 snapshot.connectionState == ConnectionState.active;
             if (hasData) {
-              return Expanded(
-                child: ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (BuildContext context, int index) => ChatCard(
-                    documentSnapshot: snapshot.data!.docs[index],
-                    myUsername: myUserName!,
-                  ),
-                ),
-              );
+              List documentSnapshot = snapshot.data!.docs;
+              myUserName = currentUser!.displayName;
+              print("I have data");
+              // return Expanded(
+              //   child: ListView.builder(
+              //     itemCount: documentSnapshot.length,
+              //     itemBuilder: (BuildContext context, int index) => ChatCard(
+              //       documentSnapshot: documentSnapshot[index],
+              //       myUsername: myUserName!,
+              //     ),
+              //   ),
+              // );
             }
             return const Text("Something is wrong");
           },
@@ -157,15 +132,16 @@ class _ChatCardState extends State<ChatCard> {
     return FutureBuilder(
       future: getThisUserInfo(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        name = snapshot.data!.docs[0]["name"];
-        profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
-        lastMessage = widget.documentSnapshot["lastMessage"];
-        timeOflastM = widget.documentSnapshot["lastMessageSendTs"];
-        date = timeago.format(
-          timeOflastM!.toDate(),
-        );
         bool hasData = snapshot.hasData;
-        if (hasData) {
+        bool isConnected = snapshot.connectionState == ConnectionState.done;
+        if (hasData && isConnected) {
+          name = snapshot.data!.docs[0]["name"];
+          profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
+          lastMessage = widget.documentSnapshot["lastMessage"];
+          timeOflastM = widget.documentSnapshot["lastMessageSendTs"];
+          date = timeago.format(
+            timeOflastM!.toDate(),
+          );
           return GestureDetector(
             onTap: () {
               print("hahhaha");
@@ -183,7 +159,6 @@ class _ChatCardState extends State<ChatCard> {
                         backgroundImage: NetworkImage(profilePicUrl),
                       ),
                       // TODO: add conditional to check if user is active
-                      
 
                       Positioned(
                         right: 0,

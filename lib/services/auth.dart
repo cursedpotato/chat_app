@@ -22,11 +22,11 @@ class AuthMethods {
   }
 
 
-  signInWithGoogle(BuildContext context) async {
+  signInWithGoogle() async {
     final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
     final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-    GoogleSignInAccount? googleSignInAccount = await GoogleSignIn().signIn();
+    GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
 
     final GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount!.authentication;
@@ -52,8 +52,7 @@ class AuthMethods {
       DatabaseMethods()
           .addUserInfoToDB(userDetails.uid, userInfoMap)
           .then((value) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => ChatScreen()));
+        
       });
     }
   }

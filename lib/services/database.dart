@@ -65,8 +65,8 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
-    // ignore: await_only_futures
-    String?  myUsername = await FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
+
+    String? myUsername = FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .orderBy("lastMessageSendTs", descending: true)
