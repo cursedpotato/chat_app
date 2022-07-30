@@ -1,8 +1,6 @@
 
-import 'package:chat_app/pages/chats/chat_screen.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -40,21 +38,18 @@ class AuthMethods {
 
     User? userDetails = result.user;
 
-    if (result != null) {
+    Map<String, dynamic> userInfoMap = {
+      "email": userDetails!.email,
+      "username": userDetails.email!.replaceAll("@gmail.com", ""),
+      "name": userDetails.displayName,
+      "imgUrl": userDetails.photoURL
+    };
 
-      Map<String, dynamic> userInfoMap = {
-        "email": userDetails!.email,
-        "username": userDetails.email!.replaceAll("@gmail.com", ""),
-        "name": userDetails.displayName,
-        "imgUrl": userDetails.photoURL
-      };
-
-      DatabaseMethods()
-          .addUserInfoToDB(userDetails.uid, userInfoMap)
-          .then((value) {
-        
-      });
-    }
+    DatabaseMethods()
+        .addUserInfoToDB(userDetails.uid, userInfoMap)
+        .then((value) {
+      
+    });
   }
 
 

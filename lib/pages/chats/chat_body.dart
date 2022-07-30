@@ -16,7 +16,6 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   String? myUserName;
   Stream<QuerySnapshot>? chatRoomsStream;
-  final User? currentUser = FirebaseAuth.instance.currentUser;
 
   getChatRooms() async {
     chatRoomsStream = await DatabaseMethods().getChatRooms();
@@ -60,20 +59,23 @@ class _BodyState extends State<Body> {
           stream: chatRoomsStream,
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            bool isWaiting =
+                snapshot.connectionState == ConnectionState.waiting;
+            if (isWaiting) {
+              return const LinearProgressIndicator();
+            }
             bool hasData = snapshot.hasData;
             if (hasData) {
-              List documentSnapshot = snapshot.data!.docs;
-              print(
-                  "This is the length of the list ${documentSnapshot.length}");
-              myUserName = currentUser!.displayName;
+              List<DocumentSnapshot> documentSnapshot = snapshot.data!.docs;
               return Expanded(
                 child: ListView.builder(
                     itemCount: documentSnapshot.length,
-                    itemBuilder: (BuildContext context, int index) => ChatCard()
-                    ),
+                    itemBuilder: (BuildContext context, int index) => ChatCard(
+                          documentSnapshot: documentSnapshot,
+                        )),
               );
             }
-            return Text("ah fuck");
+            return const Text("ah fuck");
           },
         ),
       ],
@@ -82,8 +84,10 @@ class _BodyState extends State<Body> {
 }
 
 class ChatCard extends StatefulWidget {
+  final List<DocumentSnapshot> documentSnapshot;
   const ChatCard({
     Key? key,
+    required this.documentSnapshot,
   }) : super(key: key);
 
   @override
@@ -91,92 +95,102 @@ class ChatCard extends StatefulWidget {
 }
 
 class _ChatCardState extends State<ChatCard> {
+  final String? myUsername =
+      FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
+
   String profilePicUrl = "",
       name = "",
       username = "",
       lastMessage = "",
       date = "";
-  // Future<QuerySnapshot> getThisUserInfo() async {
-  //   username = widget.documentSnapshot.id
-  //       .replaceAll(widget.myUsername, "")
-  //       .replaceAll("_", "");
-  //   return await DatabaseMethods().getUserInfo(username);
-  // }
-
-  // @override
-  // void initState() {
-  //   getThisUserInfo();
-  //   super.initState();
-  // }
+  Future<QuerySnapshot> getThisUserInfo() async {
+    username = widget.documentSnapshot[0].id
+        .replaceAll(myUsername!, "")
+        .replaceAll("_", "");
+    print('this is the username: $username');
+    return await DatabaseMethods().getUserInfo(username);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {},
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: kDefaultPadding, vertical: kDefaultPadding * 0.75),
-        child: Row(
-          children: [
-            Stack(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundImage: NetworkImage(
-                    'https://masterclassenglish.com/wp-content/uploads/2019/05/noimage-placeholderpng.png',
-                  ),
-                ),
-                // TODO: add conditional to check if user is active
+    return FutureBuilder(
+      future: getThisUserInfo(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        bool hasData = snapshot.hasData;
+        if (hasData) {
+          print("This is the data: ${snapshot.data!.docs[0]["imgUrl"]}");
+          profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
+          return GestureDetector(
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: kDefaultPadding,
+                  vertical: kDefaultPadding * 0.75),
+              child: Row(
+                children: [
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundImage: NetworkImage(
+                          profilePicUrl
+                        ),
+                      ),
+                      // TODO: add conditional to check if user is active
 
-                Positioned(
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    height: 16,
-                    width: 16,
-                    decoration: BoxDecoration(
-                      color: kPrimaryColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Theme.of(context).scaffoldBackgroundColor,
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          height: 16,
+                          width: 16,
+                          decoration: BoxDecoration(
+                            color: kPrimaryColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: kDefaultPadding),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: const TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w500),
+                          ),
+                          const SizedBox(height: 8),
+                          Opacity(
+                            opacity: 0.64,
+                            child: Text(
+                              lastMessage,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Expanded(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w500),
-                    ),
-                    const SizedBox(height: 8),
-                    Opacity(
-                      opacity: 0.64,
-                      child: Text(
-                        lastMessage,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )
-                  ],
-                ),
+                  Opacity(
+                    opacity: 0.64,
+                    child: Text(date),
+                  )
+                ],
               ),
             ),
-            Opacity(
-              opacity: 0.64,
-              child: Text(date),
-            )
-          ],
-        ),
-      ),
+          );
+        }
+        return LinearProgressIndicator();
+      },
     );
   }
 }
