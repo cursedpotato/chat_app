@@ -107,93 +107,94 @@ class _ChatCardState extends State<ChatCard> {
     username = widget.documentSnapshot[0].id
         .replaceAll(myUsername!, "")
         .replaceAll("_", "");
-    print('this is the username: $username');
+   
     return await DatabaseMethods().getUserInfo(username);
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getThisUserInfo(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        bool hasData = snapshot.hasData;
-        if (hasData) {
-          print("This is the data: ${snapshot.data!.docs[0]["imgUrl"]}");
-          profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
-          name = snapshot.data!.docs[0]["name"];
-          username = snapshot.data!.docs[0]['username'];
+        future: getThisUserInfo(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          bool hasData = snapshot.hasData &&
+                  snapshot.connectionState == ConnectionState.active ||
+              snapshot.connectionState == ConnectionState.done;
+          if (hasData) {
+      
+            profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
+            name = snapshot.data!.docs[0]["name"];
+            username = snapshot.data!.docs[0]['username'];
 
-          return GestureDetector(
-            onTap: () {},
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding,
-                  vertical: kDefaultPadding * 0.75),
-              child: Row(
-                children: [
-                  Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundImage: NetworkImage(
-                          profilePicUrl 
+            return GestureDetector(
+              onTap: () {},
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: kDefaultPadding,
+                    vertical: kDefaultPadding * 0.75),
+                child: Row(
+                  children: [
+                    Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundImage: NetworkImage(profilePicUrl),
                         ),
-                      ),
-                      // TODO: add conditional to check if user is active
+                        // TODO: add conditional to check if user is active
 
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          height: 16,
-                          width: 16,
-                          decoration: BoxDecoration(
-                            color: kPrimaryColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Theme.of(context).scaffoldBackgroundColor,
+                        Positioned(
+                          right: 0,
+                          bottom: 0,
+                          child: Container(
+                            height: 16,
+                            width: 16,
+                            decoration: BoxDecoration(
+                              color: kPrimaryColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: kDefaultPadding),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(height: 8),
-                          Opacity(
-                            opacity: 0.64,
-                            child: Text(
-                              lastMessage,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                      ],
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: kDefaultPadding),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              name,
+                              style: const TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.w500),
                             ),
-                          )
-                        ],
+                            const SizedBox(height: 8),
+                            Opacity(
+                              opacity: 0.64,
+                              child: Text(
+                                lastMessage,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Opacity(
-                    opacity: 0.64,
-                    child: Text(date),
-                  )
-                ],
+                    Opacity(
+                      opacity: 0.64,
+                      child: Text(date),
+                    )
+                  ],
+                ),
               ),
-            ),
-          );
-        }
-        return LinearProgressIndicator();
-      },
-    );
+            );
+          }
+
+          return const LinearProgressIndicator();
+        });
   }
 }
