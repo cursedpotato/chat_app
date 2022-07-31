@@ -66,16 +66,21 @@ class _BodyState extends State<Body> {
             }
             bool hasData = snapshot.hasData;
             if (hasData) {
-              List<DocumentSnapshot> documentSnapshot = snapshot.data!.docs;
+              List<DocumentSnapshot> documentList = snapshot.data!.docs;
               return Expanded(
                 child: ListView.builder(
-                    itemCount: documentSnapshot.length,
-                    itemBuilder: (BuildContext context, int index) => ChatCard(
-                          documentSnapshot: documentSnapshot,
-                        )),
+                  itemCount: documentList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    DocumentSnapshot documentSnapshot = documentList[index];
+                    
+                    return ChatCard(
+                      documentSnapshot: documentSnapshot,
+                    );
+                  },
+                ),
               );
             }
-            return const Text("ah fuck");
+            return const Text("Something went oopsie");
           },
         ),
       ],
@@ -84,7 +89,7 @@ class _BodyState extends State<Body> {
 }
 
 class ChatCard extends StatefulWidget {
-  final List<DocumentSnapshot> documentSnapshot;
+  final DocumentSnapshot documentSnapshot;
   const ChatCard({
     Key? key,
     required this.documentSnapshot,
@@ -104,10 +109,9 @@ class _ChatCardState extends State<ChatCard> {
       lastMessage = "",
       date = "";
   Future<QuerySnapshot> getThisUserInfo() async {
-    username = widget.documentSnapshot[0].id
+    username = widget.documentSnapshot.id
         .replaceAll(myUsername!, "")
         .replaceAll("_", "");
-   
     return await DatabaseMethods().getUserInfo(username);
   }
 
@@ -120,10 +124,13 @@ class _ChatCardState extends State<ChatCard> {
                   snapshot.connectionState == ConnectionState.active ||
               snapshot.connectionState == ConnectionState.done;
           if (hasData) {
-      
             profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
             name = snapshot.data!.docs[0]["name"];
             username = snapshot.data!.docs[0]['username'];
+            lastMessage = widget.documentSnapshot["lastMessage"];
+            // TODO: Find a way to make this pretty
+            DateTime dt = (widget.documentSnapshot['lastMessageSendTs'] as Timestamp).toDate();
+            date = timeago.format(dt);
 
             return GestureDetector(
               onTap: () {},
