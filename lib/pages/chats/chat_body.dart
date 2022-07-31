@@ -120,6 +120,9 @@ class _ChatCardState extends State<ChatCard> {
         if (hasData) {
           print("This is the data: ${snapshot.data!.docs[0]["imgUrl"]}");
           profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
+          name = snapshot.data!.docs[0]["name"];
+          username = snapshot.data!.docs[0]['username'];
+
           return GestureDetector(
             onTap: () {},
             child: Padding(
@@ -133,7 +136,7 @@ class _ChatCardState extends State<ChatCard> {
                       CircleAvatar(
                         radius: 24,
                         backgroundImage: NetworkImage(
-                          profilePicUrl
+                          profilePicUrl 
                         ),
                       ),
                       // TODO: add conditional to check if user is active
