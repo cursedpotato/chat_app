@@ -55,15 +55,14 @@ class MyApp extends StatelessWidget {
       title: 'Capychat',
       debugShowCheckedModeBanner: false,
       theme: lightThemeData(context),
-      darkTheme: darkThemeData(context),
-      
+      darkTheme: darkThemeData(context),      
       home: FutureBuilder(
         future: getCurrentUser(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
-            return SignIn();
+            return const SignIn();
           }
-          return ChatScreen( );
+          return const ChatScreen( );
         },
       ),
     );

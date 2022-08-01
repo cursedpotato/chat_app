@@ -1,4 +1,5 @@
 import 'package:chat_app/globals.dart';
+import 'package:chat_app/pages/messages/messages.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/widgets/filledout_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -72,7 +73,7 @@ class _BodyState extends State<Body> {
                   itemCount: documentList.length,
                   itemBuilder: (BuildContext context, int index) {
                     DocumentSnapshot documentSnapshot = documentList[index];
-                    
+
                     return ChatCard(
                       documentSnapshot: documentSnapshot,
                     );
@@ -108,6 +109,8 @@ class _ChatCardState extends State<ChatCard> {
       username = "",
       lastMessage = "",
       date = "";
+
+  DateTime fiveMinAgo = DateTime.now().subtract(const Duration(minutes: 5));
   Future<QuerySnapshot> getThisUserInfo() async {
     username = widget.documentSnapshot.id
         .replaceAll(myUsername!, "")
@@ -128,12 +131,23 @@ class _ChatCardState extends State<ChatCard> {
             name = snapshot.data!.docs[0]["name"];
             username = snapshot.data!.docs[0]['username'];
             lastMessage = widget.documentSnapshot["lastMessage"];
-            // TODO: Find a way to make this pretty
-            DateTime dt = (widget.documentSnapshot['lastMessageSendTs'] as Timestamp).toDate();
+            DateTime dt =
+                (widget.documentSnapshot['lastMessageSendTs'] as Timestamp)
+                    .toDate();
             date = timeago.format(dt);
 
             return GestureDetector(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MessagesScreen(
+                      chatterName: myUsername!,
+                      chatteeName: username,
+                    ),
+                  ),
+                );
+              },
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: kDefaultPadding,

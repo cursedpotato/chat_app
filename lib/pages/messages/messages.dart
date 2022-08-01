@@ -3,8 +3,32 @@ import 'package:chat_app/globals.dart';
 import 'package:chat_app/pages/messages/messages_body.dart';
 import 'package:flutter/material.dart';
 
-class MessagesScreen extends StatelessWidget {
-  const MessagesScreen({Key? key}) : super(key: key);
+class MessagesScreen extends StatefulWidget {
+  final String chatterName;
+  final String chatteeName;
+  const MessagesScreen({
+    Key? key,
+    required this.chatterName,
+    required this.chatteeName,
+  }) : super(key: key);
+
+  @override
+  State<MessagesScreen> createState() => _MessagesScreenState();
+}
+
+class _MessagesScreenState extends State<MessagesScreen> {
+  // we will use getChatRoomMessages method to get the messages stream, this stream will user
+  //
+  // we will use getUser
+  getChatRoomIdByUsernames(String a, String b) {
+    if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+      // ignore: unnecessary_string_escapes
+      return "$b\_$a";
+    } else {
+      // ignore: unnecessary_string_escapes
+      return "$a\_$b";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +49,13 @@ class MessagesScreen extends StatelessWidget {
           const SizedBox(width: kDefaultPadding * 0.75),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children:[
               Text(
-                "Receptor name",
-                style: TextStyle(fontSize: 16),
+                widget.chatteeName,
+                style: const TextStyle(fontSize: 16),
               ),
-              Text(
+              // TODO: implement conditional to see if user was active
+              const Text(
                 "Active 3 minutes ago",
                 style: TextStyle(fontSize: 12),
               ),
@@ -54,4 +79,3 @@ class MessagesScreen extends StatelessWidget {
     );
   }
 }
-
