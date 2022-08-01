@@ -1,5 +1,5 @@
 import 'package:chat_app/globals.dart';
-import 'package:chat_app/pages/messages/messages.dart';
+import 'package:chat_app/screens/messages/messages.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/widgets/filledout_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

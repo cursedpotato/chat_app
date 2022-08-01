@@ -1,6 +1,6 @@
 import 'package:chat_app/globals.dart';
+import 'package:chat_app/screens/messages/messages_body.dart';
 
-import 'package:chat_app/pages/messages/messages_body.dart';
 import 'package:flutter/material.dart';
 
 class MessagesScreen extends StatefulWidget {

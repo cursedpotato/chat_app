@@ -1,9 +1,10 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:chat_app/globals.dart';
-import 'package:chat_app/pages/messages/chat_input_field.dart';
-import 'package:chat_app/pages/messages/text_message.dart';
-import 'package:chat_app/pages/messages/video_widget.dart';
+import 'package:chat_app/screens/messages/chat_input_field.dart';
+import 'package:chat_app/screens/messages/text_message.dart';
+import 'package:chat_app/screens/messages/video_widget.dart';
+
 import 'package:flutter/material.dart';
 
 import 'audio_message.dart';
