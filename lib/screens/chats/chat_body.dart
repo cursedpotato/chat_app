@@ -144,6 +144,7 @@ class _ChatCardState extends State<ChatCard> {
                     builder: (context) => MessagesScreen(
                       chatterName: myUsername!,
                       chatteeName: username,
+                      photoUrl: profilePicUrl,
                     ),
                   ),
                 );

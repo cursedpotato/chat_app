@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 class MessagesScreen extends StatefulWidget {
   final String chatterName;
   final String chatteeName;
+  final String photoUrl;
   const MessagesScreen({
     Key? key,
     required this.chatterName,
     required this.chatteeName,
+    required this.photoUrl,
   }) : super(key: key);
 
   @override
@@ -42,14 +44,13 @@ class _MessagesScreenState extends State<MessagesScreen> {
     return AppBar(
       title: Row(
         children: [
-          const CircleAvatar(
-            backgroundImage: NetworkImage(
-                "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"),
+          CircleAvatar(
+            backgroundImage: NetworkImage(widget.photoUrl),
           ),
           const SizedBox(width: kDefaultPadding * 0.75),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children:[
+            children: [
               Text(
                 widget.chatteeName,
                 style: const TextStyle(fontSize: 16),

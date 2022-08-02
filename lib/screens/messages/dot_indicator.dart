@@ -9,7 +9,6 @@ class MessageStatusDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color? dotColor(MessageStatus status) {
-      // if(status == MessageStatus.not_sent) kErrorColor;
       switch (status) {
         case MessageStatus.not_sent:
           return kErrorColor;
