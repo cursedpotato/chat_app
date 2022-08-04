@@ -1,5 +1,7 @@
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/screens/messages/messages_body.dart';
+import 'package:chat_app/services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 
@@ -17,6 +19,12 @@ class MessagesScreen extends StatefulWidget {
 }
 
 class _MessagesScreenState extends State<MessagesScreen> {
+
+  Stream<QuerySnapshot>? messagesStream;
+
+  QuerySnapshot? chatteeInfo;
+
+
   // we will use getChatRoomMessages method to get the messages stream, this stream will user
   //
   // we will use getUser
@@ -28,6 +36,19 @@ class _MessagesScreenState extends State<MessagesScreen> {
       // ignore: unnecessary_string_escapes
       return "$a\_$b";
     }
+  }
+
+  toExecute () async {
+
+    final chatroomId = getChatRoomIdByUsernames(widget.chatteeName, widget.chatterName);
+    messagesStream = await DatabaseMethods().getChatRoomMessages(chatroomId);
+    chatteeInfo = await DatabaseMethods().getUserInfo(widget.chatteeName);
+  }
+
+  @override
+  void initState() {
+    toExecute();
+    super.initState();
   }
 
   @override
@@ -42,6 +63,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     return AppBar(
       title: Row(
         children: [
+          // TODO: implement future builder here
           const CircleAvatar(
             backgroundImage: NetworkImage(
               "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
