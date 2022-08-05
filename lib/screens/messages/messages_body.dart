@@ -4,6 +4,7 @@ import 'package:chat_app/globals.dart';
 import 'package:chat_app/screens/messages/chat_input_field.dart';
 import 'package:chat_app/screens/messages/text_message.dart';
 import 'package:chat_app/screens/messages/video_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,7 @@ import 'audio_message.dart';
 import 'dot_indicator.dart';
 
 enum ChatMessageType { text, audio, image, video }
+
 enum MessageStatus { not_sent, not_view, viewed }
 
 class ChatMessage {
@@ -73,24 +75,36 @@ List demeChatMessages = [
 ];
 
 class Body extends StatelessWidget {
-  const Body({Key? key}) : super(key: key);
+  final Stream<QuerySnapshot> messagesStream;
+  const Body({Key? key, required this.messagesStream}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-            child: ListView.builder(
-              itemCount: demeChatMessages.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Message(
-                  message: demeChatMessages[index],
-                );
-              },
-            ),
-          ),
+        StreamBuilder(
+          stream: messagesStream,
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            bool hasData = snapshot.hasData;
+            if (hasData) {
+              Expanded(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                  child: ListView.builder(
+                    itemCount: demeChatMessages.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Message(
+                        message: demeChatMessages[index],
+                      );
+                    },
+                  ),
+                ),
+              );
+            }
+            return const LinearProgressIndicator();
+          },
         ),
         const ChatInputField()
       ],
@@ -126,7 +140,6 @@ class Message extends StatelessWidget {
       child: Row(
         mainAxisAlignment:
             message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
-
         children: [
           if (!message.isSender) ...[
             const CircleAvatar(
@@ -145,5 +158,3 @@ class Message extends StatelessWidget {
     );
   }
 }
-
-
