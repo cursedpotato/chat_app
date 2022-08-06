@@ -19,11 +19,9 @@ class MessagesScreen extends StatefulWidget {
 }
 
 class _MessagesScreenState extends State<MessagesScreen> {
-
   Stream<QuerySnapshot>? messagesStream;
 
   QuerySnapshot? chatteeInfo;
-
 
   // we will use getChatRoomMessages method to get the messages stream, this stream will user
   //
@@ -38,11 +36,15 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 
-  toExecute () async {
+  Future<QuerySnapshot?> getUserInfo() async {
+    return chatteeInfo =
+        await DatabaseMethods().getUserInfo(widget.chatteeName);
+  }
 
-    final chatroomId = getChatRoomIdByUsernames(widget.chatteeName, widget.chatterName);
+  toExecute() async {
+    final chatroomId =
+        getChatRoomIdByUsernames(widget.chatteeName, widget.chatterName);
     messagesStream = await DatabaseMethods().getChatRoomMessages(chatroomId);
-    chatteeInfo = await DatabaseMethods().getUserInfo(widget.chatteeName);
   }
 
   @override
@@ -55,7 +57,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: Body(messagesStream: messagesStream!),
+      body: Body(messagesStream: messagesStream),
     );
   }
 
@@ -64,10 +66,21 @@ class _MessagesScreenState extends State<MessagesScreen> {
       title: Row(
         children: [
           // TODO: implement future builder here
-          const CircleAvatar(
-            backgroundImage: NetworkImage(
-              "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
-            ),
+          FutureBuilder(
+            future: getUserInfo(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              bool hasData = snapshot.hasData &&
+                  snapshot.connectionState == ConnectionState.done;
+              if (hasData) {
+                print(snapshot.data.docs);
+                const CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+                  ),
+                );
+              }
+              return const CircularProgressIndicator();
+            },
           ),
           const SizedBox(width: kDefaultPadding * 0.75),
           Column(

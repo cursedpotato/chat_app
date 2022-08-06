@@ -75,7 +75,7 @@ List demeChatMessages = [
 ];
 
 class Body extends StatelessWidget {
-  final Stream<QuerySnapshot> messagesStream;
+  final Stream<QuerySnapshot>? messagesStream;
   const Body({Key? key, required this.messagesStream}) : super(key: key);
 
   @override
@@ -86,6 +86,7 @@ class Body extends StatelessWidget {
           stream: messagesStream,
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            // TODO: get the stream builder outside body and pass the document snapshot to the class constructor
             bool hasData = snapshot.hasData;
             if (hasData) {
               Expanded(
