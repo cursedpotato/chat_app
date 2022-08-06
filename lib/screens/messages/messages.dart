@@ -24,8 +24,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
   QuerySnapshot? chatteeInfo;
 
   // we will use getChatRoomMessages method to get the messages stream, this stream will user
-  //
-  // we will use getUser
   getChatRoomIdByUsernames(String a, String b) {
     if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
       // ignore: unnecessary_string_escapes
@@ -36,7 +34,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 
-  Future<QuerySnapshot?> getUserInfo() async {
+  Future<QuerySnapshot> getUserInfo() async {
     return chatteeInfo =
         await DatabaseMethods().getUserInfo(widget.chatteeName);
   }
@@ -44,7 +42,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
   toExecute() async {
     final chatroomId =
         getChatRoomIdByUsernames(widget.chatteeName, widget.chatterName);
+    getUserInfo();
     messagesStream = await DatabaseMethods().getChatRoomMessages(chatroomId);
+    setState(() {});
   }
 
   @override
@@ -57,7 +57,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: Body(messagesStream: messagesStream),
+      body: StreamBuilder(
+        stream: messagesStream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          bool hasData = snapshot.hasData;
+          if (hasData) {
+            return const Body();
+          }
+          return const Text("ah fuck");
+        },
+      ),
     );
   }
 
@@ -68,15 +77,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
           // TODO: implement future builder here
           FutureBuilder(
             future: getUserInfo(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               bool hasData = snapshot.hasData &&
                   snapshot.connectionState == ConnectionState.done;
               if (hasData) {
-                print(snapshot.data.docs);
-                const CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
-                  ),
+                final chattePfp = snapshot.data?.docs[0]["imgUrl"];
+                CircleAvatar(
+                  backgroundImage: NetworkImage(chattePfp),
                 );
               }
               return const CircularProgressIndicator();
