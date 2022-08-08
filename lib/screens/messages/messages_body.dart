@@ -131,10 +131,13 @@ class Message extends StatelessWidget {
             message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!message.isSender) ...[
-            const CircleAvatar(
-              radius: 12,
-              backgroundImage: NetworkImage(
-                  "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"),
+            Container(
+              margin: const EdgeInsets.only(right: kDefaultPadding / 2, top: 20),
+              child: const CircleAvatar(
+                radius: 12,
+                backgroundImage: NetworkImage(
+                    "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"),
+              ),
             )
           ],
           messageContent(message),
