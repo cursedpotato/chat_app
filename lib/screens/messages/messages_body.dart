@@ -75,7 +75,9 @@ List demeChatMessages = [
 ];
 
 class Body extends StatelessWidget {
-  const Body({Key? key}) : super(key: key);
+  final List<QueryDocumentSnapshot> querySnapshot;
+  const Body({Key? key, required this.querySnapshot}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
