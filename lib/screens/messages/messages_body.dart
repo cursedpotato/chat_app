@@ -81,9 +81,9 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var querySnapshotvar =  querySnapshot;
     return Column(
       children: [
-        
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),

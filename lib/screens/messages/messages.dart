@@ -62,7 +62,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           bool hasData = snapshot.hasData;
           if (hasData) {
-            return Body(querySnapshot: snapshot.data!.docs,);
+            return Body(
+              querySnapshot: snapshot.data!.docs,
+            );
           }
           return const Text("ah fuck");
         },
