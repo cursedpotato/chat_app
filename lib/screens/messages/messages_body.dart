@@ -66,7 +66,7 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var querySnapshotvar =  querySnapshot;
+    List<QueryDocumentSnapshot  >querySnapshotvar =  querySnapshot;
     return Column(
       children: [
         Expanded(

@@ -1,4 +1,5 @@
 import 'package:chat_app/globals.dart';
+import 'package:chat_app/modelview/message_model.dart';
 import 'package:flutter/material.dart';
 
 import 'messages_body.dart';
@@ -10,9 +11,9 @@ class MessageStatusDot extends StatelessWidget {
   Widget build(BuildContext context) {
     Color? dotColor(MessageStatus status) {
       switch (status) {
-        case MessageStatus.not_sent:
+        case MessageStatus.notSent:
           return kErrorColor;
-        case MessageStatus.not_view:
+        case MessageStatus.notViewed:
           return Theme.of(context).textTheme.bodyText1?.color?.withOpacity(0.1);
         case MessageStatus.viewed:
           return kPrimaryColor;
@@ -30,7 +31,7 @@ class MessageStatusDot extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: Icon(
-        status == MessageStatus.not_sent ? Icons.close : Icons.done,
+        status == MessageStatus.notSent ? Icons.close : Icons.done,
         size: 8,
         color: Theme.of(context).scaffoldBackgroundColor,
       ),
