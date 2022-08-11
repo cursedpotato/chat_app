@@ -2,7 +2,6 @@ import 'package:chat_app/globals.dart';
 import 'package:chat_app/modelview/message_model.dart';
 import 'package:flutter/material.dart';
 
-import 'messages_body.dart';
 class MessageStatusDot extends StatelessWidget {
   final MessageStatus status;
   const MessageStatusDot({Key? key, required this.status}) : super(key: key);

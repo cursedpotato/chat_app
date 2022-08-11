@@ -1,6 +1,6 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:chat_app/modelview/signin_modelview.dart';
-import 'package:chat_app/screens/chats/chat_screen.dart';
+import 'package:chat_app/screens/home/chat_screen.dart';
 
 import 'package:chat_app/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -56,14 +56,14 @@ class MyApp extends StatelessWidget {
       title: 'Capychat',
       debugShowCheckedModeBanner: false,
       theme: lightThemeData(context),
-      darkTheme: darkThemeData(context),      
+      darkTheme: darkThemeData(context),
       home: FutureBuilder(
         future: getCurrentUser(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             return const SignIn();
           }
-          return const ChatScreen( );
+          return const HomeScreen();
         },
       ),
     );

@@ -2,7 +2,6 @@ import 'package:chat_app/modelview/message_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../globals.dart';
-import 'messages_body.dart';
 
 class TextMessage extends StatelessWidget {
   const TextMessage({
