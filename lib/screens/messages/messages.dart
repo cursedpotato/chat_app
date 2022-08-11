@@ -66,7 +66,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
               querySnapshot: snapshot.data!.docs,
             );
           }
-          return const Text("ah fuck");
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         },
       ),
     );

@@ -66,7 +66,7 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<QueryDocumentSnapshot  >querySnapshotvar =  querySnapshot;
+    
     return Column(
       children: [
         Expanded(
@@ -75,6 +75,8 @@ class Body extends StatelessWidget {
             child: ListView.builder(
               itemCount: demeChatMessages.length,
               itemBuilder: (BuildContext context, int index) {
+                var blahblah = querySnapshot[index].data();
+                print("This is the data I need ya donke $blahblah");
                 return Message(
                   message: demeChatMessages[index],
                 );
