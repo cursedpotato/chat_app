@@ -1,6 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:chat_app/globals.dart';
+import 'package:chat_app/modelview/message_model.dart';
 import 'package:chat_app/screens/messages/chat_input_field.dart';
 import 'package:chat_app/screens/messages/text_message.dart';
 import 'package:chat_app/screens/messages/video_widget.dart';
@@ -11,23 +12,7 @@ import 'package:flutter/material.dart';
 import 'audio_message.dart';
 import 'dot_indicator.dart';
 
-enum ChatMessageType { text, audio, image, video }
 
-enum MessageStatus { not_sent, not_view, viewed }
-
-class ChatMessage {
-  final String text;
-  final ChatMessageType messageType;
-  final MessageStatus messageStatus;
-  final bool isSender;
-
-  ChatMessage({
-    this.text = '',
-    required this.messageType,
-    required this.messageStatus,
-    required this.isSender,
-  });
-}
 
 List demeChatMessages = [
   ChatMessage(
@@ -57,7 +42,7 @@ List demeChatMessages = [
   ChatMessage(
     text: "Error happend",
     messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.not_sent,
+    messageStatus: MessageStatus.notSent,
     isSender: true,
   ),
   ChatMessage(
@@ -69,7 +54,7 @@ List demeChatMessages = [
   ChatMessage(
     text: "Glad you like it",
     messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.not_view,
+    messageStatus: MessageStatus.notViewed,
     isSender: true,
   ),
 ];
