@@ -16,10 +16,10 @@ class WaveWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _WaveWidgetState createState() => _WaveWidgetState();
+  WaveWidgetState createState() => WaveWidgetState();
 }
 
-class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
+class WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
   late AnimationController animationController;
   List<Offset> wavePoints = [];
 

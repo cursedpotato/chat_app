@@ -55,12 +55,7 @@ class HomeScreen extends HookWidget {
     return AppBar(
       automaticallyImplyLeading: true,
       title: const Text("Chats"),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: () {},
-        )
-      ],
+      
     );
   }
 }

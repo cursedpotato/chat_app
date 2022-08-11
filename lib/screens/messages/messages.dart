@@ -84,11 +84,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               bool hasData = snapshot.hasData &&
-                  snapshot.connectionState == ConnectionState.done;
+                  (snapshot.connectionState == ConnectionState.done || snapshot.connectionState == ConnectionState.active);
               if (hasData) {
-                final chattePfp = snapshot.data?.docs[0]["imgUrl"];
+                // String chattePfp = ;
+                // print("This is what you want dummie dumb $chattePfp");
                 CircleAvatar(
-                  backgroundImage: NetworkImage(chattePfp),
+                  backgroundImage: NetworkImage(snapshot.data?.docs[0]["imgUrl"]),
                 );
               }
               return const CircularProgressIndicator();
