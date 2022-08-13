@@ -22,18 +22,18 @@ class HomeScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final String? profilePicUrl = FirebaseAuth.instance.currentUser?.photoURL;
-    final _selectedIndex = useState(0);
+    final selectedIndex = useState(0);
     return Scaffold(
       appBar: buildAppBar(),
-      body: screenList[_selectedIndex.value],
+      body: screenList[selectedIndex.value],
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: kPrimaryColor,
         child: const Icon(Icons.person_add_alt_1),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex.value,
-        onTap: (int index) => _selectedIndex.value = index,
+        currentIndex: selectedIndex.value,
+        onTap: (int index) => selectedIndex.value = index,
         items: [
           const BottomNavigationBarItem(
               icon: Icon(Icons.message), label: "Message"),

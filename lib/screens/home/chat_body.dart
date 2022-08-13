@@ -17,6 +17,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   String? myUserName;
   Stream<QuerySnapshot>? chatRoomsStream;
+  bool isActive = false;
 
   getChatRooms() async {
     chatRoomsStream = await DatabaseMethods().getChatRooms();
@@ -44,14 +45,19 @@ class _BodyState extends State<Body> {
           child: Row(
             children: [
               FillOutlineButton(
-                press: () {},
+                press: () => setState(() {
+                  isActive = !isActive;
+                }),
                 text: "Resent Messages",
+                isFilled: !isActive,
               ),
               const SizedBox(width: kDefaultPadding),
               FillOutlineButton(
-                press: () {},
+                press: () => setState(() {
+                  isActive = !isActive;
+                }),
                 text: "Active",
-                isFilled: false,
+                isFilled: isActive,
               ),
             ],
           ),
@@ -67,6 +73,7 @@ class _BodyState extends State<Body> {
             }
             bool hasData = snapshot.hasData;
             if (hasData) {
+              // TODO: Add conditional that filters
               List<DocumentSnapshot> documentList = snapshot.data!.docs;
               return Expanded(
                 child: ListView.builder(
@@ -81,7 +88,8 @@ class _BodyState extends State<Body> {
                 ),
               );
             }
-            return const Text("Something went oopsie");
+            // TODO: Make an error screen
+            return const Text("Something went wrong");
           },
         ),
       ],

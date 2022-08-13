@@ -78,18 +78,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
     return AppBar(
       title: Row(
         children: [
-          // TODO: implement future builder here
           FutureBuilder(
             future: getUserInfo(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              // TODO: Find a better solution
               String? chattePfp = snapshot.data?.docs[0]["imgUrl"];
               String noUser =
                   "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
               return ClipOval(
                 child: Image.network(
-                  chattePfp == null ? noUser : chattePfp,
+                  chattePfp ?? noUser,
                   width: 40,
                   height: 40,
                   fit: BoxFit.cover,
