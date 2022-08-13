@@ -15,8 +15,9 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  String? myUserName;
   Stream<QuerySnapshot>? chatRoomsStream;
+
+  // This variable was created to filter chatroom stream data and toggle buttons
   bool isActive = false;
 
   getChatRooms() async {
