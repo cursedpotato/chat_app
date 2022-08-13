@@ -83,16 +83,18 @@ class _MessagesScreenState extends State<MessagesScreen> {
             future: getUserInfo(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              bool hasData = snapshot.hasData &&
-                  (snapshot.connectionState == ConnectionState.done || snapshot.connectionState == ConnectionState.active);
-              if (hasData) {
-                // String chattePfp = ;
-                // print("This is what you want dummie dumb $chattePfp");
-                CircleAvatar(
-                  backgroundImage: NetworkImage(snapshot.data?.docs[0]["imgUrl"]),
-                );
-              }
-              return const CircularProgressIndicator();
+              // TODO: Find a better solution
+              String? chattePfp = snapshot.data?.docs[0]["imgUrl"];
+              String noUser =
+                  "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
+              return ClipOval(
+                child: Image.network(
+                  chattePfp == null ? noUser : chattePfp,
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                ),
+              );
             },
           ),
           const SizedBox(width: kDefaultPadding * 0.75),
