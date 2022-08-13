@@ -48,7 +48,7 @@ class _BodyState extends State<Body> {
                 press: () => setState(() {
                   isActive = !isActive;
                 }),
-                text: "Resent Messages",
+                text: "Recent Messages",
                 isFilled: !isActive,
               ),
               const SizedBox(width: kDefaultPadding),
@@ -73,7 +73,7 @@ class _BodyState extends State<Body> {
             }
             bool hasData = snapshot.hasData;
             if (hasData) {
-              // TODO: Add conditional that filters
+              // TODO: Add conditional that filters if users are active or nots
               List<DocumentSnapshot> documentList = snapshot.data!.docs;
               return Expanded(
                 child: ListView.builder(
@@ -109,22 +109,30 @@ class ChatCard extends StatefulWidget {
 }
 
 class _ChatCardState extends State<ChatCard> {
-  final String? myUsername =
-      FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
-
+  // This variables are used on the future builder to fill data into the card itself
   String profilePicUrl = "",
       name = "",
       username = "",
       lastMessage = "",
       date = "";
 
-  DateTime fiveMinAgo = DateTime.now().subtract(const Duration(minutes: 5));
+  /* This variable is used to exclude the chatter name from a document id 
+  (the chat document id is formed as a combination between the chatte and chatter username) 
+  to get the chatte name and fetch the chatte info from a method
+  */
+  final String? chatterUsername =
+      FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
+
   Future<QuerySnapshot> getThisUserInfo() async {
     username = widget.documentSnapshot.id
-        .replaceAll(myUsername!, "")
+        .replaceAll(chatterUsername!, "")
         .replaceAll("_", "");
     return await DatabaseMethods().getUserInfo(username);
   }
+
+  /* The idea of this variable was to check if the chatte is active but
+  I don't have a clear idea of how to implement it yet, I might create a provider  */
+  // DateTime fiveMinAgo = DateTime.now().subtract(const Duration(minutes: 5));
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +158,7 @@ class _ChatCardState extends State<ChatCard> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => MessagesScreen(
-                      chatterName: myUsername!,
+                      chatterName: chatterUsername!,
                       chatteeName: username,
                     ),
                   ),
