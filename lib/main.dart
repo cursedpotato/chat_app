@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'models/signin_modelview.dart';
-import 'screens/signin/signin.dart';
+import 'screens/signin/signin_screen.dart';
 
 void main() async {
   AwesomeNotifications().initialize(

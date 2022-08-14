@@ -1,16 +1,19 @@
 import 'package:chat_app/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
+import '../screens/home/home_screen.dart';
+
 class AuthMethods {
-  Future signOut() async {
+  Future signOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
   }
 
-  signInWithMail(String mail, String password) async {
+  signInWithMail(String mail, String password, BuildContext context) async {
     final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     UserCredential userCredential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: mail, password: password);
@@ -32,9 +35,17 @@ class AuthMethods {
     DatabaseMethods()
         .addUserInfoToDB(userDetails.uid, userInfoMap)
         .then((value) {});
+
+    // ignore: use_build_context_synchronously
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HomeScreen(),
+      ),
+    );
   }
 
-  signInWithGoogle() async {
+  signInWithGoogle(BuildContext context) async {
     final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
@@ -61,6 +72,14 @@ class AuthMethods {
     DatabaseMethods()
         .addUserInfoToDB(userDetails.uid, userInfoMap)
         .then((value) {});
+
+    // ignore: use_build_context_synchronously
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HomeScreen(),
+      ),
+    );
   }
 
   Future<UserCredential> signInWithFacebook() async {

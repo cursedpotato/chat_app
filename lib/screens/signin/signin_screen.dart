@@ -8,19 +8,14 @@ import 'package:provider/provider.dart';
 import '../../models/signin_modelview.dart';
 import 'wave_widget.dart';
 
-
-
 class SignIn extends HookWidget {
   const SignIn({Key? key}) : super(key: key);
-
 
   @override
   Widget build(BuildContext context) {
     final model = Provider.of<SingInModel>(context);
     final bool keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     final size = MediaQuery.of(context).size;
-
-    
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -76,7 +71,7 @@ class SignIn extends HookWidget {
             title: "Sign in",
             onTap: () {
               AuthMethods().signInWithMail(
-                  emailController.text, passwordController.text);
+                  emailController.text, passwordController.text, context);
             },
           ),
           const SizedBox(height: 20.0),
@@ -86,7 +81,7 @@ class SignIn extends HookWidget {
                 color: const Color.fromRGBO(219, 68, 55, 1),
                 title: "Google",
                 onTap: () {
-                  AuthMethods().signInWithGoogle();
+                  AuthMethods().signInWithGoogle(context);
                 },
               ),
               const SizedBox(

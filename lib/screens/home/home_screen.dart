@@ -3,7 +3,7 @@ import 'package:chat_app/screens/calls_screen.dart';
 import 'package:chat_app/screens/home/home_body.dart';
 import 'package:chat_app/screens/people_screen.dart';
 import 'package:chat_app/screens/profile_screen.dart';
-import 'package:chat_app/screens/signin/signin.dart';
+import 'package:chat_app/screens/signin/signin_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
@@ -24,6 +24,8 @@ class HomeScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final String? profilePicUrl = FirebaseAuth.instance.currentUser?.photoURL;
+    String noImage =
+        'https://secure.gravatar.com/avatar/ef9463e636b415ee041791a6a3764104?s=250&d=mm&r=g';
     final selectedIndex = useState(0);
     return Scaffold(
       appBar: buildAppBar(context),
@@ -45,7 +47,7 @@ class HomeScreen extends HookWidget {
           BottomNavigationBarItem(
               icon: CircleAvatar(
                 radius: 14,
-                backgroundImage: NetworkImage(profilePicUrl!),
+                backgroundImage: NetworkImage(profilePicUrl ?? noImage),
               ),
               label: "Profile")
         ],
@@ -60,7 +62,7 @@ class HomeScreen extends HookWidget {
       actions: [
         InkWell(
           onTap: () {
-            AuthMethods().signOut().then(
+            AuthMethods().signOut(context).then(
                   (value) => Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
