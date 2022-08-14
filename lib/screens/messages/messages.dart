@@ -35,7 +35,7 @@ class MessagesScreen extends HookWidget {
 
     Stream<QuerySnapshot>? messagesStream = useFuture(future).data;
 
-    
+
     return Scaffold(
       appBar: buildAppBar(),
       body: StreamBuilder(
@@ -45,6 +45,7 @@ class MessagesScreen extends HookWidget {
           if (hasData) {
             return Body(
               querySnapshot: snapshot.data!.docs,
+              chatteName: chatteeName,
             );
           }
           return const Center(

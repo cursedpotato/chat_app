@@ -8,11 +8,11 @@ import 'package:chat_app/screens/messages/video_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
+import '../../services/database.dart';
 import 'audio_message.dart';
 import 'dot_indicator.dart';
-
-
 
 List demeChatMessages = [
   ChatMessage(
@@ -59,14 +59,18 @@ List demeChatMessages = [
   ),
 ];
 
-class Body extends StatelessWidget {
+class Body extends HookWidget {
   final List<QueryDocumentSnapshot> querySnapshot;
-  const Body({Key? key, required this.querySnapshot}) : super(key: key);
-
+  // TODO: eliminate this middleman with provider
+  final String chatteName;
+  const Body({
+    Key? key,
+    required this.querySnapshot,
+    required this.chatteName,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    
     return Column(
       children: [
         Expanded(
@@ -78,6 +82,7 @@ class Body extends StatelessWidget {
                 var blahblah = querySnapshot[index].data();
                 print("This is the data I need ya donke $blahblah");
                 return Message(
+                  chatteeName: chatteName,
                   message: demeChatMessages[index],
                 );
               },
@@ -90,13 +95,14 @@ class Body extends StatelessWidget {
   }
 }
 
-class Message extends StatelessWidget {
+class Message extends HookWidget {
+  final ChatMessage message;
+  final String chatteeName;
   const Message({
     Key? key,
     required this.message,
+    required this.chatteeName,
   }) : super(key: key);
-
-  final ChatMessage message;
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +119,15 @@ class Message extends StatelessWidget {
       }
     }
 
+    final chatteFuture =
+        useMemoized(() => DatabaseMethods().getUserInfo(chatteeName));
+
+    QuerySnapshot? chatteData = useFuture(chatteFuture).data;
+
+    String? chattePfp = chatteData?.docs[0]["imgUrl"];
+    String noUser =
+        "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
+
     return Padding(
       padding: const EdgeInsets.only(top: kDefaultPadding),
       child: Row(
@@ -121,11 +136,11 @@ class Message extends StatelessWidget {
         children: [
           if (!message.isSender) ...[
             Container(
-              margin: const EdgeInsets.only(right: kDefaultPadding / 2, top: 20),
-              child: const CircleAvatar(
+              margin:
+                  const EdgeInsets.only(right: kDefaultPadding / 2, top: 20),
+              child: CircleAvatar(
                 radius: 12,
-                backgroundImage: NetworkImage(
-                    "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"),
+                backgroundImage: NetworkImage(chattePfp ?? noUser),
               ),
             )
           ],
