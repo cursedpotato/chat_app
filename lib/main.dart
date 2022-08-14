@@ -1,5 +1,4 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:chat_app/modelview/signin_modelview.dart';
 import 'package:chat_app/screens/home/home_screen.dart';
 
 import 'package:chat_app/theme.dart';
@@ -9,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'models/signin_modelview.dart';
 import 'screens/signin/signin.dart';
 
 void main() async {

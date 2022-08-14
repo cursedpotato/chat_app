@@ -1,10 +1,10 @@
-import 'package:chat_app/modelview/signin_modelview.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/screens/signin/button_widget.dart';
 import 'package:chat_app/screens/signin/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/signin_modelview.dart';
 import 'wave_widget.dart';
 
 class SignIn extends StatefulWidget {

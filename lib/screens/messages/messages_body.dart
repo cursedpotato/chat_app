@@ -1,7 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:chat_app/globals.dart';
-import 'package:chat_app/modelview/message_model.dart';
+import 'package:chat_app/models/message_model.dart';
 import 'package:chat_app/screens/messages/chat_input_field.dart';
 import 'package:chat_app/screens/messages/text_message.dart';
 import 'package:chat_app/screens/messages/video_widget.dart';

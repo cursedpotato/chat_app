@@ -1,4 +1,4 @@
-import 'package:chat_app/modelview/message_model.dart';
+import 'package:chat_app/models/message_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../globals.dart';

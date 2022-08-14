@@ -1,7 +1,8 @@
 import 'package:chat_app/globals.dart';
-import 'package:chat_app/modelview/signin_modelview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../models/signin_modelview.dart';
 
 class TextFieldWidget extends StatelessWidget {
   final String hintText;
