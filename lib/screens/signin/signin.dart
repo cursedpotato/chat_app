@@ -2,33 +2,25 @@ import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/screens/signin/button_widget.dart';
 import 'package:chat_app/screens/signin/textfield_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/signin_modelview.dart';
 import 'wave_widget.dart';
 
-class SignIn extends StatefulWidget {
+
+
+class SignIn extends HookWidget {
   const SignIn({Key? key}) : super(key: key);
 
-  @override
-  State<SignIn> createState() => _SignInState();
-}
-
-class _SignInState extends State<SignIn> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final model = Provider.of<SingInModel>(context);
     final bool keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     final size = MediaQuery.of(context).size;
+
+    
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -55,6 +47,8 @@ class _SignInState extends State<SignIn> {
   }
 
   Widget _loginBox(SingInModel model, BuildContext context) {
+    final emailController = useTextEditingController();
+    final passwordController = useTextEditingController();
     return Padding(
       padding: const EdgeInsets.all(30.0),
       child: Column(
@@ -63,14 +57,14 @@ class _SignInState extends State<SignIn> {
           TextFieldWidget(
             hintText: "Email",
             suffixIconData: model.isValid ? Icons.check : null,
-            controller: _emailController,
+            controller: emailController,
             prefixIconData: Icons.mail_outline,
             obscureText: false,
           ),
           const SizedBox(height: 10.0),
           TextFieldWidget(
             hintText: "Password",
-            controller: _passwordController,
+            controller: passwordController,
             prefixIconData: Icons.lock_outline,
             obscureText: model.isVisible ? false : true,
             suffixIconData:
@@ -82,7 +76,7 @@ class _SignInState extends State<SignIn> {
             title: "Sign in",
             onTap: () {
               AuthMethods().signInWithMail(
-                  _emailController.text, _passwordController.text);
+                  emailController.text, passwordController.text);
             },
           ),
           const SizedBox(height: 20.0),
