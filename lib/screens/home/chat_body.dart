@@ -5,34 +5,23 @@ import 'package:chat_app/widgets/filledout_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class Body extends StatefulWidget {
+class Body extends HookWidget {
   const Body({Key? key}) : super(key: key);
 
   @override
-  State<Body> createState() => _BodyState();
-}
-
-class _BodyState extends State<Body> {
-  Stream<QuerySnapshot>? chatRoomsStream;
-
-  // This variable was created to filter chatroom stream data and toggle buttons
-  bool isActive = false;
-
-  getChatRooms() async {
-    chatRoomsStream = await DatabaseMethods().getChatRooms();
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    getChatRooms();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    var future = useMemoized(() => DatabaseMethods().getChatRooms());
+
+    Stream<QuerySnapshot>? chatroomStream = useFuture(future).data;
+
+    // This variable was created to filter chatroom stream data and toggle buttons
+
+    ValueNotifier<bool> isActive = useValueNotifier(false);
+
+    // TODO: implement use state for is active var
     return Column(
       children: [
         Container(
@@ -43,28 +32,29 @@ class _BodyState extends State<Body> {
             kDefaultPadding,
           ),
           color: kPrimaryColor,
-          child: Row(
-            children: [
-              FillOutlineButton(
-                press: () => setState(() {
-                  isActive = !isActive;
-                }),
-                text: "Recent Messages",
-                isFilled: !isActive,
-              ),
-              const SizedBox(width: kDefaultPadding),
-              FillOutlineButton(
-                press: () => setState(() {
-                  isActive = !isActive;
-                }),
-                text: "Active",
-                isFilled: isActive,
-              ),
-            ],
+          child: HookBuilder(
+            builder: (_) {
+              bool toggle = useValueListenable(isActive);
+              return Row(
+                children: [
+                  FillOutlineButton(
+                    press: () => isActive.value = !isActive.value,
+                    text: "Recent Messages",
+                    isFilled: !toggle,
+                  ),
+                  const SizedBox(width: kDefaultPadding),
+                  FillOutlineButton(
+                    press: () => isActive.value = !isActive.value,
+                    text: "Active",
+                    isFilled: toggle,
+                  ),
+                ],
+              );
+            },
           ),
         ),
         StreamBuilder(
-          stream: chatRoomsStream,
+          stream: chatroomStream,
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             bool isWaiting =

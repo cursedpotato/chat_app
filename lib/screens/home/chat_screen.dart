@@ -9,15 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class HomeScreen extends HookWidget {
-  
-  final List<Widget> screenList = const [
+  const HomeScreen({Key? key}) : super(key: key);
+
+  final List<Widget> screenList = const  [
     Body(),
     CallScreen(),
     PeopleScreen(),
     ProfileScreen(),
   ];
-
-  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +54,6 @@ class HomeScreen extends HookWidget {
     return AppBar(
       automaticallyImplyLeading: true,
       title: const Text("Chats"),
-      
     );
   }
 }
