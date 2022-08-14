@@ -80,7 +80,8 @@ class Body extends HookWidget {
               itemCount: demeChatMessages.length,
               itemBuilder: (BuildContext context, int index) {
                 var blahblah = querySnapshot[index].data();
-                print("This is the data I need ya donke $blahblah");
+                // TODO: remove this print when its not necessary
+                debugPrint("This is the data I need ya donke $blahblah");
                 return Message(
                   chatteeName: chatteName,
                   message: demeChatMessages[index],

@@ -1,3 +1,4 @@
+import 'package:chat_app/globals.dart';
 import 'package:chat_app/modelview/signin_modelview.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +15,7 @@ class TextFieldWidget extends StatelessWidget {
     Key? key,
     required this.hintText,
     required this.prefixIconData,
-    this.onChanged, 
+    this.onChanged,
     required this.controller,
     this.suffixIconData,
     required this.obscureText,
@@ -28,18 +29,15 @@ class TextFieldWidget extends StatelessWidget {
       onChanged: onChanged,
       obscureText: obscureText,
       style: const TextStyle(
-        // TODO: Assign color theme
-        color: Color(0xFF087949),
+        color: khighlightColor,
         fontSize: 14,
       ),
       decoration: InputDecoration(
-        
         labelText: hintText,
         icon: Icon(
           prefixIconData,
           size: 18,
-          // TODO: Assign color theme
-          color: const Color(0xFF087949),
+          color: khighlightColor,
         ),
         filled: true,
         enabledBorder: UnderlineInputBorder(
@@ -57,13 +55,11 @@ class TextFieldWidget extends StatelessWidget {
           child: Icon(
             suffixIconData,
             size: 18,
-            // TODO: Assign color theme
-            color: const Color(0xFF087949),
+            color: khighlightColor,
           ),
         ),
-        // TODO: Assign color theme
-        labelStyle: const TextStyle(color: Color(0xFF087949)),
-        focusColor: const Color(0xFF087949),
+        labelStyle: const TextStyle(color: khighlightColor),
+        focusColor: khighlightColor,
       ),
     );
   }

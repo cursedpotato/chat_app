@@ -34,7 +34,6 @@ class ButtonWidget extends StatelessWidget {
                 child: Text(
                   title,
                   style: const TextStyle(
-                    // TODO: Assign color theme
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                     fontSize: 16.0
