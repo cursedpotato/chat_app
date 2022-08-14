@@ -5,5 +5,7 @@ Capychat is an application that allows its users to exchange messages, audio fil
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is created with the MVC architecture, you can find the Models in the models file, you can see the Views in the screens file, and you can use the Controllers in the services file.
+
+
 
