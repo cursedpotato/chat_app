@@ -19,7 +19,7 @@ class Body extends HookWidget {
 
     // This variable was created to filter chatroom stream data and toggle buttons
 
-    ValueNotifier isActive = useState(false);
+    ValueNotifier<bool> isActive = useState(false);
     return Column(
       children: [
         Container(
@@ -50,7 +50,8 @@ class Body extends HookWidget {
           stream: chatroomStream,
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            bool isWaiting = snapshot.connectionState == ConnectionState.waiting;
+            bool isWaiting =
+                snapshot.connectionState == ConnectionState.waiting;
             if (isWaiting) {
               return const LinearProgressIndicator();
             }
@@ -91,7 +92,7 @@ class Body extends HookWidget {
   }
 }
 
-class ChatCard extends StatefulWidget {
+class ChatCard extends StatelessWidget {
   final DocumentSnapshot documentSnapshot;
   const ChatCard({
     Key? key,
@@ -99,51 +100,42 @@ class ChatCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ChatCard> createState() => _ChatCardState();
-}
-
-class _ChatCardState extends State<ChatCard> {
-  // This variables are used on the future builder to fill data into the card itself
-  String profilePicUrl = "",
-      name = "",
-      username = "",
-      lastMessage = "",
-      date = "";
-
-  /* This variable is used to exclude the chatter name from a document id 
-  (the chat document id is formed as a combination between the chatte and chatter username) 
-  to get the chatte name and fetch the chatte info from a method
-  */
-  final String? chatterUsername =
-      FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
-
-  Future<QuerySnapshot> getThisUserInfo() async {
-    username = widget.documentSnapshot.id
-        .replaceAll(chatterUsername!, "")
-        .replaceAll("_", "");
-    return await DatabaseMethods().getUserInfo(username);
-  }
-
-  /* The idea of this variable was to check if the chatte is active but
-  I don't have a clear idea of how to implement it yet, I might create a provider  */
-  // DateTime fiveMinAgo = DateTime.now().subtract(const Duration(minutes: 5));
-
-  @override
   Widget build(BuildContext context) {
+    // This variables are used on the future builder to fill data into the card itself
+    String profilePicUrl = "",
+        name = "",
+        username = "",
+        lastMessage = "",
+        date = "";
+
+    /* This variable is used to exclude the chatter name from a document id 
+    (the chat document id is formed as a combination between the chatte and chatter username) 
+    to get the chatte name and fetch the chatte info from a method
+    */
+    String? chatterUsername =
+        FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
+
+    Future<QuerySnapshot> getThisUserInfo() async {
+      username = documentSnapshot.id
+          .replaceAll(chatterUsername!, "")
+          .replaceAll("_", "");
+      return await DatabaseMethods().getUserInfo(username);
+    }
+
+    /* The idea of this variable was to check if the chatte is active but
+    I don't have a clear idea of how to implement it yet, I might create a provider  */
+    // DateTime fiveMinAgo = DateTime.now().subtract(const Duration(minutes: 5));
     return FutureBuilder(
         future: getThisUserInfo(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          bool hasData = snapshot.hasData &&
-                  snapshot.connectionState == ConnectionState.active ||
-              snapshot.connectionState == ConnectionState.done;
+          bool hasData = snapshot.hasData;
           if (hasData) {
             profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
             name = snapshot.data!.docs[0]["name"];
             username = snapshot.data!.docs[0]['username'];
-            lastMessage = widget.documentSnapshot["lastMessage"];
+            lastMessage = documentSnapshot["lastMessage"];
             DateTime dt =
-                (widget.documentSnapshot['lastMessageSendTs'] as Timestamp)
-                    .toDate();
+                (documentSnapshot['lastMessageSendTs'] as Timestamp).toDate();
             date = timeago.format(dt);
 
             return GestureDetector(

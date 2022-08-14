@@ -4,8 +4,9 @@ import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
-class MessagesScreen extends StatefulWidget {
+class MessagesScreen extends HookWidget {
   final String chatterName;
   final String chatteeName;
   const MessagesScreen({
@@ -15,46 +16,26 @@ class MessagesScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<MessagesScreen> createState() => _MessagesScreenState();
-}
-
-class _MessagesScreenState extends State<MessagesScreen> {
-  Stream<QuerySnapshot>? messagesStream;
-
-  QuerySnapshot? chatteeInfo;
-
-  // we will use getChatRoomMessages method to get the messages stream, this stream will user
-  getChatRoomIdByUsernames(String a, String b) {
-    if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
-      // ignore: unnecessary_string_escapes
-      return "$b\_$a";
-    } else {
-      // ignore: unnecessary_string_escapes
-      return "$a\_$b";
-    }
-  }
-
-  Future<QuerySnapshot> getUserInfo() async {
-    return chatteeInfo =
-        await DatabaseMethods().getUserInfo(widget.chatteeName);
-  }
-
-  toExecute() async {
-    final chatroomId =
-        getChatRoomIdByUsernames(widget.chatteeName, widget.chatterName);
-    getUserInfo();
-    messagesStream = await DatabaseMethods().getChatRoomMessages(chatroomId);
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    toExecute();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // we will use getChatRoomMessages method to get the messages stream, this stream will user
+    getChatRoomIdByUsernames(String a, String b) {
+      if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+        // ignore: unnecessary_string_escapes
+        return "$b\_$a";
+      } else {
+        // ignore: unnecessary_string_escapes
+        return "$a\_$b";
+      }
+    }
+
+    final chatroomId = getChatRoomIdByUsernames(chatteeName, chatterName);
+
+    final future =
+        useMemoized((() => DatabaseMethods().getChatRoomMessages(chatroomId)));
+
+    Stream<QuerySnapshot>? messagesStream = useFuture(future).data;
+
+    
     return Scaffold(
       appBar: buildAppBar(),
       body: StreamBuilder(
@@ -75,32 +56,32 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   AppBar buildAppBar() {
+    final chatteFuture =
+        useMemoized(() => DatabaseMethods().getUserInfo(chatteeName));
+
+    QuerySnapshot? chatteData = useFuture(chatteFuture).data;
+
+    String? chattePfp = chatteData?.docs[0]["imgUrl"];
+    String noUser =
+        "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
+
     return AppBar(
       title: Row(
         children: [
-          FutureBuilder(
-            future: getUserInfo(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              String? chattePfp = snapshot.data?.docs[0]["imgUrl"];
-              String noUser =
-                  "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
-              return ClipOval(
-                child: Image.network(
-                  chattePfp ?? noUser,
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.cover,
-                ),
-              );
-            },
+          ClipOval(
+            child: Image.network(
+              chattePfp ?? noUser,
+              width: 40,
+              height: 40,
+              fit: BoxFit.cover,
+            ),
           ),
           const SizedBox(width: kDefaultPadding * 0.75),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.chatteeName,
+                chatteeName,
                 style: const TextStyle(fontSize: 16),
               ),
               // TODO: implement conditional to see if user was active
