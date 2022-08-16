@@ -8,7 +8,7 @@ class DatabaseMethods {
     FirebaseFirestore.instance
         .collection("users")
         .doc(userId)
-        .update({"userAppTs": DateTime.now()});
+        .update({"userActivityTs": DateTime.now()});
   }
 
   Future addUserInfoToDB(
