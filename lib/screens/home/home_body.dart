@@ -17,6 +17,13 @@ class Body extends HookWidget {
 
     Stream<QuerySnapshot>? chatroomStream = useFuture(future).data;
 
+    useEffect(
+      () {
+        DatabaseMethods().updateUserTs();
+        return;
+      },
+    );
+
     // This variable was created to filter chatroom stream data and toggle buttons
 
     ValueNotifier<bool> isActive = useState(false);
@@ -29,7 +36,8 @@ class Body extends HookWidget {
             kDefaultPadding,
             kDefaultPadding,
           ),
-          color: kPrimaryColor,
+          // Dark theme does weird thing
+          // color: kPrimaryColor,
           child: Row(
             children: [
               FillOutlineButton(
@@ -59,6 +67,7 @@ class Body extends HookWidget {
             bool isRecent = snapshot.hasData && !isActive.value;
             if (isRecent) {
               // TODO: Add conditional that filters if users are active or not
+              /* Idea: create a var in firebase that updates everytime the user enters*/
               List<DocumentSnapshot> documentList = snapshot.data!.docs;
               return chatroomLb(documentList);
             }
@@ -106,7 +115,8 @@ class ChatCard extends StatelessWidget {
         name = "",
         username = "",
         lastMessage = "",
-        date = "";
+        lastMessageTs = "",
+        lastSeen;
 
     /* This variable is used to exclude the chatter name from a document id 
     (the chat document id is formed as a combination between the chatte and chatter username) 
@@ -130,13 +140,20 @@ class ChatCard extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           bool hasData = snapshot.hasData;
           if (hasData) {
+            // TODO: create a model for this whole mess
+            DateTime formatLastM =
+                (documentSnapshot['lastMessageSendTs'] as Timestamp).toDate();
+            DateTime formatLastS =
+                (snapshot.data!.docs[0]["userAppTs"] as Timestamp).toDate();
+            DateTime fiveMinAgo =
+                DateTime.now().subtract(const Duration(hours: 1));
+            bool isActive = fiveMinAgo.isAfter(formatLastS);
             profilePicUrl = snapshot.data!.docs[0]["imgUrl"];
             name = snapshot.data!.docs[0]["name"];
             username = snapshot.data!.docs[0]['username'];
             lastMessage = documentSnapshot["lastMessage"];
-            DateTime dt =
-                (documentSnapshot['lastMessageSendTs'] as Timestamp).toDate();
-            date = timeago.format(dt);
+            lastMessageTs = timeago.format(formatLastM);
+            lastSeen = timeago.format(formatLastS);
 
             return GestureDetector(
               onTap: () {
@@ -146,6 +163,7 @@ class ChatCard extends StatelessWidget {
                     builder: (context) => MessagesScreen(
                       chatterName: chatterUsername!,
                       chatteeName: username,
+                      lastSeen: lastSeen,
                     ),
                   ),
                 );
@@ -162,24 +180,8 @@ class ChatCard extends StatelessWidget {
                           radius: 24,
                           backgroundImage: NetworkImage(profilePicUrl),
                         ),
-                        // TODO: add conditional to check if user is active
 
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: Container(
-                            height: 16,
-                            width: 16,
-                            decoration: BoxDecoration(
-                              color: kPrimaryColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                              ),
-                            ),
-                          ),
-                        ),
+                        isActive ? activityDot(context) : const SizedBox(),
                       ],
                     ),
                     Expanded(
@@ -209,7 +211,7 @@ class ChatCard extends StatelessWidget {
                     ),
                     Opacity(
                       opacity: 0.64,
-                      child: Text(date),
+                      child: Text(lastMessageTs),
                     )
                   ],
                 ),
@@ -219,5 +221,23 @@ class ChatCard extends StatelessWidget {
 
           return const LinearProgressIndicator();
         });
+  }
+
+  Positioned activityDot(BuildContext context) {
+    return Positioned(
+      right: 0,
+      bottom: 0,
+      child: Container(
+        height: 16,
+        width: 16,
+        decoration: BoxDecoration(
+          color: kPrimaryColor,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Theme.of(context).scaffoldBackgroundColor,
+          ),
+        ),
+      ),
+    );
   }
 }

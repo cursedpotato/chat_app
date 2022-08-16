@@ -1,10 +1,16 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-
 class DatabaseMethods {
+  updateUserTs() {
+    // We need the userId to access the document
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(userId)
+        .update({"userAppTs": DateTime.now()});
+  }
+
   Future addUserInfoToDB(
       String userId, Map<String, dynamic> userInfoMap) async {
     return FirebaseFirestore.instance
@@ -30,14 +36,16 @@ class DatabaseMethods {
         .set(messageInfoMap);
   }
 
-  updateLastMessageSend(String chatRoomId, Map<String, dynamic> lastMessageInfoMap) {
+  updateLastMessageSend(
+      String chatRoomId, Map<String, dynamic> lastMessageInfoMap) {
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatRoomId)
         .update(lastMessageInfoMap);
   }
 
-  createChatRoom(String chatRoomId, Map<String, dynamic> chatRoomInfoMap) async {
+  createChatRoom(
+      String chatRoomId, Map<String, dynamic> chatRoomInfoMap) async {
     final snapShot = await FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatRoomId)
@@ -65,8 +73,8 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
-
-    String? myUsername = FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
+    String? myUsername =
+        FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .orderBy("lastMessageSendTs", descending: true)

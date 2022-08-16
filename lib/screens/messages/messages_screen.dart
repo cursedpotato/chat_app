@@ -9,10 +9,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 class MessagesScreen extends HookWidget {
   final String chatterName;
   final String chatteeName;
+  final String lastSeen;
   const MessagesScreen({
     Key? key,
     required this.chatterName,
     required this.chatteeName,
+    required this.lastSeen,
   }) : super(key: key);
 
   @override
@@ -34,7 +36,6 @@ class MessagesScreen extends HookWidget {
         useMemoized((() => DatabaseMethods().getChatRoomMessages(chatroomId)));
 
     Stream<QuerySnapshot>? messagesStream = useFuture(future).data;
-
 
     return Scaffold(
       appBar: buildAppBar(),
@@ -65,7 +66,7 @@ class MessagesScreen extends HookWidget {
     String? chattePfp = chatteData?.docs[0]["imgUrl"];
     String noUser =
         "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
-
+    // TODO: fix overflow problems
     return AppBar(
       title: Row(
         children: [
@@ -83,12 +84,12 @@ class MessagesScreen extends HookWidget {
             children: [
               Text(
                 chatteeName,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 16),
               ),
-              // TODO: implement conditional to see if user was active
-              const Text(
-                "Active 3 minutes ago",
-                style: TextStyle(fontSize: 12),
+              Text(
+                "Active $lastSeen",
+                style: const TextStyle(fontSize: 12),
               ),
             ],
           )
