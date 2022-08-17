@@ -4,19 +4,22 @@ class chatroomModel {
   String? lastMessage;
   String? lastMessageSendBy;
   Timestamp? lastMessageSendTs;
+  DateTime? lastMessageSendDate;
   List<String>? users;
 
   chatroomModel(
       {this.lastMessage,
       this.lastMessageSendBy,
       this.lastMessageSendTs,
+      this.lastMessageSendDate,
       this.users});
 
-  chatroomModel.fromJson(Map<String, dynamic> json) {
-    lastMessage = json['lastMessage'];
-    lastMessageSendBy = json['lastMessageSendBy'];
-    lastMessageSendTs = json['lastMessageSendTs'];
-    users = json['users'].cast<String>();
+  chatroomModel.fromDocument(DocumentSnapshot document) {
+    lastMessage = document['lastMessage'];
+    lastMessageSendBy = document['lastMessageSendBy'];
+    lastMessageSendTs = document['lastMessageSendTs'];
+    lastMessageSendDate = (document['lastMessageSendTs'] as Timestamp).toDate();
+    users = document['users'].cast<String>();
   }
 
   // Map<String, dynamic> toJson() {
