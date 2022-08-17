@@ -1,20 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class chatroomModel {
+class ChatroomModel {
   String? lastMessage;
   String? lastMessageSendBy;
   Timestamp? lastMessageSendTs;
   DateTime? lastMessageSendDate;
   List<String>? users;
 
-  chatroomModel(
+  ChatroomModel(
       {this.lastMessage,
       this.lastMessageSendBy,
       this.lastMessageSendTs,
       this.lastMessageSendDate,
       this.users});
 
-  chatroomModel.fromDocument(DocumentSnapshot document) {
+  ChatroomModel.fromDocument(DocumentSnapshot document) {
     lastMessage = document['lastMessage'];
     lastMessageSendBy = document['lastMessageSendBy'];
     lastMessageSendTs = document['lastMessageSendTs'];
