@@ -1,4 +1,3 @@
-// ignore_for_file: constant_identifier_names
 
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/message_model.dart';
@@ -14,55 +13,9 @@ import '../../services/database.dart';
 import 'audio_message.dart';
 import 'dot_indicator.dart';
 
-List demeChatMessages = [
-  ChatMessage(
-    message
-    : "Hi Sajol,",
-    messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.viewed,
-    isSender: false,
-  ),
-  ChatMessage(
-    message: "Hello, How are you?",
-    messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.viewed,
-    isSender: true,
-  ),
-  ChatMessage(
-    message: "",
-    messageType: ChatMessageType.audio,
-    messageStatus: MessageStatus.viewed,
-    isSender: false,
-  ),
-  ChatMessage(
-    message: "",
-    messageType: ChatMessageType.video,
-    messageStatus: MessageStatus.viewed,
-    isSender: true,
-  ),
-  ChatMessage(
-    message: "Error happend",
-    messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.notSent,
-    isSender: true,
-  ),
-  ChatMessage(
-    message: "This looks great man!!",
-    messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.viewed,
-    isSender: false,
-  ),
-  ChatMessage(
-    message: "Glad you like it",
-    messageType: ChatMessageType.text,
-    messageStatus: MessageStatus.notViewed,
-    isSender: true,
-  ),
-];
 
 class Body extends HookWidget {
   final List<QueryDocumentSnapshot> querySnapshot;
-  // TODO: eliminate this middleman with provider
   final String chatteName;
   const Body({
     Key? key,
@@ -78,14 +31,13 @@ class Body extends HookWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
             child: ListView.builder(
-              itemCount: demeChatMessages.length,
+              itemCount: querySnapshot.length,
               itemBuilder: (BuildContext context, int index) {
-                var blahblah = querySnapshot[index].data();
-                // TODO: remove this print when its not necessary
-                debugPrint("This is the data I need ya donke $blahblah");
+                ChatMesssageModel model =
+                    ChatMesssageModel.fromDocument(querySnapshot[index]);
                 return Message(
                   chatteeName: chatteName,
-                  message: demeChatMessages[index],
+                  message: model,
                 );
               },
             ),
@@ -98,7 +50,7 @@ class Body extends HookWidget {
 }
 
 class Message extends HookWidget {
-  final ChatMessage message;
+  final ChatMesssageModel message;
   final String chatteeName;
   const Message({
     Key? key,
@@ -108,7 +60,7 @@ class Message extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget messageContent(ChatMessage message) {
+    Widget messageContent(ChatMesssageModel message) {
       switch (message.messageType) {
         case ChatMessageType.text:
           return TextMessage(message: message);
@@ -134,9 +86,9 @@ class Message extends HookWidget {
       padding: const EdgeInsets.only(top: kDefaultPadding),
       child: Row(
         mainAxisAlignment:
-            message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
+            message.isSender! ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          if (!message.isSender) ...[
+          if (!message.isSender!) ...[
             Container(
               margin:
                   const EdgeInsets.only(right: kDefaultPadding / 2, top: 20),
@@ -147,9 +99,9 @@ class Message extends HookWidget {
             )
           ],
           messageContent(message),
-          if (message.isSender)
+          if (message.isSender!)
             MessageStatusDot(
-              status: message.messageStatus,
+              status: message.messageStatus!,
             ),
         ],
       ),

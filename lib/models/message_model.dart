@@ -47,13 +47,15 @@ class ChatMesssageModel {
     String? myUsername =
         FirebaseAuth.instance.currentUser?.email?.replaceAll("@gmail.com", "");
     message = document['message'];
-    messageType = whatType(document['type']);
-    // messageStatus = document['messageStatus'];
+    // messageType = whatType(document['type']);
+    // TODO: add message type to firebase   
+    messageType = ChatMessageType.text;
+    // TODO: Find a way to show a message status
     messageStatus = MessageStatus.viewed;
     isSender = myUsername == document['sendBy'];
-    pfpUrl = document['pfpUrl'];
+    pfpUrl = document['imgUrl'];
     sendBy = document['sendBy'];
-    timestamp = document['timestamp'];
+    timestamp = document['ts'];
   }
 
   // Map<String, dynamic> toJson() {
@@ -67,19 +69,4 @@ class ChatMesssageModel {
   //   data['timestamp'] = this.timestamp;
   //   return data;
   // }
-}
-
-class ChatMessage {
-  final String message;
-  final ChatMessageType messageType;
-  final MessageStatus messageStatus;
-  // username is same as firebase auth current user
-  final bool isSender;
-
-  ChatMessage({
-    this.message = '',
-    required this.messageType,
-    required this.messageStatus,
-    required this.isSender,
-  });
 }

@@ -23,12 +23,12 @@ class AuthMethods {
 
     String noImage =
         'https://secure.gravatar.com/avatar/ef9463e636b415ee041791a6a3764104?s=250&d=mm&r=g';
+    String? email = userDetails!.email;
+    String? username = email!.substring(0, email.indexOf('@'));
     Map<String, dynamic> userInfoMap = {
-      "email": userDetails!.email,
-      // TODO: replace everything after @ not just gmail
-      "username": userDetails.email!.replaceAll("@gmail.com", ""),
-      "name": userDetails.displayName ??
-          userDetails.email!.replaceAll("@gmail.com", ""),
+      "email": email,
+      "username": username,
+      "name": userDetails.displayName ?? username,
       "imgUrl": userDetails.photoURL ?? noImage,
     };
 

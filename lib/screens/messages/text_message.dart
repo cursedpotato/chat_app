@@ -9,7 +9,7 @@ class TextMessage extends StatelessWidget {
     required this.message,
   }) : super(key: key);
 
-  final ChatMessage message;
+  final ChatMesssageModel message;
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +20,13 @@ class TextMessage extends StatelessWidget {
         vertical: kDefaultPadding / 2,
       ),
       decoration: BoxDecoration(
-        color: kPrimaryColor.withOpacity(message.isSender ? 1 : 0.1),
+        color: kPrimaryColor.withOpacity(message.isSender! ? 1 : 0.1),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Text(
-        message.message,
+        message.message!,
         style: TextStyle(
-          color: message.isSender
+          color: message.isSender!
               ? Colors.white
               : Theme.of(context).textTheme.bodyText1?.color,
         ),
