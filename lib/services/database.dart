@@ -74,13 +74,12 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
-<<<<<<< HEAD
+
     // TODO: assign global variable
 
     String? myUsername =
         FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
-=======
->>>>>>> 854697bfc246f0c6e8eb179171e1a48a6b8860e0
+
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .orderBy("lastMessageSendTs", descending: true)
