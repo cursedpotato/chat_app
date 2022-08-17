@@ -12,4 +12,8 @@ const kErrorColor = Color(0xFFF03738);
 const kDefaultPadding = 20.0;
 
 String? email = FirebaseAuth.instance.currentUser?.email;
+<<<<<<< HEAD
 String? chatterUsername = email!.substring(0, email?.indexOf('@'));
+=======
+String chatterUsername = email!.substring(0, email!.indexOf('@'));
+>>>>>>> 854697bfc246f0c6e8eb179171e1a48a6b8860e0
