@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 const khighlightColor = Color(0xFF087949);
@@ -9,3 +10,6 @@ const kWarninngColor = Color(0xFFF3BB1C);
 const kErrorColor = Color(0xFFF03738);
 
 const kDefaultPadding = 20.0;
+
+String? email = FirebaseAuth.instance.currentUser?.email;
+String chatterUsername = email!.substring(0, email!.indexOf('@'));
