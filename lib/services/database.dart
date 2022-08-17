@@ -73,6 +73,8 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
+    // TODO: assign global variable
+
     String? myUsername =
         FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
     return FirebaseFirestore.instance

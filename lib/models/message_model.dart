@@ -44,6 +44,7 @@ class ChatMesssageModel {
   });
 
   ChatMesssageModel.fromDocument(DocumentSnapshot document) {
+    // TODO: assign global variable 
     String? myUsername =
         FirebaseAuth.instance.currentUser?.email?.replaceAll("@gmail.com", "");
     message = document['message'];
