@@ -111,7 +111,7 @@ class ChatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // This variables are used on the future builder to fill data into the card itself
-    String lastMessage = "", lastMessageTs = "", lastSeen;
+    String lastMessage = "", lastMessageTs = "";
 
     /* This variable is used to exclude the chatter name from a document id 
     (the chat document id is formed as a combination between the chatte and chatter username) 
@@ -132,15 +132,14 @@ class ChatCard extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           bool hasData = snapshot.hasData;
           if (hasData) {
-            UserModel userModel =
-                UserModel.fromDocument(snapshot.data!.docs[0]);
+            DocumentSnapshot document = snapshot.data!.docs[0];
+            UserModel userModel = UserModel.fromDocument(document);
             DateTime formatLastM =
                 (documentSnapshot['lastMessageSendTs'] as Timestamp).toDate();
-            DateTime formatLastS = userModel.userActivityTs!.toDate();
-            final lastSeen = timeago.format(formatLastS);
+            final lastSeen = timeago.format(userModel.lastSeenDate!);
             DateTime fiveMinAgo =
                 DateTime.now().subtract(const Duration(minutes: 5));
-            bool isActive = formatLastS.isAfter(fiveMinAgo);
+            bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
             lastMessage = documentSnapshot["lastMessage"];
             lastMessageTs = timeago.format(formatLastM);
 

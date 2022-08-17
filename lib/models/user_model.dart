@@ -7,7 +7,7 @@ class UserModel {
   String? email;
   String? username;
   Timestamp? userActivityTs;
-
+  DateTime? lastSeenDate;
 
   UserModel({
     this.pfpUrl,
@@ -15,6 +15,7 @@ class UserModel {
     this.email,
     this.username,
     this.userActivityTs,
+    this.lastSeenDate,
   });
 
   UserModel.fromDocument(DocumentSnapshot documentSnapshot) {
@@ -23,6 +24,7 @@ class UserModel {
     email = documentSnapshot['email'];
     username = documentSnapshot['username'];
     userActivityTs = documentSnapshot['userActivityTs'];
+    lastSeenDate = (documentSnapshot['userActivityTs'] as Timestamp).toDate();
   }
 
   // Map<String, dynamic> toJson() {
