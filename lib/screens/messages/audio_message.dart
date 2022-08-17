@@ -1,4 +1,5 @@
 import 'package:chat_app/models/message_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../globals.dart';
@@ -7,8 +8,14 @@ class AudioMessage extends StatelessWidget {
   final ChatMessage message;
   const AudioMessage({Key? key, required this.message}) : super(key: key);
 
+  
+
   @override
   Widget build(BuildContext context) {
+    // TODO: fix quickfix
+    String? myUsername =
+        FirebaseAuth.instance.currentUser?.email?.replaceAll("@gmail.com", "");
+    
     return Container(
       width: MediaQuery.of(context).size.width * 0.55,
       margin: const EdgeInsets.only(top: kDefaultPadding),

@@ -16,43 +16,44 @@ import 'dot_indicator.dart';
 
 List demeChatMessages = [
   ChatMessage(
-    text: "Hi Sajol,",
+    message
+    : "Hi Sajol,",
     messageType: ChatMessageType.text,
     messageStatus: MessageStatus.viewed,
     isSender: false,
   ),
   ChatMessage(
-    text: "Hello, How are you?",
+    message: "Hello, How are you?",
     messageType: ChatMessageType.text,
     messageStatus: MessageStatus.viewed,
     isSender: true,
   ),
   ChatMessage(
-    text: "",
+    message: "",
     messageType: ChatMessageType.audio,
     messageStatus: MessageStatus.viewed,
     isSender: false,
   ),
   ChatMessage(
-    text: "",
+    message: "",
     messageType: ChatMessageType.video,
     messageStatus: MessageStatus.viewed,
     isSender: true,
   ),
   ChatMessage(
-    text: "Error happend",
+    message: "Error happend",
     messageType: ChatMessageType.text,
     messageStatus: MessageStatus.notSent,
     isSender: true,
   ),
   ChatMessage(
-    text: "This looks great man!!",
+    message: "This looks great man!!",
     messageType: ChatMessageType.text,
     messageStatus: MessageStatus.viewed,
     isSender: false,
   ),
   ChatMessage(
-    text: "Glad you like it",
+    message: "Glad you like it",
     messageType: ChatMessageType.text,
     messageStatus: MessageStatus.notViewed,
     isSender: true,

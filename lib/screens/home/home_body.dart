@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-
 class Body extends HookWidget {
   const Body({Key? key}) : super(key: key);
 
@@ -91,11 +90,10 @@ class Body extends HookWidget {
         itemBuilder: (BuildContext context, int index) {
           DocumentSnapshot documentSnapshot = documentList[index];
           return ChatCard(
-            documentSnapshot: documentSnapshot,
+            chatroomDocument: documentSnapshot,
           );
         },
       ),
     );
   }
 }
-

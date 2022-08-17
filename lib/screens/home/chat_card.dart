@@ -1,3 +1,4 @@
+import 'package:chat_app/models/chatroom_model.dart';
 import 'package:chat_app/screens/messages/messages_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,17 +9,15 @@ import '../../models/user_model.dart';
 import '../../services/database.dart';
 
 class ChatCard extends StatelessWidget {
-  final DocumentSnapshot documentSnapshot;
+  final DocumentSnapshot chatroomDocument;
   const ChatCard({
     Key? key,
-    required this.documentSnapshot,
+    required this.chatroomDocument,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // This variables are used on the future builder to fill data into the card itself
-    String lastMessage = "", lastMessageTs = "";
-
     /* This variable is used to exclude the chatter name from a document id 
     (the chat document id is formed as a combination between the chatte and chatter username) 
     to get the chatte name and fetch the chatte info from a method
@@ -27,7 +26,7 @@ class ChatCard extends StatelessWidget {
         FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
 
     Future<QuerySnapshot> getThisUserInfo() async {
-      final username = documentSnapshot.id
+      final username = chatroomDocument.id
           .replaceAll(chatterUsername!, "")
           .replaceAll("_", "");
       return await DatabaseMethods().getUserInfo(username);
@@ -38,16 +37,16 @@ class ChatCard extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           bool hasData = snapshot.hasData;
           if (hasData) {
-            DocumentSnapshot document = snapshot.data!.docs[0];
-            UserModel userModel = UserModel.fromDocument(document);
-            DateTime formatLastM =
-                (documentSnapshot['lastMessageSendTs'] as Timestamp).toDate();
-            final lastSeen = timeago.format(userModel.lastSeenDate!);
+            DocumentSnapshot userDocument = snapshot.data!.docs[0];
+            UserModel userModel = UserModel.fromDocument(userDocument);
+            ChatroomModel chatroomModel =
+                ChatroomModel.fromDocument(chatroomDocument);
+            String lastMessage =
+                timeago.format(chatroomModel.lastMessageSendDate!);
+            String lastSeen = timeago.format(userModel.lastSeenDate!);
             DateTime fiveMinAgo =
                 DateTime.now().subtract(const Duration(minutes: 5));
             bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
-            lastMessage = documentSnapshot["lastMessage"];
-            lastMessageTs = timeago.format(formatLastM);
 
             return GestureDetector(
               onTap: () {
@@ -95,7 +94,7 @@ class ChatCard extends StatelessWidget {
                             Opacity(
                               opacity: 0.64,
                               child: Text(
-                                lastMessage,
+                                chatroomModel.lastMessage!,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -106,7 +105,7 @@ class ChatCard extends StatelessWidget {
                     ),
                     Opacity(
                       opacity: 0.64,
-                      child: Text(lastMessageTs),
+                      child: Text(lastMessage),
                     )
                   ],
                 ),
