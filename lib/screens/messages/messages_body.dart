@@ -1,4 +1,3 @@
-
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/message_model.dart';
 import 'package:chat_app/screens/messages/chat_input_field.dart';
@@ -12,7 +11,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import '../../services/database.dart';
 import 'audio_message.dart';
 import 'dot_indicator.dart';
-
 
 class Body extends HookWidget {
   final List<QueryDocumentSnapshot> querySnapshot;
@@ -28,22 +26,31 @@ class Body extends HookWidget {
     return Column(
       children: [
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-            child: ListView.builder(
-              itemCount: querySnapshot.length,
-              itemBuilder: (BuildContext context, int index) {
-                ChatMesssageModel model =
-                    ChatMesssageModel.fromDocument(querySnapshot[index]);
-                return Message(
-                  chatteeName: chatteName,
-                  message: model,
-                );
-              },
+          flex: 5,
+          child: SizedBox(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+              child: ListView.builder(
+                reverse: true,
+                shrinkWrap: true,
+                itemCount: querySnapshot.length,
+                itemBuilder: (BuildContext context, int index) {
+                  ChatMesssageModel model =
+                      ChatMesssageModel.fromDocument(querySnapshot[index]);
+                  return Message(
+                    chatteeName: chatteName,
+                    message: model,
+                  );
+                },
+              ),
             ),
           ),
         ),
-        const ChatInputField()
+        Flexible(
+          flex: 1,
+          fit: FlexFit.tight,
+          child: ChatInputField(chatteeName: chatteName,),
+        ),
       ],
     );
   }
