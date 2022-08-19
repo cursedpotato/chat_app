@@ -89,6 +89,7 @@ class MessagesScreen extends HookWidget {
               ),
               Text(
                 "Active $lastSeen",
+                overflow: TextOverflow.visible,
                 style: const TextStyle(fontSize: 12),
               ),
             ],

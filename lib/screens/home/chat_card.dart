@@ -73,8 +73,6 @@ class ChatCard extends StatelessWidget {
                           radius: 24,
                           backgroundImage: NetworkImage(userModel.pfpUrl!),
                         ),
-                        // TODO: make sure the activity led works
-
                         isActive ? activityDot(context) : const SizedBox(),
                       ],
                     ),

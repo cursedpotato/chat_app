@@ -41,6 +41,7 @@ class ChatInputField extends HookWidget {
           "sendBy": chatterUsername,
           "ts": lastMessageTs,
           "imgUrl": chatterPfp,
+          "messageType": "text",
         };
 
         //messageId
@@ -92,7 +93,6 @@ class ChatInputField extends HookWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(
                   horizontal: kDefaultPadding * 0.75),
-              height: 50,
               decoration: BoxDecoration(
                 color: kPrimaryColor.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(40),
@@ -115,7 +115,7 @@ class ChatInputField extends HookWidget {
                   Flexible(
                     child: TextField(
                       controller: messageController,
-                      maxLines: null,
+                      maxLines: 1,
                       keyboardType: TextInputType.multiline,
                       decoration: const InputDecoration(
                           hintText: "Type message", border: InputBorder.none),
@@ -140,7 +140,6 @@ class ChatInputField extends HookWidget {
           ),
           GestureDetector(
             onTap: () {
-              print("I was clicked and i did nothing");
               addMessage(true);
             },
             child: const Icon(

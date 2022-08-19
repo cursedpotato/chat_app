@@ -46,11 +46,7 @@ class Body extends HookWidget {
             ),
           ),
         ),
-        Flexible(
-          flex: 1,
-          fit: FlexFit.tight,
-          child: ChatInputField(chatteeName: chatteName,),
-        ),
+        ChatInputField(chatteeName: chatteName,),
       ],
     );
   }
