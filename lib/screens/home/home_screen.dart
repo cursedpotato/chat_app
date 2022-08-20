@@ -16,8 +16,8 @@ class HomeScreen extends HookWidget {
 
   final List<Widget> screenList = const [
     Body(),
-    CallScreen(),
     PeopleScreen(),
+    CallScreen(),
     ProfileScreen(),
   ];
 
@@ -28,7 +28,6 @@ class HomeScreen extends HookWidget {
         'https://secure.gravatar.com/avatar/ef9463e636b415ee041791a6a3764104?s=250&d=mm&r=g';
     final selectedIndex = useState(0);
     return Scaffold(
-      appBar: buildAppBar(context),
       body: screenList[selectedIndex.value],
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
@@ -55,27 +54,5 @@ class HomeScreen extends HookWidget {
     );
   }
 
-  AppBar buildAppBar(BuildContext context) {
-    return AppBar(
-      automaticallyImplyLeading: true,
-      title: const Text("Chats"),
-      actions: [
-        InkWell(
-          onTap: () {
-            AuthMethods().signOut(context).then(
-                  (value) => Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SignIn(),
-                    ),
-                  ),
-                );
-          },
-          child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: const Icon(Icons.exit_to_app)),
-        )
-      ],
-    );
-  }
+  
 }
