@@ -1,4 +1,6 @@
 import 'package:chat_app/globals.dart';
+import 'package:chat_app/services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -7,17 +9,17 @@ class PeopleScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    var searchController = useTextEditingController();
+    Stream<QuerySnapshot>? userStream;
+
+    TextEditingController searchController = useTextEditingController();
     return SafeArea(
       child: Row(
         children: [
           Expanded(
             child: Container(
-              
               padding: const EdgeInsets.symmetric(
                   horizontal: kDefaultPadding * 0.75),
               decoration: BoxDecoration(
-
                 color: kPrimaryColor.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -31,7 +33,11 @@ class PeopleScreen extends HookWidget {
             ),
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              var future = useMemoized(() =>
+                  DatabaseMethods().getUserByUserName(searchController.text));
+              userStream = useFuture(future).data;
+            },
             child: const Icon(
               Icons.search,
             ),
