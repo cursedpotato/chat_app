@@ -13,35 +13,53 @@ class PeopleScreen extends HookWidget {
 
     TextEditingController searchController = useTextEditingController();
     return SafeArea(
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding * 0.75),
-              decoration: BoxDecoration(
-                color: kPrimaryColor.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(20),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: kDefaultPadding * 0.75),
+                  decoration: BoxDecoration(
+                    color: kPrimaryColor.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: TextField(
+                    controller: searchController,
+                    maxLines: 1,
+                    keyboardType: TextInputType.text,
+                    decoration: const InputDecoration(
+                        hintText: "Search a friend", border: InputBorder.none),
+                  ),
+                ),
               ),
-              child: TextField(
-                controller: searchController,
-                maxLines: 1,
-                keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                    hintText: "Search a friend", border: InputBorder.none),
-              ),
-            ),
+              GestureDetector(
+                onTap: () {
+                  var future = useMemoized(() => DatabaseMethods()
+                      .getUserByUserName(searchController.text));
+                  userStream = useFuture(future).data;
+                },
+                child: const Icon(
+                  Icons.search,
+                ),
+              )
+            ],
           ),
-          GestureDetector(
-            onTap: () {
-              var future = useMemoized(() =>
-                  DatabaseMethods().getUserByUserName(searchController.text));
-              userStream = useFuture(future).data;
+          StreamBuilder(
+            stream: userStream,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  itemCount: 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container();
+                  },
+                );
+              }
+              return Text("There's no one to chat with");
             },
-            child: const Icon(
-              Icons.search,
-            ),
-          )
+          ),
         ],
       ),
     );
