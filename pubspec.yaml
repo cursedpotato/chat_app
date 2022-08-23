@@ -37,7 +37,7 @@ dependencies:
   cloud_firestore: ^3.1.8
   random_string:
   # Notifications
-  awesome_notifications: ^0.6.21
+  #awesome_notifications: ^0.6.21
 
   # Google Icon
   font_awesome_flutter: 
