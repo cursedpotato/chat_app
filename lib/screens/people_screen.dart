@@ -1,4 +1,5 @@
 import 'package:chat_app/globals.dart';
+import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -48,12 +49,22 @@ class PeopleScreen extends HookWidget {
           ),
           StreamBuilder(
             stream: userStream,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              List<DocumentSnapshot>? documentList = snapshot.data?.docs;
               if (snapshot.hasData) {
                 return ListView.builder(
-                  itemCount: 1,
+                  itemCount: documentList!.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Container();
+                    UserModel userModel =
+                        UserModel.fromDocument(documentList[index]);
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(userModel.pfpUrl!),
+                        radius: 24,
+                      ),
+                      title: Text(userModel.name!),
+                    );
                   },
                 );
               }
