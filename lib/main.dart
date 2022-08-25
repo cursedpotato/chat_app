@@ -1,4 +1,3 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:chat_app/screens/home/home_screen.dart';
 
 import 'package:chat_app/theme.dart';
@@ -12,7 +11,7 @@ import 'models/signin_modelview.dart';
 import 'screens/signin/signin_screen.dart';
 
 void main() async {
-  AwesomeNotifications().initialize(
+  /*AwesomeNotifications().initialize(
     // set the icon to null if you want to use the default app icon
     'resource://drawable/logo',
     [
@@ -32,7 +31,7 @@ void main() async {
           channelGroupName: 'Basic group')
     ],
     debug: true,
-  );
+  );*/
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(

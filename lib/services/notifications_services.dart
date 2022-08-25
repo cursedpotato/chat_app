@@ -1,4 +1,4 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
+/*import 'package:awesome_notifications/awesome_notifications.dart';
 
 Future<void> createNotification(String name, String messages) async {
   int id = DateTime.now().millisecondsSinceEpoch.remainder(100000);
@@ -12,4 +12,4 @@ Future<void> createNotification(String name, String messages) async {
       notificationLayout: NotificationLayout.Messaging,
     ),
   );
-}
+}*/

@@ -48,7 +48,7 @@ class ChatMesssageModel {
         FirebaseAuth.instance.currentUser?.email?.replaceAll("@gmail.com", "");
     message = document['message'];
     // messageType = whatType(document['type']);
-    // TODO: add message type to firebase   
+    // TODO: add message type to firebase
     messageType = ChatMessageType.text;
     // TODO: Find a way to show a message status
     messageStatus = MessageStatus.viewed;
