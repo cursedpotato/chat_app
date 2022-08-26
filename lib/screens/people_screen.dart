@@ -59,10 +59,6 @@ class PeopleScreen extends HookWidget {
             stream: stream.value,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              var snapy = snapshot.data;
-
-              debugPrint("$snapy");
-
               bool isLoading =
                   snapshot.connectionState == ConnectionState.waiting;
 
@@ -71,7 +67,7 @@ class PeopleScreen extends HookWidget {
               }
               bool hasData = snapshot.hasData &
                   (snapshot.connectionState == ConnectionState.done);
-              if (snapshot.hasData) {
+              if (hasData) {
                 List<DocumentSnapshot>? documentList = snapshot.data?.docs;
                 return Expanded(
                   child: ListView.builder(
