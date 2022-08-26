@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'firebase_options.dart';
 import 'models/signin_modelview.dart';
 import 'screens/signin/signin_screen.dart';
 
@@ -29,11 +30,13 @@ void main() async {
       NotificationChannelGroup(
           channelGroupkey: 'basic_channel_group',
           channelGroupName: 'Basic group')
-    ],
+    ],fffffw
     debug: true,
   );*/
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => SingInModel())],

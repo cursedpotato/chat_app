@@ -12,7 +12,8 @@ class PeopleScreen extends HookWidget {
   Widget build(BuildContext context) {
     Stream<QuerySnapshot>? userStream;
 
-    final stream = useState(userStream);
+    // This value notifier is used to update the state of the stream builder
+    ValueNotifier stream = useState(userStream);
 
     TextEditingController searchController = useTextEditingController();
 
