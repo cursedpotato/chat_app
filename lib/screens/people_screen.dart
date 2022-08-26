@@ -43,11 +43,7 @@ class PeopleScreen extends HookWidget {
                   debugPrint(searchController.text);
                   DatabaseMethods()
                       .getUserByUserName(searchController.text)
-                      .then(
-                    (result) {
-                      stream.value = result;
-                    },
-                  );
+                      .then((result) => stream.value = result);
                 },
                 child: const Icon(
                   Icons.search,
