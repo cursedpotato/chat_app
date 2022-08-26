@@ -12,7 +12,10 @@ class PeopleScreen extends HookWidget {
   Widget build(BuildContext context) {
     Stream<QuerySnapshot>? userStream;
 
+    final stream = useState(userStream);
+
     TextEditingController searchController = useTextEditingController();
+
     return SafeArea(
       child: Column(
         children: [
@@ -37,9 +40,14 @@ class PeopleScreen extends HookWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  var future = useMemoized(() => DatabaseMethods()
-                      .getUserByUserName(searchController.text));
-                  userStream = useFuture(future).data;
+                  debugPrint(searchController.text);
+                  DatabaseMethods()
+                      .getUserByUserName(searchController.text)
+                      .then(
+                    (result) {
+                      stream.value = result;
+                    },
+                  );
                 },
                 child: const Icon(
                   Icons.search,
@@ -48,24 +56,38 @@ class PeopleScreen extends HookWidget {
             ],
           ),
           StreamBuilder(
-            stream: userStream,
+            stream: stream.value,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              List<DocumentSnapshot>? documentList = snapshot.data?.docs;
+              var snapy = snapshot.data;
+
+              debugPrint("$snapy");
+
+              bool isLoading =
+                  snapshot.connectionState == ConnectionState.waiting;
+
+              if (isLoading) {
+                return const Text('Loading');
+              }
+              bool hasData = snapshot.hasData &
+                  (snapshot.connectionState == ConnectionState.done);
               if (snapshot.hasData) {
-                return ListView.builder(
-                  itemCount: documentList!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    UserModel userModel =
-                        UserModel.fromDocument(documentList[index]);
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(userModel.pfpUrl!),
-                        radius: 24,
-                      ),
-                      title: Text(userModel.name!),
-                    );
-                  },
+                List<DocumentSnapshot>? documentList = snapshot.data?.docs;
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: documentList!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      UserModel userModel =
+                          UserModel.fromDocument(documentList[index]);
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(userModel.pfpUrl!),
+                          radius: 24,
+                        ),
+                        title: Text(userModel.name!),
+                      );
+                    },
+                  ),
                 );
               }
               return Text("There's no one to chat with");
