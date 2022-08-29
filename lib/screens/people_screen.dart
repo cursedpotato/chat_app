@@ -61,8 +61,7 @@ class PeopleScreen extends HookWidget {
               if (isLoading) {
                 return const Text('Loading');
               }
-              bool hasData = snapshot.hasData &
-                  (snapshot.connectionState == ConnectionState.done);
+              bool hasData = snapshot.hasData;
               if (hasData) {
                 List<DocumentSnapshot>? documentList = snapshot.data?.docs;
                 return Expanded(
