@@ -51,7 +51,6 @@ class PeopleScreen extends HookWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  debugPrint(searchController.text);
                   DatabaseMethods()
                       .getUserByUserName(searchController.text)
                       .then((result) => stream.value = result);
@@ -109,7 +108,7 @@ class PeopleScreen extends HookWidget {
                   ),
                 );
               }
-              return Text("There's no one to chat with");
+              return const Text("There's no one to chat with");
             },
           ),
         ],
