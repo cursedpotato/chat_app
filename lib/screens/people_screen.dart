@@ -1,5 +1,6 @@
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/user_model.dart';
+import 'package:chat_app/screens/messages/messages_screen.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,15 @@ class PeopleScreen extends HookWidget {
     ValueNotifier stream = useState(userStream);
 
     TextEditingController searchController = useTextEditingController();
+
+    // TODO: DRY
+    getChatRoomIdByUsernames(String a, String b) {
+      if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+        return "$b\_$a";
+      } else {
+        return "$a\_$b";
+      }
+    }
 
     return SafeArea(
       child: Column(
@@ -73,6 +83,22 @@ class PeopleScreen extends HookWidget {
                       UserModel userModel =
                           UserModel.fromDocument(documentList[index]);
                       return ListTile(
+                        onTap: () {
+                          var chatRoomId = getChatRoomIdByUsernames(
+                              chatterUsername!, userModel.username!);
+                          Map<String, dynamic> chatRoomInfoMap = {
+                            "users": [chatterUsername, userModel.username]
+                          };
+                          DatabaseMethods()
+                              .createChatRoom(chatRoomId, chatRoomInfoMap);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MessagesScreen(
+                                      chatterName: chatterUsername!,
+                                      chatteeName: userModel.username!,
+                                      lastSeen: "")));
+                        },
                         leading: CircleAvatar(
                           backgroundImage: NetworkImage(userModel.pfpUrl!),
                           radius: 24,
