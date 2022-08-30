@@ -86,7 +86,7 @@ class Message extends HookWidget {
         "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
 
     return Padding(
-      padding: const EdgeInsets.only(top: kDefaultPadding),
+      padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 4 ),
       child: Row(
         mainAxisAlignment:
             message.isSender! ? MainAxisAlignment.end : MainAxisAlignment.start,

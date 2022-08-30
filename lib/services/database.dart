@@ -19,9 +19,11 @@ class DatabaseMethods {
         .set(userInfoMap);
   }
 
-  Future<Stream<QuerySnapshot>> getUserByUserName(String username) async {
+  Future<Stream<QuerySnapshot>> getUserByUserName(String query) async {
     return FirebaseFirestore.instance
         .collection("users")
+        .where("name", isEqualTo: query,)
+        .where("username", isEqualTo: query)
         .snapshots();
   }
 
