@@ -45,5 +45,9 @@
 	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Talk to other users</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Video call with other users</string>
 </dict>
 </plist>
