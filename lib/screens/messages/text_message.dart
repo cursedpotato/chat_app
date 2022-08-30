@@ -14,7 +14,6 @@ class TextMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: kDefaultPadding),
       padding: const EdgeInsets.symmetric(
         horizontal: kDefaultPadding * 0.75,
         vertical: kDefaultPadding / 2,

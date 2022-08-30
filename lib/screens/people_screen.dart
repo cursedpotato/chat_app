@@ -21,8 +21,10 @@ class PeopleScreen extends HookWidget {
     // TODO: DRY
     getChatRoomIdByUsernames(String a, String b) {
       if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+        // ignore: unnecessary_string_escapes
         return "$b\_$a";
       } else {
+        // ignore: unnecessary_string_escapes
         return "$a\_$b";
       }
     }
@@ -34,11 +36,13 @@ class PeopleScreen extends HookWidget {
             children: [
               Expanded(
                 child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal:kDefaultPadding),
                   padding: const EdgeInsets.symmetric(
                       horizontal: kDefaultPadding * 0.75),
                   decoration: BoxDecoration(
+                    
                     color: kPrimaryColor.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
                     controller: searchController,
@@ -71,8 +75,7 @@ class PeopleScreen extends HookWidget {
               if (isLoading) {
                 return const Text('Loading');
               }
-              bool hasData = snapshot.hasData &
-                  (snapshot.connectionState == ConnectionState.done);
+              bool hasData = snapshot.hasData;
               if (hasData) {
                 List<DocumentSnapshot>? documentList = snapshot.data?.docs;
                 return Expanded(
