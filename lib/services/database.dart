@@ -20,10 +20,10 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getUserByUserName(String query) async {
+    // TODO: Check how to add multiple queries
     return FirebaseFirestore.instance
         .collection("users")
         .where("name", isEqualTo: query,)
-        .where("username", isEqualTo: query)
         .snapshots();
   }
 
