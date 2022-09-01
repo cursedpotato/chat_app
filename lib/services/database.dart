@@ -1,3 +1,4 @@
+import 'package:chat_app/globals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -74,15 +75,12 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
-    // TODO: assign global variable
-
-    String? myUsername =
-        FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
+    
 
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .orderBy("lastMessageSendTs", descending: true)
-        .where("users", arrayContains: myUsername)
+        .where("users", arrayContains: chatterUsername)
         .snapshots();
   }
 
