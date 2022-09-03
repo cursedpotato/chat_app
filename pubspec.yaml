@@ -37,14 +37,13 @@ dependencies:
   cloud_firestore: ^3.1.8
   random_string:
   # Notifications
-  #awesome_notifications: ^0.6.21
+  awesome_notifications: ^0.6.21
 
   # Google Icon
   font_awesome_flutter: 
   #Timestamp format
   timeago: ^3.2.2
- 
-  email_validator: ^2.0.1
+  email_validator: ^2.1.17
   provider: ^6.0.3
   google_fonts: ^3.0.1
   flutter_hooks: ^0.18.3
