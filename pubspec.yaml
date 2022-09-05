@@ -48,7 +48,7 @@ dependencies:
   google_fonts: ^3.0.1
   flutter_hooks: ^0.18.3
   flutter_facebook_auth: ^4.3.4+2
-  
+  image_picker: ^0.8.5+3  
   agora_uikit: ^1.0.3
   
 
