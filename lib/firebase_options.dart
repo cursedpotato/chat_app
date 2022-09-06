@@ -59,12 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAwacrNIw8jLR4gfCct5t8klt-ZtcJFPjg',
-    appId: '1:42740053504:ios:42f9843fcaf75e26c4cae5',
+    appId: '1:42740053504:ios:39ec1145d1341ad6c4cae5',
     messagingSenderId: '42740053504',
     projectId: 'messengerclone-49f6b',
     storageBucket: 'messengerclone-49f6b.appspot.com',
     androidClientId: '42740053504-bljdsn0q7opf4nnjlfovla2esc2slh3l.apps.googleusercontent.com',
-    iosClientId: '42740053504-mn4gdp2qfpdejhelr5kvpuv4qpnpbbrk.apps.googleusercontent.com',
-    iosBundleId: 'com.example.chatApp',
+    iosClientId: '42740053504-a0tbsiepmp2m7nbbt629ishvu8i8ekvt.apps.googleusercontent.com',
+    iosBundleId: 'com.example.capychat',
   );
 }
