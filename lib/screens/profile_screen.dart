@@ -21,14 +21,15 @@ class ProfileScreen extends StatelessWidget {
                     top: 60,
                     left: 60,
                     child: IconButton(
-                        onPressed: () {}, icon: const Icon(Icons.camera_alt_outlined))),
+                        onPressed: () {},
+                        icon: const Icon(Icons.camera_alt_outlined))),
               ],
             ),
           ),
           Text(chatterUsername!),
-        ],
 
-        
+          // Add column
+        ],
       ),
     );
   }

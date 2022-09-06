@@ -30,7 +30,7 @@ void main() async {
       NotificationChannelGroup(
           channelGroupkey: 'basic_channel_group',
           channelGroupName: 'Basic group')
-    ],fffffw
+    ],
     debug: true,
   );*/
   WidgetsFlutterBinding.ensureInitialized();
