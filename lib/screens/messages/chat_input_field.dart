@@ -85,69 +85,78 @@ class ChatInputField extends HookWidget {
               color: const Color(0xFF087949).withOpacity(0.08)),
         ],
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.mic, color: kPrimaryColor),
-          const SizedBox(width: kDefaultPadding),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding * 0.75),
-              decoration: BoxDecoration(
-                color: kPrimaryColor.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: Row(
-                children: [
-                  // May add in future
-                  // IconButton(
-                  //   onPressed: () {},
-                  //   icon: Icon(
-                  //     Icons.sentiment_satisfied_alt_outlined,
-                  //     color: Theme.of(context)
-                  //         .textTheme
-                  //         .bodyText1
-                  //         ?.color
-                  //         ?.withOpacity(0.64),
-                  //   ),
-                  // ),
-                  const SizedBox(width: kDefaultPadding / 4),
-                  Flexible(
-                    child: TextField(
-                      controller: messageController,
-                      maxLines: 1,
-                      keyboardType: TextInputType.multiline,
-                      decoration: const InputDecoration(
-                          hintText: "Type message", border: InputBorder.none),
-                    ),
-                  ),
-
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.attach_file,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.camera_alt_outlined,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              addMessage(true);
-            },
-            child: const Icon(
-              Icons.send,
-            ),
-          )
-        ],
+      child: TextField(
+        controller: messageController,
+        minLines: 1,
+        maxLines: 20,
+        keyboardType: TextInputType.multiline,
+        decoration: const InputDecoration(
+            hintText: "Type message", border: InputBorder.none),
       ),
+      // child: Row(
+      //   children: [
+      //     const Icon(Icons.mic, color: kPrimaryColor),
+      //     const SizedBox(width: kDefaultPadding),
+      //     Expanded(
+      //       child: Container(
+      //         padding: const EdgeInsets.symmetric(
+      //             horizontal: kDefaultPadding * 0.75),
+      //         decoration: BoxDecoration(
+      //           color: kPrimaryColor.withOpacity(0.05),
+      //           borderRadius: BorderRadius.circular(40),
+      //         ),
+      //         child: Row(
+      //           children: [
+      //             // May add in future
+      //             // IconButton(
+      //             //   onPressed: () {},
+      //             //   icon: Icon(
+      //             //     Icons.sentiment_satisfied_alt_outlined,
+      //             //     color: Theme.of(context)
+      //             //         .textTheme
+      //             //         .bodyText1
+      //             //         ?.color
+      //             //         ?.withOpacity(0.64),
+      //             //   ),
+      //             // ),
+      //             const SizedBox(width: kDefaultPadding / 4),
+      //             Flexible(
+      //               child: TextField(
+      //                 controller: messageController,
+      //                 minLines: 1,
+      //                 maxLines: 20,
+      //                 keyboardType: TextInputType.multiline,
+      //                 decoration: const InputDecoration(
+      //                     hintText: "Type message", border: InputBorder.none),
+      //               ),
+      //             ),
+
+      //             IconButton(
+      //               onPressed: () {},
+      //               icon: const Icon(
+      //                 Icons.attach_file,
+      //               ),
+      //             ),
+      //             IconButton(
+      //               onPressed: () {},
+      //               icon: const Icon(
+      //                 Icons.camera_alt_outlined,
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      //     GestureDetector(
+      //       onTap: () {
+      //         addMessage(true);
+      //       },
+      //       child: const Icon(
+      //         Icons.send,
+      //       ),
+      //     )
+      //   ],
+      // ),
     );
   }
 }
