@@ -85,13 +85,24 @@ class ChatInputField extends HookWidget {
               color: const Color(0xFF087949).withOpacity(0.08)),
         ],
       ),
-      child: TextField(
-        controller: messageController,
-        minLines: 1,
-        maxLines: 20,
-        keyboardType: TextInputType.multiline,
-        decoration: const InputDecoration(
-            hintText: "Type message", border: InputBorder.none),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: TextField(
+              controller: messageController,
+              minLines: 1,
+              maxLines: 5,
+              keyboardType: TextInputType.multiline,
+              decoration: const InputDecoration(
+                hintText: "Type message",
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+          IconButton(
+              onPressed: () => addMessage(true), icon: const Icon(Icons.send))
+        ],
       ),
       // child: Row(
       //   children: [
