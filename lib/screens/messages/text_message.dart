@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:chat_app/models/message_model.dart';
 import 'package:flutter/material.dart';
 
@@ -22,8 +23,9 @@ class TextMessage extends StatelessWidget {
         color: kPrimaryColor.withOpacity(message.isSender! ? 1 : 0.1),
         borderRadius: BorderRadius.circular(30),
       ),
-      child: Text(
+      child: AutoSizeText(
         message.message!,
+        maxLines: 20,
         style: TextStyle(
           color: message.isSender!
               ? Colors.white
