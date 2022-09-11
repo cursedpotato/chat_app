@@ -14,22 +14,24 @@ class TextMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: kDefaultPadding * 0.75,
-        vertical: kDefaultPadding / 2,
-      ),
-      decoration: BoxDecoration(
-        color: kPrimaryColor.withOpacity(message.isSender! ? 1 : 0.1),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: AutoSizeText(
-        message.message!,
-        maxLines: 20,
-        style: TextStyle(
-          color: message.isSender!
-              ? Colors.white
-              : Theme.of(context).textTheme.bodyText1?.color,
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: kDefaultPadding * 0.75,
+          vertical: kDefaultPadding / 2,
+        ),
+        decoration: BoxDecoration(
+          color: kPrimaryColor.withOpacity(message.isSender! ? 1 : 0.1),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: AutoSizeText(
+          message.message!,
+          maxLines: 20,
+          style: TextStyle(
+            color: message.isSender!
+                ? Colors.white
+                : Theme.of(context).textTheme.bodyText1?.color,
+          ),
         ),
       ),
     );
