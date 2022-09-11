@@ -7,7 +7,7 @@ class VideoCallScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AgoraClient _client = AgoraClient(
+    final AgoraClient client = AgoraClient(
       agoraConnectionData: AgoraConnectionData(
         appId: '',
         channelName: "",
@@ -15,7 +15,7 @@ class VideoCallScreen extends HookWidget {
       ),
     );
     Future<void> _initAgora() async {
-      await _client.initialize();
+      await client.initialize();
     }
 
     useEffect(() {
@@ -32,8 +32,8 @@ class VideoCallScreen extends HookWidget {
         body: SafeArea(
           child: Stack(
             children: [
-              AgoraVideoViewer(client: _client),
-              AgoraVideoButtons(client: _client)
+              AgoraVideoViewer(client: client),
+              AgoraVideoButtons(client: client)
             ],
           ),
         ),
