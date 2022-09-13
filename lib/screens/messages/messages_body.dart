@@ -88,13 +88,14 @@ class Message extends HookWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 4 ),
       child: Row(
+        crossAxisAlignment: message.isSender! ? CrossAxisAlignment.end : CrossAxisAlignment.center,
         mainAxisAlignment:
             message.isSender! ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!message.isSender!) ...[
             Container(
               margin:
-                  const EdgeInsets.only(right: kDefaultPadding / 2, top: 20),
+                  const EdgeInsets.only(right: kDefaultPadding / 2),
               child: CircleAvatar(
                 radius: 12,
                 backgroundImage: NetworkImage(chattePfp ?? noUser),

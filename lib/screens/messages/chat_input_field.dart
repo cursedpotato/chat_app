@@ -18,16 +18,6 @@ class ChatInputField extends HookWidget {
     String messageId = "";
     String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
     TextEditingController messageController = useTextEditingController();
-    getChatRoomIdByUsernames(String a, String b) {
-      if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
-        // ignore: unnecessary_string_escapes
-        return "$b\_$a";
-      } else {
-        // ignore: unnecessary_string_escapes
-        return "$a\_$b";
-      }
-    }
-
     String chatRoomId = getChatRoomIdByUsernames(chatteeName, chatterUsername!);
 
     addMessage(bool sendClicked) {
@@ -88,15 +78,27 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          mediaMenu(),
           Expanded(
-            child: TextField(
-              controller: messageController,
-              minLines: 1,
-              maxLines: 5,
-              keyboardType: TextInputType.multiline,
-              decoration: const InputDecoration(
-                hintText: "Type message",
-                border: InputBorder.none,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: kDefaultPadding * 0.75),
+              decoration: BoxDecoration(
+                color: kPrimaryColor.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: TextField(
+                controller: messageController,
+                maxLength: 800,
+                minLines: 1,
+                maxLines: 5, // This way the textfield grows
+                keyboardType: TextInputType.multiline,
+                decoration: const InputDecoration(
+                   // This hides the counter that appears when you set a chat limit
+                  counterText:"",
+                  hintText: "Type message",
+                  border: InputBorder.none,
+                ),
               ),
             ),
           ),
@@ -104,70 +106,29 @@ class ChatInputField extends HookWidget {
               onPressed: () => addMessage(true), icon: const Icon(Icons.send))
         ],
       ),
-      // child: Row(
-      //   children: [
-      //     const Icon(Icons.mic, color: kPrimaryColor),
-      //     const SizedBox(width: kDefaultPadding),
-      //     Expanded(
-      //       child: Container(
-      //         padding: const EdgeInsets.symmetric(
-      //             horizontal: kDefaultPadding * 0.75),
-      //         decoration: BoxDecoration(
-      //           color: kPrimaryColor.withOpacity(0.05),
-      //           borderRadius: BorderRadius.circular(40),
-      //         ),
-      //         child: Row(
-      //           children: [
-      //             // May add in future
-      //             // IconButton(
-      //             //   onPressed: () {},
-      //             //   icon: Icon(
-      //             //     Icons.sentiment_satisfied_alt_outlined,
-      //             //     color: Theme.of(context)
-      //             //         .textTheme
-      //             //         .bodyText1
-      //             //         ?.color
-      //             //         ?.withOpacity(0.64),
-      //             //   ),
-      //             // ),
-      //             const SizedBox(width: kDefaultPadding / 4),
-      //             Flexible(
-      //               child: TextField(
-      //                 controller: messageController,
-      //                 minLines: 1,
-      //                 maxLines: 20,
-      //                 keyboardType: TextInputType.multiline,
-      //                 decoration: const InputDecoration(
-      //                     hintText: "Type message", border: InputBorder.none),
-      //               ),
-      //             ),
-
-      //             IconButton(
-      //               onPressed: () {},
-      //               icon: const Icon(
-      //                 Icons.attach_file,
-      //               ),
-      //             ),
-      //             IconButton(
-      //               onPressed: () {},
-      //               icon: const Icon(
-      //                 Icons.camera_alt_outlined,
-      //               ),
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //     GestureDetector(
-      //       onTap: () {
-      //         addMessage(true);
-      //       },
-      //       child: const Icon(
-      //         Icons.send,
-      //       ),
-      //     )
-      //   ],
-      // ),
     );
+  }
+
+  Row mediaMenu() {
+    return Row(
+          children: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.attach_file,
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.camera_alt_outlined,
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.mic),
+            ),
+          ],
+        );
   }
 }
