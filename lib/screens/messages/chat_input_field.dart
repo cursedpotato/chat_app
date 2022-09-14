@@ -1,3 +1,4 @@
+import 'package:animate_icons/animate_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -19,6 +20,7 @@ class ChatInputField extends HookWidget {
     String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
     TextEditingController messageController = useTextEditingController();
     String chatRoomId = getChatRoomIdByUsernames(chatteeName, chatterUsername!);
+    final controller = AnimateIconController();
 
     addMessage(bool sendClicked) {
       if (messageController.text != "") {
@@ -78,7 +80,7 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          mediaMenu(),
+          mediaMenu(controller),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(
@@ -94,8 +96,8 @@ class ChatInputField extends HookWidget {
                 maxLines: 5, // This way the textfield grows
                 keyboardType: TextInputType.multiline,
                 decoration: const InputDecoration(
-                   // This hides the counter that appears when you set a chat limit
-                  counterText:"",
+                  // This hides the counter that appears when you set a chat limit
+                  counterText: "",
                   hintText: "Type message",
                   border: InputBorder.none,
                 ),
@@ -109,26 +111,39 @@ class ChatInputField extends HookWidget {
     );
   }
 
-  Row mediaMenu() {
+  Row mediaMenu(controller) {
     return Row(
-          children: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.attach_file,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.camera_alt_outlined,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.mic),
-            ),
-          ],
-        );
+      children: [
+        AnimateIcons(
+          startIcon: Icons.arrow_forward_ios_rounded,
+          endIcon: Icons.arrow_back_ios_rounded,
+          onStartIconPress: () {
+            print("Clicked on Add Icon");
+            return true;
+          },
+          onEndIconPress: () {
+            print("Clicked on Close Icon");
+            return true;
+          },
+          controller: controller,
+        ),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(
+            Icons.attach_file,
+          ),
+        ),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(
+            Icons.camera_alt_outlined,
+          ),
+        ),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(Icons.mic),
+        ),
+      ],
+    );
   }
 }
