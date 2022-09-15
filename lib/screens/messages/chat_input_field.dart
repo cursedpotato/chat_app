@@ -121,12 +121,11 @@ class ChatInputField extends HookWidget {
           endIcon: Icons.apps,
           onStartIconPress: () {
             toggle.value = !toggle.value;
-            print("Clicked on Add Icon");
+            
             return true;
           },
           onEndIconPress: () {
             toggle.value = !toggle.value;
-            print("Clicked on Close Icon");
             return true;
           },
           controller: controller,
