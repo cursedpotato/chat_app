@@ -57,7 +57,7 @@ class MessagesScreen extends HookWidget {
     String? chattePfp = chatteData?.docs[0]["imgUrl"];
     String noUser =
         "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
-    // TODO: fix overflow problems
+  
     return AppBar(
       title: Row(
         children: [
