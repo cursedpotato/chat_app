@@ -22,6 +22,8 @@ class ChatInputField extends HookWidget {
     String chatRoomId = getChatRoomIdByUsernames(chatteeName, chatterUsername!);
     final controller = AnimateIconController();
 
+    final toggle = useState(false);
+
     addMessage(bool sendClicked) {
       if (messageController.text != "") {
         String message = messageController.text;
@@ -80,7 +82,7 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          mediaMenu(controller),
+          mediaMenu(controller, toggle),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(
@@ -111,39 +113,48 @@ class ChatInputField extends HookWidget {
     );
   }
 
-  Row mediaMenu(controller) {
+  Row mediaMenu(controller, toggle) {
     return Row(
       children: [
         AnimateIcons(
           startIcon: Icons.arrow_forward_ios_rounded,
-          endIcon: Icons.arrow_back_ios_rounded,
+          endIcon: Icons.apps,
           onStartIconPress: () {
+            toggle.value = !toggle.value;
             print("Clicked on Add Icon");
             return true;
           },
           onEndIconPress: () {
+            toggle.value = !toggle.value;
             print("Clicked on Close Icon");
             return true;
           },
           controller: controller,
         ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.attach_file,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.camera_alt_outlined,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.mic),
-        ),
+        toggle == true ? Row(children: multimedia()) : Container()
       ],
     );
+  }
+
+  List<Widget> multimedia() {
+    final media = <Widget>[
+      IconButton(
+        onPressed: () {},
+        icon: const Icon(
+          Icons.attach_file,
+        ),
+      ),
+      IconButton(
+        onPressed: () {},
+        icon: const Icon(
+          Icons.camera_alt_outlined,
+        ),
+      ),
+      IconButton(
+        onPressed: () {},
+        icon: const Icon(Icons.mic),
+      ),
+    ];
+    return media;
   }
 }
