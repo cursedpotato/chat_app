@@ -2,6 +2,7 @@ import 'package:animate_icons/animate_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:random_string/random_string.dart';
 
 import '../../globals.dart';
@@ -116,44 +117,49 @@ class ChatInputField extends HookWidget {
   Row mediaMenu(controller, toggle) {
     return Row(
       children: [
-        AnimateIcons(
-          startIcon: Icons.arrow_forward_ios_rounded,
-          endIcon: Icons.apps,
-          onStartIconPress: () {
-            toggle.value = !toggle.value;
-            
-            return true;
-          },
-          onEndIconPress: () {
-            toggle.value = !toggle.value;
-            return true;
-          },
-          controller: controller,
-        ),
-        toggle == true ? Row(children: multimedia()) : Container()
+        // AnimateIcons(
+        //   startIcon: Icons.arrow_forward_ios_rounded,
+        //   endIcon: Icons.apps,
+        //   onStartIconPress: () {
+        //     toggle.value = !toggle.value;
+
+        //     return true;
+        //   },
+        //   onEndIconPress: () {
+        //     toggle.value = !toggle.value;
+        //     return true;
+        //   },
+        //   controller: controller,
+        // ),
+        // toggle.value == true ? multimedia() : const SizedBox()
+        multimedia()
       ],
     );
   }
 
-  List<Widget> multimedia() {
-    final media = <Widget>[
-      IconButton(
-        onPressed: () {},
-        icon: const Icon(
-          Icons.attach_file,
-        ),
+  Widget multimedia() {
+    return Slidable(
+      // startActionPane: ActionPane(motion: const ScrollMotion(), children: children),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.attach_file,
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.camera_alt_outlined,
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.mic),
+          ),
+        ],
       ),
-      IconButton(
-        onPressed: () {},
-        icon: const Icon(
-          Icons.camera_alt_outlined,
-        ),
-      ),
-      IconButton(
-        onPressed: () {},
-        icon: const Icon(Icons.mic),
-      ),
-    ];
-    return media;
+    );
   }
 }

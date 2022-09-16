@@ -51,6 +51,7 @@ dependencies:
   image_picker: ^0.8.5+3  
   agora_uikit: ^1.0.3
   animate_icons: ^2.0.0
+  flutter_slidable: ^2.0.0
 
   
 
