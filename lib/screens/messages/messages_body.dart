@@ -63,6 +63,7 @@ class Message extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     Widget messageContent(ChatMesssageModel message) {
       switch (message.messageType) {
         case ChatMessageType.text:
