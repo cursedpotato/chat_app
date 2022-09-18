@@ -2,7 +2,7 @@ import 'package:animate_icons/animate_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+
 import 'package:random_string/random_string.dart';
 
 import '../../globals.dart';
@@ -138,9 +138,8 @@ class ChatInputField extends HookWidget {
   }
 
   Widget multimedia() {
-    return Slidable(
-      // startActionPane: ActionPane(motion: const ScrollMotion(), children: children),
-      child: Row(
+    return 
+      Row(
         children: [
           IconButton(
             onPressed: () {},
@@ -159,7 +158,7 @@ class ChatInputField extends HookWidget {
             icon: const Icon(Icons.mic),
           ),
         ],
-      ),
-    );
+      );
+   
   }
 }
