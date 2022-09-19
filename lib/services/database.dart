@@ -20,11 +20,23 @@ class DatabaseMethods {
         .set(userInfoMap);
   }
 
-  Future<Stream<QuerySnapshot>> getUserByUserName(String query) async {
-    // TODO: Check how to add multiple queries
+  Future<Stream<QuerySnapshot>> getUserByName(String query) async {
     return FirebaseFirestore.instance
         .collection("users")
-        .where("name", isEqualTo: query,)
+        .where(
+          "name",
+          isEqualTo: query,
+        )
+        .snapshots();
+  }
+
+  Future<Stream<QuerySnapshot>> getUserByUserName(String query) async {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .where(
+          "username",
+          isEqualTo: query,
+        )
         .snapshots();
   }
 
@@ -75,8 +87,6 @@ class DatabaseMethods {
   }
 
   Future<Stream<QuerySnapshot>> getChatRooms() async {
-    
-
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .orderBy("lastMessageSendTs", descending: true)
