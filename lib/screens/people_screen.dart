@@ -77,12 +77,7 @@ class PeopleScreen extends HookWidget {
                   ),
                 );
               }
-              // This could create the method to call itself so find a better logic
-              if (!hasData) {
-                DatabaseMethods()
-                      .getUserByName(searchController.text)
-                      .then((result) => stream.value = result);
-              }
+              // TODO: Implement function that calls method
               return const Text("There's no one to chat with");
             },
           ),
