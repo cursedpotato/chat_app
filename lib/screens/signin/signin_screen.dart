@@ -75,6 +75,7 @@ class SignIn extends HookWidget {
             },
           ),
           const SizedBox(height: 20.0),
+          // TODO: Buttons show dark edges, remove that
           Row(
             children: [
               ButtonWidget(

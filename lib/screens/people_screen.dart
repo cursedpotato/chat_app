@@ -11,10 +11,10 @@ class PeopleScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    Stream<QuerySnapshot>? userStream;
+    Future<QuerySnapshot>? userFuture;
 
     // This value notifier is used to update the state of the stream builder
-    ValueNotifier stream = useState(userStream);
+    ValueNotifier future = useState(userFuture);
 
     TextEditingController searchController = useTextEditingController();
     return SafeArea(
@@ -43,9 +43,8 @@ class PeopleScreen extends HookWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  DatabaseMethods()
-                      .getUserByUserName(searchController.text)
-                      .then((result) => stream.value = result);
+                  future.value = DatabaseMethods()
+                      .getUserByUserName(searchController.text);
                 },
                 child: const Icon(
                   Icons.search,
@@ -53,8 +52,8 @@ class PeopleScreen extends HookWidget {
               )
             ],
           ),
-          StreamBuilder(
-            stream: stream.value,
+          FutureBuilder(
+            future: future.value,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               bool isLoading =
@@ -78,11 +77,11 @@ class PeopleScreen extends HookWidget {
                 );
               }
               // This could create the method to call itself so find a better logic
-              if (!hasData) {
-                DatabaseMethods()
-                      .getUserByName(searchController.text)
-                      .then((result) => stream.value = result);
-              }
+              // if (!hasData) {
+              //   DatabaseMethods()
+              //         .getUserByName(searchController.text)
+              //         .then((result) => stream.value = result);
+              // }
               return const Text("There's no one to chat with");
             },
           ),

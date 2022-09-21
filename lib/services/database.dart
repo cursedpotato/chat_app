@@ -20,24 +20,23 @@ class DatabaseMethods {
         .set(userInfoMap);
   }
 
-  Future<Stream<QuerySnapshot>> getUserByName(String query) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserByName(String query) async {
     return FirebaseFirestore.instance
         .collection("users")
         .where(
           "name",
           isEqualTo: query,
-        )
-        .snapshots();
+        ).get();
   }
 
-  Future<Stream<QuerySnapshot>> getUserByUserName(String query) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserByUserName(String query) async {
     return FirebaseFirestore.instance
         .collection("users")
         .where(
           "username",
           isEqualTo: query,
         )
-        .snapshots();
+        .get();
   }
 
   Future addMessage(String chatRoomId, String messageId,
