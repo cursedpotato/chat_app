@@ -41,8 +41,8 @@ class Body extends HookWidget {
               kDefaultPadding,
               kDefaultPadding,
             ),
-            //TODO: Dark theme does weird thing
-            color: kPrimaryColor,
+            
+            color: Theme.of(context).scaffoldBackgroundColor,
             child: Row(
               children: [
                 FillOutlineButton(
