@@ -93,6 +93,7 @@ class Body extends HookWidget {
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       automaticallyImplyLeading: true,
       title: const Text("Chats"),
       actions: [
