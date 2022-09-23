@@ -11,15 +11,21 @@ class PeopleScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future<QuerySnapshot>? userFuture;
-
+    Future<QuerySnapshot> userFuture = DatabaseMethods().getUserByName("");
+    Future<QuerySnapshot> usernameFuture =
+        DatabaseMethods().getUserByUserName("");
     // This value notifier is used to update the state of the stream builder
-    ValueNotifier<Future<QuerySnapshot<Object?>>?> future = useValueNotifier(userFuture);
-
-    final userQuery = useValueListenable(future);
-
+    ValueNotifier<Future<QuerySnapshot<Object?>>> userQuery =
+        useValueNotifier(userFuture);
+    ValueNotifier<Future<QuerySnapshot<Object?>>> usernameQuery =
+        useValueNotifier(usernameFuture);
 
     TextEditingController searchController = useTextEditingController();
+
+    Iterable<Future<QuerySnapshot<Object?>>> iterable = [
+      userQuery.value,
+      usernameQuery.value
+    ];
     return SafeArea(
       child: Column(
         children: [
@@ -46,8 +52,10 @@ class PeopleScreen extends HookWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  future.value = DatabaseMethods()
+                  usernameQuery.value = DatabaseMethods()
                       .getUserByUserName(searchController.text);
+                  userQuery.value =
+                      DatabaseMethods().getUserByName(searchController.text);
                 },
                 child: const Icon(
                   Icons.search,
@@ -56,18 +64,20 @@ class PeopleScreen extends HookWidget {
             ],
           ),
           FutureBuilder(
-            future: userQuery,
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            future: Future.wait(iterable),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<QuerySnapshot>> snapshot) {
               bool isLoading =
                   snapshot.connectionState == ConnectionState.waiting;
-
               if (isLoading) {
                 return const Text('Loading');
               }
-              bool hasData = snapshot.hasData;
-              if (hasData) {
-                List<DocumentSnapshot>? documentList = snapshot.data?.docs;
+              // ignore: prefer_is_empty
+              bool query1HasData = snapshot.data?[0].docs.length != 0;
+              // ignore: prefer_is_empty
+              bool query2HasData = snapshot.data?[1].docs.length != 0;
+              if (snapshot.hasData && query1HasData) {
+                List<DocumentSnapshot>? documentList = snapshot.data?[0].docs;
                 return Expanded(
                   child: ListView.builder(
                     itemCount: documentList!.length,
@@ -79,14 +89,53 @@ class PeopleScreen extends HookWidget {
                   ),
                 );
               }
-              // This could create the method to call itself so find a better logic
-              if (!hasData && userQuery != null) {
-                future.value = DatabaseMethods()
-                      .getUserByName(searchController.text);
+              if (snapshot.hasData && query2HasData) {
+                List<DocumentSnapshot>? documentList = snapshot.data?[0].docs;
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: documentList!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      UserModel userModel =
+                          UserModel.fromDocument(documentList[index]);
+                      return userTile(userModel, context);
+                    },
+                  ),
+                );
               }
+
               return const Text("There's no one to chat with");
             },
-          ),
+          )
+
+          // FutureBuilder(
+          //   future: ,
+          //   builder:
+          //       (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          //     bool isLoading =
+          //         snapshot.connectionState == ConnectionState.waiting;
+
+          //     if (isLoading) {
+          //       return const Text('Loading');
+          //     }
+          //     bool hasData = snapshot.hasData;
+          //     if (hasData) {
+          //       List<DocumentSnapshot>? documentList = snapshot.data?.docs;
+          //       return Expanded(
+          //         child: ListView.builder(
+          //           itemCount: documentList!.length,
+          //           itemBuilder: (BuildContext context, int index) {
+          //             UserModel userModel =
+          //                 UserModel.fromDocument(documentList[index]);
+          //             return userTile(userModel, context);
+          //           },
+          //         ),
+          //       );
+          //     }
+          //     // This could create the method to call itself so find a better logic
+
+          //     return const Text("There's no one to chat with");
+          //   },
+          // ),
         ],
       ),
     );
