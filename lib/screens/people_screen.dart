@@ -11,7 +11,7 @@ class PeopleScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future? getFutures;
+    Future<List<QuerySnapshot<Object?>>>? getFutures;
 
     ValueNotifier getQueries = useValueNotifier(getFutures);
 
@@ -43,13 +43,15 @@ class PeopleScreen extends HookWidget {
               ),
               GestureDetector(
                 onTap: () {
+
+                  debugPrint("Click");
                   var usernameQuery = DatabaseMethods()
                       .getUserByUserName(searchController.text);
                   var nameQuery =
                       DatabaseMethods().getUserByName(searchController.text);
 
-                  getQueries.value = Future.wait([usernameQuery, nameQuery])
-                      .then((value) => print(value));
+                  getQueries.value = Future.wait([usernameQuery, nameQuery]);
+                      
                 },
                 child: const Icon(
                   Icons.search,
@@ -57,7 +59,7 @@ class PeopleScreen extends HookWidget {
               )
             ],
           ),
-          FutureBuilder(
+          FutureBuilder<List<QuerySnapshot<Object?>>>(
             future: getQueries.value,
             builder: (BuildContext context,
                 AsyncSnapshot<List<QuerySnapshot>> snapshot) {
@@ -68,8 +70,8 @@ class PeopleScreen extends HookWidget {
               }
               // ignore: prefer_is_empty
               bool query1HasData = snapshot.data?[0].docs.length != 0;
-              // ignore: prefer_is_empty
-              bool query2HasData = snapshot.data?[1].docs.length != 0;
+              
+              
               if (snapshot.hasData && query1HasData) {
                 List<DocumentSnapshot>? documentList = snapshot.data?[0].docs;
                 return Expanded(
@@ -83,8 +85,10 @@ class PeopleScreen extends HookWidget {
                   ),
                 );
               }
-              if (snapshot.hasData && query2HasData) {
-                List<DocumentSnapshot>? documentList = snapshot.data?[0].docs;
+              // ignore: prefer_is_empty
+              bool? query2HasData = snapshot.data?[1].docs.isEmpty;
+              if (snapshot.hasData && query2HasData!) {
+                List<DocumentSnapshot>? documentList = snapshot.data?[1].docs;
                 return Expanded(
                   child: ListView.builder(
                     itemCount: documentList!.length,
