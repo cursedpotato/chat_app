@@ -20,22 +20,19 @@ class DatabaseMethods {
         .set(userInfoMap);
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getUserByName(String query) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserByName(
+      String query) async {
     return FirebaseFirestore.instance
         .collection("users")
-        .where(
-          "name",
-          isEqualTo: query,
-        ).get();
+        .where("name", isEqualTo: query)
+        .get();
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getUserByUserName(String query) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserByUserName(
+      String query) async {
     return FirebaseFirestore.instance
         .collection("users")
-        .where(
-          "username",
-          isEqualTo: query,
-        )
+        .where("username", isEqualTo: query)
         .get();
   }
 
