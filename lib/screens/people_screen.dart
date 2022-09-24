@@ -11,21 +11,12 @@ class PeopleScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future<QuerySnapshot> userFuture = DatabaseMethods().getUserByName("");
-    Future<QuerySnapshot> usernameFuture =
-        DatabaseMethods().getUserByUserName("");
+    Future? getFutures;
+
+    ValueNotifier getQueries = useValueNotifier(getFutures);
+
     // This value notifier is used to update the state of the stream builder
-    ValueNotifier<Future<QuerySnapshot<Object?>>> userQuery =
-        useValueNotifier(userFuture);
-    ValueNotifier<Future<QuerySnapshot<Object?>>> usernameQuery =
-        useValueNotifier(usernameFuture);
-
     TextEditingController searchController = useTextEditingController();
-
-    Iterable<Future<QuerySnapshot<Object?>>> iterable = [
-      userQuery.value,
-      usernameQuery.value
-    ];
     return SafeArea(
       child: Column(
         children: [
@@ -52,10 +43,13 @@ class PeopleScreen extends HookWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  usernameQuery.value = DatabaseMethods()
+                  var usernameQuery = DatabaseMethods()
                       .getUserByUserName(searchController.text);
-                  userQuery.value =
+                  var nameQuery =
                       DatabaseMethods().getUserByName(searchController.text);
+
+                  getQueries.value = Future.wait([usernameQuery, nameQuery])
+                      .then((value) => print(value));
                 },
                 child: const Icon(
                   Icons.search,
@@ -64,7 +58,7 @@ class PeopleScreen extends HookWidget {
             ],
           ),
           FutureBuilder(
-            future: Future.wait(iterable),
+            future: getQueries.value,
             builder: (BuildContext context,
                 AsyncSnapshot<List<QuerySnapshot>> snapshot) {
               bool isLoading =
