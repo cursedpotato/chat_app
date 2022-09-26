@@ -21,14 +21,14 @@ class Body extends HookWidget {
     useEffect(
       () {
         // Put this within a function that repeats this code every minute
-
         DatabaseMethods().updateUserTs();
         return;
       },
     );
 
-    // This variable was created to filter chatroom stream data and toggle buttons
+    final _myListKey = GlobalKey<AnimatedListState>();
 
+    // This variable was created to filter chatroom stream data and toggle buttons
     ValueNotifier<bool> isActive = useState(false);
     return Scaffold(
       appBar: buildAppBar(context),
@@ -67,6 +67,19 @@ class Body extends HookWidget {
                   snapshot.connectionState == ConnectionState.waiting;
               if (isWaiting) {
                 return const LinearProgressIndicator();
+              }
+
+              
+              if (snapshot.hasData) {
+                // TODO: Add conditional that filters if users are active or not
+                List<DocumentSnapshot> documentList = snapshot.data!.docs;
+                return AnimatedList(
+                  key: _myListKey,
+                  initialItemCount: documentList.length,
+                  itemBuilder: (BuildContext context, int index, animation) {
+                    DocumentSnapshot documentSnapshot = documentList[index];
+                    return ChatCard(chatroomDocument: documentSnapshot);
+                  },);
               }
 
               bool isRecent = snapshot.hasData && !isActive.value;
