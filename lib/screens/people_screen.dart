@@ -13,9 +13,9 @@ class PeopleScreen extends HookWidget {
   Widget build(BuildContext context) {
     Future<List<QuerySnapshot<Object?>>>? getFutures;
 
-    ValueNotifier getQueries = useValueNotifier(getFutures);
-
     // This value notifier is used to update the state of the stream builder
+    ValueNotifier getQueries = useState(getFutures);
+
     TextEditingController searchController = useTextEditingController();
     return SafeArea(
       child: Column(
@@ -43,15 +43,14 @@ class PeopleScreen extends HookWidget {
               ),
               GestureDetector(
                 onTap: () {
-
                   debugPrint("Click");
+                  // TODO: We can compact this by adding a method that does this whole process in DatabaseMethods
                   var usernameQuery = DatabaseMethods()
                       .getUserByUserName(searchController.text);
                   var nameQuery =
                       DatabaseMethods().getUserByName(searchController.text);
-
                   getQueries.value = Future.wait([usernameQuery, nameQuery]);
-                      
+                  searchController.text = "";
                 },
                 child: const Icon(
                   Icons.search,
@@ -63,78 +62,43 @@ class PeopleScreen extends HookWidget {
             future: getQueries.value,
             builder: (BuildContext context,
                 AsyncSnapshot<List<QuerySnapshot>> snapshot) {
+              if (!snapshot.hasData) {
+                return const Text("");
+              }
               bool isLoading =
                   snapshot.connectionState == ConnectionState.waiting;
               if (isLoading) {
                 return const Text('Loading');
               }
-              // ignore: prefer_is_empty
-              bool query1HasData = snapshot.data?[0].docs.length != 0;
-              
-              
-              if (snapshot.hasData && query1HasData) {
+
+              bool? query1HasData = snapshot.data?[0].docs.isNotEmpty;
+              if (query1HasData!) {
                 List<DocumentSnapshot>? documentList = snapshot.data?[0].docs;
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: documentList!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      UserModel userModel =
-                          UserModel.fromDocument(documentList[index]);
-                      return userTile(userModel, context);
-                    },
-                  ),
-                );
+                return userList(documentList);
               }
-              // ignore: prefer_is_empty
-              bool? query2HasData = snapshot.data?[1].docs.isEmpty;
-              if (snapshot.hasData && query2HasData!) {
+
+              bool? query2HasData = snapshot.data?[1].docs.isNotEmpty;
+              if (query2HasData!) {
                 List<DocumentSnapshot>? documentList = snapshot.data?[1].docs;
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: documentList!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      UserModel userModel =
-                          UserModel.fromDocument(documentList[index]);
-                      return userTile(userModel, context);
-                    },
-                  ),
-                );
+                return userList(documentList);
               }
 
               return const Text("There's no one to chat with");
             },
           )
-
-          // FutureBuilder(
-          //   future: ,
-          //   builder:
-          //       (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          //     bool isLoading =
-          //         snapshot.connectionState == ConnectionState.waiting;
-
-          //     if (isLoading) {
-          //       return const Text('Loading');
-          //     }
-          //     bool hasData = snapshot.hasData;
-          //     if (hasData) {
-          //       List<DocumentSnapshot>? documentList = snapshot.data?.docs;
-          //       return Expanded(
-          //         child: ListView.builder(
-          //           itemCount: documentList!.length,
-          //           itemBuilder: (BuildContext context, int index) {
-          //             UserModel userModel =
-          //                 UserModel.fromDocument(documentList[index]);
-          //             return userTile(userModel, context);
-          //           },
-          //         ),
-          //       );
-          //     }
-          //     // This could create the method to call itself so find a better logic
-
-          //     return const Text("There's no one to chat with");
-          //   },
-          // ),
         ],
+      ),
+    );
+  }
+
+  Widget userList(List<DocumentSnapshot>? documentList) {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: documentList!.length,
+        itemBuilder: (BuildContext context, int index) {
+          UserModel userModel = UserModel.fromDocument(documentList[index]);
+          return userTile(userModel, context);
+        },
       ),
     );
   }
