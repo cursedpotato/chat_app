@@ -26,7 +26,7 @@ class Body extends HookWidget {
       },
     );
 
-    final _myListKey = GlobalKey<AnimatedListState>();
+    final myListKey = GlobalKey<AnimatedListState>();
 
     // This variable was created to filter chatroom stream data and toggle buttons
     ValueNotifier<bool> isActive = useState(false);
@@ -41,7 +41,6 @@ class Body extends HookWidget {
               kDefaultPadding,
               kDefaultPadding,
             ),
-            
             color: Theme.of(context).scaffoldBackgroundColor,
             child: Row(
               children: [
@@ -69,17 +68,10 @@ class Body extends HookWidget {
                 return const LinearProgressIndicator();
               }
 
-              
-              if (snapshot.hasData) {
+              if (snapshot.hasData && isActive.value) {
                 // TODO: Add conditional that filters if users are active or not
                 List<DocumentSnapshot> documentList = snapshot.data!.docs;
-                return AnimatedList(
-                  key: _myListKey,
-                  initialItemCount: documentList.length,
-                  itemBuilder: (BuildContext context, int index, animation) {
-                    DocumentSnapshot documentSnapshot = documentList[index];
-                    return ChatCard(chatroomDocument: documentSnapshot);
-                  },);
+                return animatedChatroomList(myListKey, documentList);
               }
 
               bool isRecent = snapshot.hasData && !isActive.value;
@@ -89,17 +81,40 @@ class Body extends HookWidget {
                 return chatroomLb(documentList);
               }
 
-              bool isAvailable = snapshot.hasData && isActive.value;
-              if (isAvailable) {
-                List<DocumentSnapshot> documentList = snapshot.data!.docs;
-                return chatroomLb(documentList);
-              }
+              // bool isAvailable = snapshot.hasData && isActive.value;
+              // if (isAvailable) {
+              //   List<DocumentSnapshot> documentList = snapshot.data!.docs;
+              //   return chatroomLb(documentList);
+              // }
 
               // TODO: Make an error screen
               return const Text("Something went wrong");
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget animatedChatroomList(
+    GlobalKey<AnimatedListState> myListKey,
+    List<DocumentSnapshot<Object?>> documentList,
+  ) {
+    Tween<Offset> _offset = Tween(begin: Offset(1, 0), end: Offset(0, 0));
+    return Expanded(
+      child: AnimatedList(
+        key: myListKey,
+        initialItemCount: documentList.length,
+        physics: const BouncingScrollPhysics(),
+        itemBuilder: (BuildContext context, int index, animation) {
+          DocumentSnapshot documentSnapshot = documentList[index];
+          return SlideTransition(
+            position: animation.drive(_offset),
+            child: ChatCard(
+              chatroomDocument: documentSnapshot,
+            ),
+          );
+        },
       ),
     );
   }
