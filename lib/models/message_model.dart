@@ -5,23 +5,17 @@ enum ChatMessageType { text, audio, image, video }
 
 enum MessageStatus { notSent, notViewed, viewed }
 
-ChatMessageType whatType(DocumentSnapshot documentSnapshot) {
-  if (documentSnapshot["type"] == "text") {
-    return ChatMessageType.text;
-  }
-  if (documentSnapshot["type"] == "audio") {
-    return ChatMessageType.audio;
-  }
-  if (documentSnapshot["type"] == "video") {
-    return ChatMessageType.video;
-  }
-  if (documentSnapshot["type"] == "image") {
-    return ChatMessageType.image;
-  }
-  if (documentSnapshot["type"] == null) {
-    return ChatMessageType.text;
-  }
-  return ChatMessageType.text;
+ChatMessageType whatType(String documentType) {
+  const map = {
+    'text': ChatMessageType.text,
+    'audio': ChatMessageType.audio,
+    'image': ChatMessageType.image,
+    'video': ChatMessageType.video
+  };
+
+  ChatMessageType type = map[documentType] ?? ChatMessageType.text;
+
+  return type;
 }
 
 class ChatMesssageModel {
