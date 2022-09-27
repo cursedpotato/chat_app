@@ -100,7 +100,8 @@ class Body extends HookWidget {
     GlobalKey<AnimatedListState> myListKey,
     List<DocumentSnapshot<Object?>> documentList,
   ) {
-    Tween<Offset> _offset = Tween(begin: Offset(1, 0), end: Offset(0, 0));
+    Tween<Offset> offset =
+        Tween(begin: const Offset(1, 0), end: const Offset(0, 0));
     return Expanded(
       child: AnimatedList(
         key: myListKey,
@@ -109,7 +110,7 @@ class Body extends HookWidget {
         itemBuilder: (BuildContext context, int index, animation) {
           DocumentSnapshot documentSnapshot = documentList[index];
           return SlideTransition(
-            position: animation.drive(_offset),
+            position: animation.drive(offset),
             child: ChatCard(
               chatroomDocument: documentSnapshot,
             ),
