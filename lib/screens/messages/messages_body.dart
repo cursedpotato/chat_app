@@ -46,7 +46,9 @@ class Body extends HookWidget {
             ),
           ),
         ),
-        ChatInputField(chatteeName: chatteName,),
+        ChatInputField(
+          chatteeName: chatteName,
+        ),
       ],
     );
   }
@@ -63,18 +65,14 @@ class Message extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     Widget messageContent(ChatMesssageModel message) {
-      switch (message.messageType) {
-        case ChatMessageType.text:
-          return TextMessage(message: message);
-        case ChatMessageType.audio:
-          return AudioMessage(message: message);
-        case ChatMessageType.video:
-          return const VideoWidget();
-        default:
-          return const SizedBox();
-      }
+      final map = {
+        ChatMessageType.text: TextMessage(message: message),
+        ChatMessageType.audio: AudioMessage(message: message),
+        ChatMessageType.video: const VideoWidget(),
+      };
+      Widget type = map[message.messageType] ?? const SizedBox();
+      return type;
     }
 
     final chatteFuture =
@@ -87,16 +85,17 @@ class Message extends HookWidget {
         "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 4 ),
+      padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 4),
       child: Row(
-        crossAxisAlignment: message.isSender! ? CrossAxisAlignment.end : CrossAxisAlignment.center,
+        crossAxisAlignment: message.isSender!
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.center,
         mainAxisAlignment:
             message.isSender! ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!message.isSender!) ...[
             Container(
-              margin:
-                  const EdgeInsets.only(right: kDefaultPadding / 2),
+              margin: const EdgeInsets.only(right: kDefaultPadding / 2),
               child: CircleAvatar(
                 radius: 12,
                 backgroundImage: NetworkImage(chattePfp ?? noUser),
