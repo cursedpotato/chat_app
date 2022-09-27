@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/screens/messages/messages_body.dart';
 import 'package:chat_app/services/database.dart';
@@ -19,6 +21,17 @@ class MessagesScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    Timer? timer;
+
+    useEffect(
+      () {
+        // Put this within a function that repeats this code every minute
+        timer = Timer.periodic(const Duration(seconds: 60), (timer) {
+          DatabaseMethods().updateUserTs();
+        });
+        return () => timer?.cancel();
+      },
+    );
     // we will use getChatRoomMessages method to get the messages stream, this stream will user
 
     final chatroomId = getChatRoomIdByUsernames(chatteeName, chatterName);
@@ -57,7 +70,7 @@ class MessagesScreen extends HookWidget {
     String? chattePfp = chatteData?.docs[0]["imgUrl"];
     String noUser =
         "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
-  
+
     return AppBar(
       title: Row(
         children: [

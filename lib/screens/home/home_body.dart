@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/screens/home/chat_card.dart';
 import 'package:chat_app/services/auth.dart';
@@ -18,11 +20,15 @@ class Body extends HookWidget {
 
     Stream<QuerySnapshot>? chatroomStream = useFuture(future).data;
 
+    Timer? timer;
+
     useEffect(
       () {
         // Put this within a function that repeats this code every minute
-        DatabaseMethods().updateUserTs();
-        return;
+        timer = Timer.periodic(const Duration(seconds: 60), (timer) {
+          DatabaseMethods().updateUserTs();
+        });
+        return () => timer?.cancel();
       },
     );
 
@@ -41,7 +47,7 @@ class Body extends HookWidget {
               kDefaultPadding,
               kDefaultPadding,
             ),
-            color: Theme.of(context).scaffoldBackgroundColor,
+            color: Theme.of(context).primaryColor,
             child: Row(
               children: [
                 FillOutlineButton(
@@ -68,25 +74,16 @@ class Body extends HookWidget {
                 return const LinearProgressIndicator();
               }
 
-              if (snapshot.hasData && isActive.value) {
-                // TODO: Add conditional that filters if users are active or not
+              if (snapshot.hasData) {
                 List<DocumentSnapshot> documentList = snapshot.data!.docs;
                 return animatedChatroomList(myListKey, documentList);
               }
 
-              bool isRecent = snapshot.hasData && !isActive.value;
+              bool isRecent = snapshot.hasData && isActive.value;
               if (isRecent) {
                 // TODO: Add conditional that filters if users are active or not
-                List<DocumentSnapshot> documentList = snapshot.data!.docs;
-                return chatroomLb(documentList);
+
               }
-
-              // bool isAvailable = snapshot.hasData && isActive.value;
-              // if (isAvailable) {
-              //   List<DocumentSnapshot> documentList = snapshot.data!.docs;
-              //   return chatroomLb(documentList);
-              // }
-
               // TODO: Make an error screen
               return const Text("Something went wrong");
             },
@@ -122,7 +119,7 @@ class Body extends HookWidget {
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).primaryColor,
       automaticallyImplyLeading: true,
       title: const Text("Chats"),
       actions: [
@@ -142,20 +139,6 @@ class Body extends HookWidget {
               child: const Icon(Icons.exit_to_app)),
         )
       ],
-    );
-  }
-
-  Widget chatroomLb(List<DocumentSnapshot> documentList) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: documentList.length,
-        itemBuilder: (BuildContext context, int index) {
-          DocumentSnapshot documentSnapshot = documentList[index];
-          return ChatCard(
-            chatroomDocument: documentSnapshot,
-          );
-        },
-      ),
     );
   }
 }
