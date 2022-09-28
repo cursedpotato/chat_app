@@ -76,13 +76,14 @@ class Body extends HookWidget {
 
               if (snapshot.hasData) {
                 List<DocumentSnapshot> documentList = snapshot.data!.docs;
-                return animatedChatroomList(myListKey, documentList);
+                return animatedChatroomList(myListKey, documentList, false);
               }
 
               bool isRecent = snapshot.hasData && isActive.value;
               if (isRecent) {
                 // TODO: Add conditional that filters if users are active or not
-
+                List<DocumentSnapshot> documentList = snapshot.data!.docs;
+                return animatedChatroomList(myListKey, documentList, true);
               }
               // TODO: Make an error screen
               return const Text("Something went wrong");
@@ -96,6 +97,7 @@ class Body extends HookWidget {
   Widget animatedChatroomList(
     GlobalKey<AnimatedListState> myListKey,
     List<DocumentSnapshot<Object?>> documentList,
+    bool isActive,
   ) {
     Tween<Offset> offset =
         Tween(begin: const Offset(1, 0), end: const Offset(0, 0));
@@ -109,6 +111,7 @@ class Body extends HookWidget {
           return SlideTransition(
             position: animation.drive(offset),
             child: ChatCard(
+              showOnlyActive: isActive,
               chatroomDocument: documentSnapshot,
             ),
           );

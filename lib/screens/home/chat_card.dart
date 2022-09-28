@@ -3,7 +3,7 @@ import 'package:chat_app/screens/messages/messages_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+
 import 'package:timeago/timeago.dart' as timeago;
 import '../../globals.dart';
 import '../../models/user_model.dart';
@@ -50,7 +50,7 @@ class ChatCard extends StatelessWidget {
     );
   }
 
-  GestureDetector listTile(
+  Widget listTile(
     BuildContext context,
     UserModel userModel,
     ChatroomModel chatroomModel,
@@ -59,6 +59,11 @@ class ChatCard extends StatelessWidget {
     String lastMessage = timeago.format(chatroomModel.lastMessageSendDate!);
     String lastSeen = timeago.format(userModel.lastSeenDate!);
     bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
+    bool isNotActive = !isActive;
+
+    if (showOnlyActive && !isNotActive) {
+      return const SizedBox();
+    }
     // TODO: May change to list tile
     return GestureDetector(
       onTap: () {
