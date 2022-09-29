@@ -36,6 +36,8 @@ class Body extends HookWidget {
 
     // This variable was created to filter chatroom stream data and toggle buttons
     ValueNotifier<bool> isActive = useState(false);
+
+    debugPrint(isActive.value.toString());
     return Scaffold(
       appBar: buildAppBar(context),
       body: Column(
@@ -68,23 +70,28 @@ class Body extends HookWidget {
             stream: chatroomStream,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              debugPrint(isActive.value.toString() + " Stream Builder");
+              if (!snapshot.hasData) {
+                return const Text('Failed connection');
+              }
+
               bool isWaiting =
                   snapshot.connectionState == ConnectionState.waiting;
               if (isWaiting) {
                 return const LinearProgressIndicator();
               }
 
-              if (snapshot.hasData) {
-                List<DocumentSnapshot> documentList = snapshot.data!.docs;
-                return animatedChatroomList(myListKey, documentList, false);
-              }
-
-              bool isRecent = snapshot.hasData && isActive.value;
-              if (isRecent) {
+              if (isActive.value) {
                 // TODO: Add conditional that filters if users are active or not
                 List<DocumentSnapshot> documentList = snapshot.data!.docs;
                 return animatedChatroomList(myListKey, documentList, true);
               }
+
+              if (!isActive.value) {
+                List<DocumentSnapshot> documentList = snapshot.data!.docs;
+                return animatedChatroomList(myListKey, documentList, false);
+              }
+
               // TODO: Make an error screen
               return const Text("Something went wrong");
             },

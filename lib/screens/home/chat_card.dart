@@ -14,7 +14,7 @@ class ChatCard extends StatelessWidget {
   final DocumentSnapshot chatroomDocument;
   const ChatCard({
     Key? key,
-    this.showOnlyActive = false,
+    required this.showOnlyActive,
     required this.chatroomDocument,
   }) : super(key: key);
 
@@ -61,6 +61,7 @@ class ChatCard extends StatelessWidget {
     bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
     bool isNotActive = !isActive;
 
+    // We have to debug around here
     if (showOnlyActive && !isNotActive) {
       return const SizedBox();
     }
