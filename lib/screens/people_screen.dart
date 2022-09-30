@@ -44,7 +44,6 @@ class PeopleScreen extends HookWidget {
               GestureDetector(
                 onTap: () {
                   debugPrint("Click");
-                  // TODO: We can compact this by adding a method that does this whole process in DatabaseMethods
                   var usernameQuery = DatabaseMethods()
                       .getUserByUserName(searchController.text);
                   var nameQuery =
