@@ -18,7 +18,7 @@ class SignIn extends HookWidget {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      
       body: Stack(
         children: [
           Container(
@@ -70,8 +70,10 @@ class SignIn extends HookWidget {
             color: const Color(0xFF087949),
             title: "Sign in",
             onTap: () {
-              AuthMethods().signInWithMail(
+              if (emailController.text != "" || passwordController.text != '') {
+                AuthMethods().signInWithMail(
                   emailController.text, passwordController.text, context);
+              }
             },
           ),
           const SizedBox(height: 20.0),
@@ -91,6 +93,7 @@ class SignIn extends HookWidget {
               ButtonWidget(
                 color: const Color.fromRGBO(66, 103, 178, 1),
                 title: "Facebook",
+                // TODO: Implement facebook auth
                 onTap: () {},
               )
             ],

@@ -17,6 +17,7 @@ class ButtonWidget extends StatelessWidget {
     return Flexible(
       flex: 1,
       child: Material(
+        color: Colors.white,
         child: Ink(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),

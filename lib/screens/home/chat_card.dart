@@ -186,7 +186,6 @@ class ChatCard extends StatelessWidget {
       ),
     );
     }
-    // TODO: May change to list tile
     return const SizedBox();
   }
 
