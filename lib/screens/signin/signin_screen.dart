@@ -1,11 +1,12 @@
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/screens/signin/button_widget.dart';
 import 'package:chat_app/screens/signin/textfield_widget.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:provider/provider.dart';
 
-import '../../models/signin_modelview.dart';
+
+
 import 'wave_widget.dart';
 
 class SignIn extends HookWidget {
@@ -13,7 +14,7 @@ class SignIn extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = Provider.of<SingInModel>(context);
+
     final bool keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     final size = MediaQuery.of(context).size;
 
@@ -35,15 +36,17 @@ class SignIn extends HookWidget {
               color: Colors.white,
             ),
           ),
-          _loginBox(model, context),
+          _loginBox(context),
         ],
       ),
     );
   }
 
-  Widget _loginBox(SingInModel model, BuildContext context) {
+  Widget _loginBox(BuildContext context) {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
+    final isVisible = useState(false);
+    bool isValid = EmailValidator.validate(emailController.text);
     return Padding(
       padding: const EdgeInsets.all(30.0),
       child: Column(
@@ -51,19 +54,22 @@ class SignIn extends HookWidget {
         children: [
           TextFieldWidget(
             hintText: "Email",
-            suffixIconData: model.isValid ? Icons.check : null,
+            suffixIconData: isValid ? Icons.check : null,
             controller: emailController,
             prefixIconData: Icons.mail_outline,
             obscureText: false,
           ),
           const SizedBox(height: 10.0),
           TextFieldWidget(
+            onIconTap: () {
+              
+            },
             hintText: "Password",
             controller: passwordController,
             prefixIconData: Icons.lock_outline,
-            obscureText: model.isVisible ? false : true,
+            obscureText: isVisible.value ? false : true,
             suffixIconData:
-                model.isVisible ? Icons.visibility : Icons.visibility_off,
+                isVisible.value ? Icons.visibility : Icons.visibility_off,
           ),
           const SizedBox(height: 20.0),
           ButtonWidget(

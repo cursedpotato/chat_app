@@ -5,10 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
-import 'models/signin_modelview.dart';
+
 import 'screens/signin/signin_screen.dart';
 
 void main() async {
@@ -39,10 +38,7 @@ void main() async {
   );
 
   runApp(
-    MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => SingInModel())],
-      child: const MyApp(),
-    ),
+    const MyApp(),
   );
 }
 

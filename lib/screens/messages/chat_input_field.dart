@@ -26,7 +26,7 @@ class ChatInputField extends HookWidget {
     final toggle = useState(false);
 
     // Animations
-    ValueNotifier<double> _width = useState(50.0);
+    ValueNotifier<double> width = useState(50.0);
 
     addMessage(bool sendClicked) {
       if (messageController.text != "") {
@@ -86,7 +86,7 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          mediaMenu(controller, toggle),
+          mediaMenu(controller, toggle, width),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(
@@ -119,31 +119,36 @@ class ChatInputField extends HookWidget {
     );
   }
 
-  Row mediaMenu(controller, toggle) {
+  Row mediaMenu(controller, toggle, width) {
     return Row(
       children: [
         AnimateIcons(
           startIcon: Icons.arrow_forward_ios_rounded,
           endIcon: Icons.apps,
           onStartIconPress: () {
+
             toggle.value = !toggle.value;
             return true;
           },
           onEndIconPress: () {
+        
             toggle.value = !toggle.value;
             return true;
           },
           controller: controller,
         ),
-        toggle.value == true ? multimedia() : const SizedBox()
+        toggle.value == true ? multimedia(width.value) : const SizedBox()
       ],
     );
   }
 
-  Widget multimedia() {
+  Widget multimedia(double width) {
     Tween<Offset> offset =
         Tween(begin: const Offset(1, 0), end: const Offset(0, 0));
     return AnimatedContainer(
+      color: Colors.red,
+      height: 20,
+      width: width,
       duration: const Duration(seconds: 1),
       child: AnimatedList(
         scrollDirection: Axis.horizontal,
