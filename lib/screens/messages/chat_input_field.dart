@@ -25,6 +25,9 @@ class ChatInputField extends HookWidget {
 
     final toggle = useState(false);
 
+    // Animations
+    ValueNotifier<double> _width = useState(50.0);
+
     addMessage(bool sendClicked) {
       if (messageController.text != "") {
         String message = messageController.text;
@@ -108,7 +111,9 @@ class ChatInputField extends HookWidget {
             ),
           ),
           IconButton(
-              onPressed: () => addMessage(true), icon: const Icon(Icons.send))
+            onPressed: () => addMessage(true),
+            icon: const Icon(Icons.send),
+          )
         ],
       ),
     );
@@ -117,48 +122,38 @@ class ChatInputField extends HookWidget {
   Row mediaMenu(controller, toggle) {
     return Row(
       children: [
-        // AnimateIcons(
-        //   startIcon: Icons.arrow_forward_ios_rounded,
-        //   endIcon: Icons.apps,
-        //   onStartIconPress: () {
-        //     toggle.value = !toggle.value;
-
-        //     return true;
-        //   },
-        //   onEndIconPress: () {
-        //     toggle.value = !toggle.value;
-        //     return true;
-        //   },
-        //   controller: controller,
-        // ),
-        // toggle.value == true ? multimedia() : const SizedBox()
-        multimedia()
+        AnimateIcons(
+          startIcon: Icons.arrow_forward_ios_rounded,
+          endIcon: Icons.apps,
+          onStartIconPress: () {
+            toggle.value = !toggle.value;
+            return true;
+          },
+          onEndIconPress: () {
+            toggle.value = !toggle.value;
+            return true;
+          },
+          controller: controller,
+        ),
+        toggle.value == true ? multimedia() : const SizedBox()
       ],
     );
   }
 
   Widget multimedia() {
-    return 
-      Row(
-        children: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.attach_file,
-            ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.camera_alt_outlined,
-            ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.mic),
-          ),
-        ],
-      );
-   
+    Tween<Offset> offset =
+        Tween(begin: const Offset(1, 0), end: const Offset(0, 0));
+    return AnimatedContainer(
+      duration: const Duration(seconds: 1),
+      child: AnimatedList(
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index, animation) {
+          return SlideTransition(
+            position: animation.drive(offset),
+            child: const SizedBox(),
+          );
+        },
+      ),
+    );
   }
 }
