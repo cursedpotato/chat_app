@@ -70,7 +70,7 @@ class Body extends HookWidget {
             stream: chatroomStream,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              debugPrint(isActive.value.toString() + " Stream Builder");
+              debugPrint("${isActive.value} Stream Builder");
               if (!snapshot.hasData) {
                 return const Text('Failed connection');
               }
@@ -82,7 +82,7 @@ class Body extends HookWidget {
               }
 
               if (isActive.value) {
-                // TODO: Add conditional that filters if users are active or not
+                
                 List<DocumentSnapshot> documentList = snapshot.data!.docs;
                 return animatedChatroomList(myListKey, documentList, true);
               }
