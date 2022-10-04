@@ -62,7 +62,7 @@ class SignIn extends HookWidget {
           const SizedBox(height: 10.0),
           TextFieldWidget(
             onIconTap: () {
-              
+              isVisible.value = !isVisible.value;
             },
             hintText: "Password",
             controller: passwordController,
