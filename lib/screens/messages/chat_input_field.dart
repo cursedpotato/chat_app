@@ -21,12 +21,8 @@ class ChatInputField extends HookWidget {
     String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
     TextEditingController messageController = useTextEditingController();
     String chatRoomId = getChatRoomIdByUsernames(chatteeName, chatterUsername!);
-    final controller = AnimateIconController();
 
-    final toggle = useState(false);
-
-    // Animations
-    ValueNotifier<double> width = useState(50.0);
+    final toggle = useValueNotifier(false);
 
     addMessage(bool sendClicked) {
       if (messageController.text != "") {
@@ -86,7 +82,7 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          mediaMenu(controller, toggle, width),
+          mediaMenu(toggle),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(
@@ -119,49 +115,55 @@ class ChatInputField extends HookWidget {
     );
   }
 
-  Row mediaMenu(controller, toggle, ValueNotifier<double> width) {
-    return Row(
-      children: [
-        AnimateIcons(
-          startIcon: Icons.arrow_forward_ios_rounded,
-          endIcon: Icons.apps,
-          onStartIconPress: () {
-            debugPrint("mediaMenu: Shrink");
-            width.value = 50;
-            toggle.value = !toggle.value;
-            return true;
-          },
-          onEndIconPress: () {
-            debugPrint("mediaMenu: Grow");
-            width.value = 0;
-            toggle.value = !toggle.value;
+  Widget mediaMenu(ValueNotifier<bool> toggle) {
+    final controller = AnimateIconController();
+    const duration = Duration(milliseconds: 100);
+    return HookBuilder(
+      builder: (BuildContext context) {
+        bool isSelected = useValueListenable(toggle);
+        return Row(  
+          children: [
+            AnimateIcons(
+              duration: duration,
+              startIcon: Icons.arrow_forward_ios_rounded,
+              endIcon: Icons.apps_rounded,
+              onStartIconPress: () {
+                debugPrint("mediaMenu: Shrink");
+                toggle.value = !toggle.value;
+                return true;
+              },
+              onEndIconPress: () {
+                debugPrint("mediaMenu: Grow");
+                toggle.value = !toggle.value;
 
-            return true;
-          },
-          controller: controller,
-        ),
-        toggle.value == true ? multimedia(width) : const SizedBox()
-      ],
+                return true;
+              },
+              controller: controller,
+            ),
+            AnimatedContainer(
+                
+                height: 24,
+                width: isSelected ? 100.0 : 0.0,
+                duration: duration,
+                curve: Curves.fastOutSlowIn,
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget multimedia(ValueNotifier<double> width) {
+  Widget multimedia(bool selected) {
     Tween<Offset> offset =
         Tween(begin: const Offset(1, 0), end: const Offset(0, 0));
-    return AnimatedContainer(
-      color: Colors.red,
-      height: 20,
-      width: width.value,
-      duration: const Duration(seconds: 5),
-      child: AnimatedList(
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index, animation) {
-          return SlideTransition(
-            position: animation.drive(offset),
-            child: const SizedBox(),
-          );
-        },
-      ),
+    return AnimatedList(
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (context, index, animation) {
+        return SlideTransition(
+          position: animation.drive(offset),
+          child: const SizedBox(),
+        );
+      },
     );
   }
 }
