@@ -119,37 +119,40 @@ class ChatInputField extends HookWidget {
     );
   }
 
-  Row mediaMenu(controller, toggle, width) {
+  Row mediaMenu(controller, toggle, ValueNotifier<double> width) {
     return Row(
       children: [
         AnimateIcons(
           startIcon: Icons.arrow_forward_ios_rounded,
           endIcon: Icons.apps,
           onStartIconPress: () {
-
+            debugPrint("mediaMenu: Shrink");
+            width.value = 50;
             toggle.value = !toggle.value;
             return true;
           },
           onEndIconPress: () {
-        
+            debugPrint("mediaMenu: Grow");
+            width.value = 0;
             toggle.value = !toggle.value;
+
             return true;
           },
           controller: controller,
         ),
-        toggle.value == true ? multimedia(width.value) : const SizedBox()
+        toggle.value == true ? multimedia(width) : const SizedBox()
       ],
     );
   }
 
-  Widget multimedia(double width) {
+  Widget multimedia(ValueNotifier<double> width) {
     Tween<Offset> offset =
         Tween(begin: const Offset(1, 0), end: const Offset(0, 0));
     return AnimatedContainer(
       color: Colors.red,
       height: 20,
-      width: width,
-      duration: const Duration(seconds: 1),
+      width: width.value,
+      duration: const Duration(seconds: 5),
       child: AnimatedList(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index, animation) {
