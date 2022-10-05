@@ -1,3 +1,4 @@
+
 import 'package:animate_icons/animate_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +65,8 @@ class ChatInputField extends HookWidget {
         );
       }
     }
+
+    // TODO: make the input similar to the ios whatsapp in version 2
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -159,10 +162,11 @@ class ChatInputField extends HookWidget {
     return AnimatedList(
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index, animation) {
-        return SlideTransition(
-          position: animation.drive(offset),
-          child: const SizedBox(),
-        );
+        return Row(children: const [
+          Text('OWO'),
+          Text('OWO'),
+          Text('OWO'),
+        ],);
       },
     );
   }

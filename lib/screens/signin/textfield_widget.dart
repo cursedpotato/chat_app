@@ -27,7 +27,6 @@ class TextFieldWidget extends HookWidget {
   
   @override
   Widget build(BuildContext context) {
-    final isVisible = useState(false);
     return TextField(
       controller: controller,
       onChanged: onChanged,

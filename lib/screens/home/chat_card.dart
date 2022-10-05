@@ -59,11 +59,16 @@ class ChatCard extends StatelessWidget {
     String lastMessage = timeago.format(chatroomModel.lastMessageSendDate!);
     String lastSeen = timeago.format(userModel.lastSeenDate!);
     bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
+    bool notActive = !showOnlyActive;
+    bool isOnlyActive = ((showOnlyActive && isActive) || notActive ) == true;
  
 
-    // We have to debug around here
-    if (!showOnlyActive) {
-      return GestureDetector(
+    // TODO: We have to debug around here
+    
+    if (!isOnlyActive) {
+      return const SizedBox();
+    }
+    return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
@@ -122,71 +127,7 @@ class ChatCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-    }
-    if (showOnlyActive && isActive) {
-      GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MessagesScreen(
-              chatterName: chatterUsername!,
-              chatteeName: userModel.username!,
-              lastSeen: lastSeen,
-            ),
-          ),
-        );
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: kDefaultPadding, vertical: kDefaultPadding * 0.75),
-        child: Row(
-          children: [
-            Stack(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundImage: NetworkImage(userModel.pfpUrl!),
-                ),
-                isActive ? activityDot(context) : const SizedBox(),
-              ],
-            ),
-            Expanded(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      userModel.name!,
-                      style: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w500),
-                    ),
-                    const SizedBox(height: 8),
-                    Opacity(
-                      opacity: 0.64,
-                      child: Text(
-                        chatroomModel.lastMessage!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Opacity(
-              opacity: 0.64,
-              child: Text(lastMessage),
-            )
-          ],
-        ),
-      ),
-    );
-    }
-    return const SizedBox();
+    );;
   }
 
   Positioned activityDot(BuildContext context) {
