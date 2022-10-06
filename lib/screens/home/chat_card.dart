@@ -3,7 +3,6 @@ import 'package:chat_app/screens/messages/messages_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:timeago/timeago.dart' as timeago;
 import '../../globals.dart';
 import '../../models/user_model.dart';
@@ -61,11 +60,12 @@ class ChatCard extends StatelessWidget {
     bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
     // We added this var because !showOnlyActive does not work well on isOnlyActive
     bool notActive = !showOnlyActive;
-    bool isOnlyActive = ((showOnlyActive && isActive) || notActive );
-    
+    bool isOnlyActive = ((showOnlyActive && isActive) || notActive);
+
     if (!isOnlyActive) {
       return const SizedBox();
     }
+  
     return GestureDetector(
       onTap: () {
         Navigator.push(

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/screens/home/chat_card.dart';
 import 'package:chat_app/services/auth.dart';
@@ -131,7 +132,7 @@ class Body extends HookWidget {
     return AppBar(
       backgroundColor: Theme.of(context).primaryColor,
       automaticallyImplyLeading: true,
-      title: const Text("Chats"),
+      title: AnimatedTextKit(animatedTexts: [TypewriterAnimatedText('Chats'), ], totalRepeatCount: 1,),
       actions: [
         InkWell(
           onTap: () {

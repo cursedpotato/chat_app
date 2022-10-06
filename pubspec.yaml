@@ -49,10 +49,10 @@ dependencies:
   google_fonts: ^3.0.1
   # To reduce boilerplate
   flutter_hooks: ^0.18.3
-  
   image_picker: ^0.8.5+3  
   
   animate_icons: ^2.0.0
+  animated_text_kit: ^4.2.2
 
 dev_dependencies:
   flutter_launcher_icons: ^0.10.0

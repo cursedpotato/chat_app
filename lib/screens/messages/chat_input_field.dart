@@ -1,4 +1,3 @@
-
 import 'package:animate_icons/animate_icons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +22,25 @@ class ChatInputField extends HookWidget {
     TextEditingController messageController = useTextEditingController();
     String chatRoomId = getChatRoomIdByUsernames(chatteeName, chatterUsername!);
 
-    final toggle = useValueNotifier(false);
+    // This controls whether the media menu is display or not
+    ValueNotifier<bool> showMenu = useValueNotifier(false);
+
+    // This controls whether the mic icon is show or not
+    ValueNotifier<bool> showMic = useValueNotifier(true);
+
+    // We track input to toggle the mic
+    void toggle() {
+      if (messageController.text == "") showMic.value = true;
+      // To avoid the var being constantly called
+      var length = messageController.text.length;
+      if (length > 0 && length < 2) showMic.value = false;
+      debugPrint('This is the current value of this thing: ${showMic.value}');
+    }
+
+    useEffect(() {
+      messageController.addListener(toggle);
+      return () => messageController.removeListener(toggle);
+    });
 
     addMessage(bool sendClicked) {
       if (messageController.text != "") {
@@ -66,8 +83,6 @@ class ChatInputField extends HookWidget {
       }
     }
 
-    // TODO: make the input similar to the ios whatsapp in version 2
-
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: kDefaultPadding,
@@ -85,7 +100,7 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          mediaMenu(toggle),
+          mediaMenu(showMenu),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(
@@ -109,9 +124,15 @@ class ChatInputField extends HookWidget {
               ),
             ),
           ),
-          IconButton(
-            onPressed: () => addMessage(true),
-            icon: const Icon(Icons.send),
+          HookBuilder(
+            builder: (context) {
+              final toggle = useValueListenable(showMic);
+              if (toggle) return IconButton(onPressed: () {}, icon: const Icon(Icons.mic));
+              return IconButton(
+                onPressed: () => addMessage(true),
+                icon: const Icon(Icons.send),
+              );
+            },
           )
         ],
       ),
@@ -120,11 +141,11 @@ class ChatInputField extends HookWidget {
 
   Widget mediaMenu(ValueNotifier<bool> toggle) {
     final controller = AnimateIconController();
-    const duration = Duration(milliseconds: 100);
+    const duration = Duration(milliseconds: 500);
     return HookBuilder(
       builder: (BuildContext context) {
         bool isSelected = useValueListenable(toggle);
-        return Row(  
+        return Row(
           children: [
             AnimateIcons(
               duration: duration,
@@ -138,35 +159,18 @@ class ChatInputField extends HookWidget {
               onEndIconPress: () {
                 debugPrint("mediaMenu: Grow");
                 toggle.value = !toggle.value;
-
                 return true;
               },
               controller: controller,
             ),
             AnimatedContainer(
-                
-                height: 24,
-                width: isSelected ? 100.0 : 0.0,
-                duration: duration,
-                curve: Curves.fastOutSlowIn,
+              height: 24,
+              width: isSelected ? 100.0 : 0.0,
+              duration: duration,
+              curve: isSelected ? Curves.elasticOut : Curves.bounceOut,
             ),
           ],
         );
-      },
-    );
-  }
-
-  Widget multimedia(bool selected) {
-    Tween<Offset> offset =
-        Tween(begin: const Offset(1, 0), end: const Offset(0, 0));
-    return AnimatedList(
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (context, index, animation) {
-        return Row(children: const [
-          Text('OWO'),
-          Text('OWO'),
-          Text('OWO'),
-        ],);
       },
     );
   }
