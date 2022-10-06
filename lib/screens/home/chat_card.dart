@@ -59,11 +59,9 @@ class ChatCard extends StatelessWidget {
     String lastMessage = timeago.format(chatroomModel.lastMessageSendDate!);
     String lastSeen = timeago.format(userModel.lastSeenDate!);
     bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
+    // We added this var because !showOnlyActive does not work well on isOnlyActive
     bool notActive = !showOnlyActive;
-    bool isOnlyActive = ((showOnlyActive && isActive) || notActive ) == true;
- 
-
-    // TODO: We have to debug around here
+    bool isOnlyActive = ((showOnlyActive && isActive) || notActive );
     
     if (!isOnlyActive) {
       return const SizedBox();
@@ -127,7 +125,7 @@ class ChatCard extends StatelessWidget {
           ],
         ),
       ),
-    );;
+    );
   }
 
   Positioned activityDot(BuildContext context) {
