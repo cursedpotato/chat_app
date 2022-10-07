@@ -5,8 +5,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'package:random_string/random_string.dart';
 
-import '../../globals.dart';
-import '../../services/database.dart';
+import '../../../globals.dart';
+import '../../../services/database.dart';
 
 class ChatInputField extends HookWidget {
   final String chatteeName;
@@ -127,7 +127,10 @@ class ChatInputField extends HookWidget {
           HookBuilder(
             builder: (context) {
               final toggle = useValueListenable(showMic);
-              if (toggle) return IconButton(onPressed: () {}, icon: const Icon(Icons.mic));
+              if (toggle) {
+                return IconButton(
+                    onPressed: () {}, icon: const Icon(Icons.mic));
+              }
               return IconButton(
                 onPressed: () => addMessage(true),
                 icon: const Icon(Icons.send),
@@ -168,6 +171,11 @@ class ChatInputField extends HookWidget {
               width: isSelected ? 100.0 : 0.0,
               duration: duration,
               curve: isSelected ? Curves.elasticOut : Curves.bounceOut,
+              child: Row(
+                children: const [
+                  
+                ],
+              )
             ),
           ],
         );

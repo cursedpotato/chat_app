@@ -1,6 +1,6 @@
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/message_model.dart';
-import 'package:chat_app/screens/messages/chat_input_field.dart';
+import 'package:chat_app/screens/messages/chat_input/chat_input_field.dart';
 import 'package:chat_app/screens/messages/text_message.dart';
 import 'package:chat_app/screens/messages/video_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
