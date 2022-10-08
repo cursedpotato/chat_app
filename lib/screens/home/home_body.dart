@@ -37,8 +37,6 @@ class Body extends HookWidget {
 
     // This variable was created to filter chatroom stream data and toggle buttons
     ValueNotifier<bool> isActive = useState(false);
-
-    debugPrint(isActive.value.toString());
     return Scaffold(
       appBar: buildAppBar(context),
       body: Column(
@@ -71,7 +69,6 @@ class Body extends HookWidget {
             stream: chatroomStream,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              debugPrint("${isActive.value} Stream Builder");
               if (!snapshot.hasData) {
                 return const Text('Failed connection');
               }
@@ -83,7 +80,6 @@ class Body extends HookWidget {
               }
 
               if (isActive.value) {
-                
                 List<DocumentSnapshot> documentList = snapshot.data!.docs;
                 return animatedChatroomList(myListKey, documentList, true);
               }
@@ -132,7 +128,17 @@ class Body extends HookWidget {
     return AppBar(
       backgroundColor: Theme.of(context).primaryColor,
       automaticallyImplyLeading: true,
-      title: AnimatedTextKit(animatedTexts: [TypewriterAnimatedText('Chats'), ], totalRepeatCount: 1,),
+      title: AnimatedTextKit(
+        animatedTexts: [
+          TypewriterAnimatedText("Capychat"),
+          TypewriterAnimatedText("Connect with others"),
+          TypewriterAnimatedText("Explore"),
+          TypewriterAnimatedText("Talk with people you care about"),
+          WavyAnimatedText("Chat!")
+
+        ],
+        totalRepeatCount: 1,
+      ),
       actions: [
         InkWell(
           onTap: () {

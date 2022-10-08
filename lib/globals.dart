@@ -11,9 +11,12 @@ const kErrorColor = Color(0xFFF03738);
 
 const kDefaultPadding = 20.0;
 
+// Firebase related user vars
 String? email = FirebaseAuth.instance.currentUser?.email;
-
 String? chatterUsername = email!.substring(0, email?.indexOf('@'));
+String? profilePicUrl = FirebaseAuth.instance.currentUser?.photoURL;
+String noImage =
+        'https://secure.gravatar.com/avatar/ef9463e636b415ee041791a6a3764104?s=250&d=mm&r=g';
 
 getChatRoomIdByUsernames(String a, String b) {
   if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {

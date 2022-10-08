@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
           if (!snapshot.hasData) {
             return const SignIn();
           }
-          return const HomeScreen();
+          return HomeScreen();
         },
       ),
     );
