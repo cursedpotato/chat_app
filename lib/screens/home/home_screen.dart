@@ -35,6 +35,7 @@ class HomeScreen extends HookWidget {
         key:  _bottomNavigationKey,
         color: khighlightColor,
         backgroundColor: Colors.transparent,
+        buttonBackgroundColor: selectedIndex.value == 3 ? Colors.transparent : khighlightColor,
         onTap: (int index) {
           selectedIndex.value = index;
           
@@ -45,7 +46,7 @@ class HomeScreen extends HookWidget {
           const Icon(Icons.people),
           const Icon(Icons.call),
           CircleAvatar(
-                radius: 14,
+                radius: 16,
                 backgroundImage: NetworkImage(profilePicUrl ?? noImage),
               ),
         ],
