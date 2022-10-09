@@ -41,28 +41,30 @@ class Body extends HookWidget {
       appBar: buildAppBar(context),
       body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(
-              kDefaultPadding,
-              0,
-              kDefaultPadding,
-              kDefaultPadding,
-            ),
-            color: Theme.of(context).primaryColor,
-            child: Row(
-              children: [
-                FillOutlineButton(
-                  press: () => isActive.value = !isActive.value,
-                  text: "Recent Messages",
-                  isFilled: !isActive.value,
-                ),
-                const SizedBox(width: kDefaultPadding),
-                FillOutlineButton(
-                  press: () => isActive.value = !isActive.value,
-                  text: "Active",
-                  isFilled: isActive.value,
-                ),
-              ],
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(
+                kDefaultPadding,
+                0,
+                kDefaultPadding,
+                kDefaultPadding,
+              ),
+              color: Theme.of(context).primaryColor,
+              child: Row(
+                children: [
+                  FillOutlineButton(
+                    press: () => isActive.value = !isActive.value,
+                    text: "Recent Messages",
+                    isFilled: !isActive.value,
+                  ),
+                  const SizedBox(width: kDefaultPadding),
+                  FillOutlineButton(
+                    press: () => isActive.value = !isActive.value,
+                    text: "Active",
+                    isFilled: isActive.value,
+                  ),
+                ],
+              ),
             ),
           ),
           StreamBuilder(

@@ -34,7 +34,6 @@ class ChatInputField extends HookWidget {
       // To avoid the var being constantly called
       var length = messageController.text.length;
       if (length > 0 && length < 2) showMic.value = false;
-      debugPrint('This is the current value of this thing: ${showMic.value}');
     }
 
     useEffect(() {
@@ -84,6 +83,7 @@ class ChatInputField extends HookWidget {
     }
 
     return Container(
+      
       padding: const EdgeInsets.symmetric(
         horizontal: kDefaultPadding,
         vertical: kDefaultPadding / 2,
@@ -145,10 +145,13 @@ class ChatInputField extends HookWidget {
   Widget mediaMenu(ValueNotifier<bool> toggle) {
     final controller = AnimateIconController();
     const duration = Duration(milliseconds: 500);
+
     return HookBuilder(
       builder: (BuildContext context) {
         bool isSelected = useValueListenable(toggle);
+
         return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AnimateIcons(
               duration: duration,
@@ -167,16 +170,27 @@ class ChatInputField extends HookWidget {
               controller: controller,
             ),
             AnimatedContainer(
-              height: 24,
-              width: isSelected ? 100.0 : 0.0,
-              duration: duration,
-              curve: isSelected ? Curves.elasticOut : Curves.bounceOut,
-              child: Row(
-                children: const [
-                  
-                ],
-              )
-            ),
+                height: 48,
+                width: isSelected ? 104 : 0.0,
+                duration: duration,
+                curve: isSelected ? Curves.elasticOut : Curves.bounceOut,
+                child: ClipRect(
+                  child: Row(
+                    
+                    children: [
+                      Flexible(
+                        child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.attach_file)),
+                      ),
+                      Flexible(
+                        child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.filter_outlined)),
+                      )
+                    ],
+                  ),
+                )),
           ],
         );
       },

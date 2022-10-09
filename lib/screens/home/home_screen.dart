@@ -28,7 +28,7 @@ class HomeScreen extends HookWidget {
     ValueNotifier<int> selectedIndex = useState(0);
     
     
-    print("This is in the body ${selectedIndex.value}");
+
     return Scaffold(
       body: screenList[selectedIndex.value],
       bottomNavigationBar: CurvedNavigationBar(
@@ -38,8 +38,6 @@ class HomeScreen extends HookWidget {
         buttonBackgroundColor: selectedIndex.value == 3 ? Colors.transparent : khighlightColor,
         onTap: (int index) {
           selectedIndex.value = index;
-          
-          print("This is the index: $index, and this is the value notifier ${selectedIndex.value}");
         },
         items: [
           const Icon(Icons.message),
