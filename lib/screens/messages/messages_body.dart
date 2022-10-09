@@ -1,7 +1,7 @@
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/message_model.dart';
 import 'package:chat_app/screens/messages/chat_input/chat_input_field.dart';
-import 'package:chat_app/screens/messages/text_message.dart';
+import 'package:chat_app/screens/messages/text_message_widget.dart';
 import 'package:chat_app/screens/messages/video_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../services/database.dart';
+
 import 'audio_message.dart';
-import 'dot_indicator.dart';
+import 'dot_indicator_widget.dart';
 
 class Body extends HookWidget {
   final List<QueryDocumentSnapshot> querySnapshot;

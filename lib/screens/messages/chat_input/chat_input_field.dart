@@ -118,7 +118,7 @@ class ChatInputField extends HookWidget {
                 decoration: const InputDecoration(
                   // This hides the counter that appears when you set a chat limit
                   counterText: "",
-                  hintText: "Type message",
+                  hintText: "Type a message",
                   border: InputBorder.none,
                 ),
               ),
@@ -169,28 +169,31 @@ class ChatInputField extends HookWidget {
               },
               controller: controller,
             ),
-            AnimatedContainer(
-                height: 48,
-                width: isSelected ? 104 : 0.0,
-                duration: duration,
-                curve: isSelected ? Curves.elasticOut : Curves.bounceOut,
-                child: ClipRect(
-                  child: Row(
-                    
-                    children: [
-                      Flexible(
-                        child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.attach_file)),
-                      ),
-                      Flexible(
-                        child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.filter_outlined)),
-                      )
-                    ],
-                  ),
-                )),
+            // This prevents the animated container from overflowing
+            ClipRect(
+              child: AnimatedContainer(
+                  height: 48,
+                  width: isSelected ? 104 : 0.0,
+                  duration: duration,
+                  curve: isSelected ? Curves.elasticOut : Curves.bounceOut,
+                  child: ClipRect(
+                    child: Row(
+                      
+                      children: [
+                        Flexible(
+                          child: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.attach_file)),
+                        ),
+                        Flexible(
+                          child: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.filter_outlined)),
+                        )
+                      ],
+                    ),
+                  )),
+            ),
           ],
         );
       },
