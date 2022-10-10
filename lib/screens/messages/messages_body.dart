@@ -10,7 +10,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../services/database.dart';
 
-import 'audio_message.dart';
+import 'audio_message_widget.dart';
 import 'dot_indicator_widget.dart';
 
 class Body extends HookWidget {
