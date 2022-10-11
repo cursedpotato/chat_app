@@ -83,7 +83,6 @@ class ChatInputField extends HookWidget {
     }
 
     return Container(
-      
       padding: const EdgeInsets.symmetric(
         horizontal: kDefaultPadding,
         vertical: kDefaultPadding / 2,
@@ -149,6 +148,17 @@ class ChatInputField extends HookWidget {
     return HookBuilder(
       builder: (BuildContext context) {
         bool isSelected = useValueListenable(toggle);
+        final animationController = useAnimationController(duration: duration);
+        late final Animation<Offset> offsetAnimation = Tween<Offset>(
+          begin: const Offset(-2.75, 1),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(
+          parent: animationController,
+          curve: Curves.decelerate,
+        ));
+
+        if (isSelected) animationController.forward();
+        if (!isSelected) animationController.reverse();
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,27 +182,33 @@ class ChatInputField extends HookWidget {
             // This prevents the animated container from overflowing
             ClipRect(
               child: AnimatedContainer(
-                  height: 48,
-                  width: isSelected ? 104 : 0.0,
-                  duration: duration,
-                  curve: isSelected ? Curves.elasticOut : Curves.bounceOut,
-                  child: ClipRect(
-                    child: Row(
-                      
-                      children: [
-                        Flexible(
+                height: 48,
+                width: isSelected ? 104 : 0.0,
+                duration: duration,
+                curve: isSelected ? Curves.elasticOut : Curves.ease,
+                child: ClipRect(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: SlideTransition(
+                          position: offsetAnimation,
                           child: IconButton(
                               onPressed: () {},
                               icon: const Icon(Icons.attach_file)),
                         ),
-                        Flexible(
+                      ),
+                      Flexible(
+                        child: SlideTransition(
+                          position: offsetAnimation,
                           child: IconButton(
                               onPressed: () {},
                               icon: const Icon(Icons.filter_outlined)),
-                        )
-                      ],
-                    ),
-                  )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         );
