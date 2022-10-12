@@ -28,22 +28,20 @@ class Body extends HookWidget {
       children: [
         Expanded(
           flex: 5,
-          child: SizedBox(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-              child: ListView.builder(
-                reverse: true,
-                shrinkWrap: true,
-                itemCount: querySnapshot.length,
-                itemBuilder: (BuildContext context, int index) {
-                  ChatMesssageModel model =
-                      ChatMesssageModel.fromDocument(querySnapshot[index]);
-                  return Message(
-                    chatteeName: chatteName,
-                    message: model,
-                  );
-                },
-              ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+            child: ListView.builder(
+              reverse: true,
+              shrinkWrap: true,
+              itemCount: querySnapshot.length,
+              itemBuilder: (BuildContext context, int index) {
+                ChatMesssageModel model =
+                    ChatMesssageModel.fromDocument(querySnapshot[index]);
+                return Message(
+                  chatteeName: chatteName,
+                  message: model,
+                );
+              },
             ),
           ),
         ),

@@ -22,9 +22,6 @@ class ChatInputField extends HookWidget {
     TextEditingController messageController = useTextEditingController();
     String chatRoomId = getChatRoomIdByUsernames(chatteeName, chatterUsername!);
 
-    // This controls whether the media menu is display or not
-    ValueNotifier<bool> showMenu = useValueNotifier(false);
-
     // This controls whether the mic icon is show or not
     ValueNotifier<bool> showMic = useValueNotifier(true);
 
@@ -33,7 +30,7 @@ class ChatInputField extends HookWidget {
       if (messageController.text == "") showMic.value = true;
       // To avoid the var being constantly called
       var length = messageController.text.length;
-      if (length > 0 && length < 2) showMic.value = false;
+      if (length == 1) showMic.value = false;
     }
 
     useEffect(() {
@@ -99,7 +96,7 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          mediaMenu(showMenu),
+          mediaMenu(),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(
@@ -123,32 +120,52 @@ class ChatInputField extends HookWidget {
               ),
             ),
           ),
-          HookBuilder(
-            builder: (context) {
-              final toggle = useValueListenable(showMic);
-              if (toggle) {
-                return IconButton(
-                    onPressed: () {}, icon: const Icon(Icons.mic));
-              }
-              return IconButton(
-                onPressed: () => addMessage(true),
-                icon: const Icon(Icons.send),
-              );
-            },
+          ClipRect(
+            child: HookBuilder(
+              builder: (context) {
+                final toggle = useValueListenable(showMic);
+
+                late final animationController = useAnimationController(
+                    duration: const Duration(milliseconds: 500));
+                late final Animation<Offset> offsetAnimation = Tween<Offset>(
+                  begin: const Offset(0.1, 0.0),
+                  end: Offset.zero,
+                ).animate(CurvedAnimation(
+                  parent: animationController,
+                  curve: Curves.decelerate,
+                ));
+
+                if (toggle) {
+                  animationController.forward();
+                  animationController.reverse();
+                }
+                
+
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: IconButton(
+                    onPressed: toggle ? () => addMessage(true) : () {},
+                    icon:
+                        toggle ? const Icon(Icons.send) : const Icon(Icons.mic),
+                  ),
+                );
+              },
+            ),
           )
         ],
       ),
     );
   }
 
-  Widget mediaMenu(ValueNotifier<bool> toggle) {
-    final controller = AnimateIconController();
-    const duration = Duration(milliseconds: 500);
-
+  Widget mediaMenu() {
     return HookBuilder(
       builder: (BuildContext context) {
-        bool isSelected = useValueListenable(toggle);
-        final animationController = useAnimationController(duration: duration);
+        final controller = AnimateIconController();
+        const duration = Duration(milliseconds: 500);
+        // This controls whether the media menu is display or not
+        ValueNotifier<bool> showMenu = useState(false);
+        late final animationController =
+            useAnimationController(duration: duration);
         late final Animation<Offset> offsetAnimation = Tween<Offset>(
           begin: const Offset(-2.75, 1),
           end: Offset.zero,
@@ -157,8 +174,8 @@ class ChatInputField extends HookWidget {
           curve: Curves.decelerate,
         ));
 
-        if (isSelected) animationController.forward();
-        if (!isSelected) animationController.reverse();
+        if (showMenu.value) animationController.forward();
+        if (!showMenu.value) animationController.reverse();
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,45 +185,41 @@ class ChatInputField extends HookWidget {
               startIcon: Icons.arrow_forward_ios_rounded,
               endIcon: Icons.apps_rounded,
               onStartIconPress: () {
-                debugPrint("mediaMenu: Shrink");
-                toggle.value = !toggle.value;
+                showMenu.value = !showMenu.value;
                 return true;
               },
               onEndIconPress: () {
-                debugPrint("mediaMenu: Grow");
-                toggle.value = !toggle.value;
+                showMenu.value = !showMenu.value;
                 return true;
               },
               controller: controller,
             ),
             // This prevents the animated container from overflowing
-            ClipRect(
-              child: AnimatedContainer(
-                height: 48,
-                width: isSelected ? 104 : 0.0,
-                duration: duration,
-                curve: isSelected ? Curves.elasticOut : Curves.ease,
-                child: ClipRect(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: SlideTransition(
-                          position: offsetAnimation,
-                          child: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.attach_file)),
-                        ),
+            AnimatedContainer(
+              height: 48,
+              width: showMenu.value ? 104 : 0.0,
+              duration: duration,
+              curve: showMenu.value ? Curves.elasticOut : Curves.ease,
+              child: ClipRect(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: SlideTransition(
+                        position: offsetAnimation,
+                        child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.attach_file)),
                       ),
-                      Flexible(
-                        child: SlideTransition(
-                          position: offsetAnimation,
-                          child: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.filter_outlined)),
-                        ),
+                    ),
+                    Flexible(
+                      child: SlideTransition(
+                        position: offsetAnimation,
+                        child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.filter_outlined)),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
