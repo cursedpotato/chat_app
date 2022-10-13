@@ -17,75 +17,99 @@ class PeopleScreen extends HookWidget {
     ValueNotifier getQueries = useState(getFutures);
 
     TextEditingController searchController = useTextEditingController();
+
+    late final animationController =
+        useAnimationController(duration: const Duration(milliseconds: 500));
+    late final Animation<Offset> animationOffset = Tween<Offset>(
+      begin: const Offset(0.0, -1),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: animationController, curve: Curves.bounceInOut),
+    );
+
+    useEffect(() {
+      animationController.forward();
+      return (() => animationController.reset());
+    });
+
     return SafeArea(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: kDefaultPadding * 0.75),
-                  decoration: BoxDecoration(
-                    color: kPrimaryColor.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(10),
+      child: Padding(
+        padding:
+            EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.05),
+        child: Column(
+          children: [
+            SlideTransition(
+              position: animationOffset,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: kDefaultPadding),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: kDefaultPadding * 0.75),
+                      decoration: BoxDecoration(
+                        color: kPrimaryColor.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: TextField(
+                        controller: searchController,
+                        maxLines: 1,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                            hintText: "Search a friend",
+                            border: InputBorder.none),
+                      ),
+                    ),
                   ),
-                  child: TextField(
-                    controller: searchController,
-                    maxLines: 1,
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                        hintText: "Search a friend", border: InputBorder.none),
-                  ),
-                ),
+                  GestureDetector(
+                    onTap: () {
+                      debugPrint("Click");
+                      var usernameQuery = DatabaseMethods()
+                          .getUserByUserName(searchController.text);
+                      var nameQuery = DatabaseMethods()
+                          .getUserByName(searchController.text);
+                      getQueries.value =
+                          Future.wait([usernameQuery, nameQuery]);
+                      searchController.text = "";
+                    },
+                    child: const Icon(
+                      Icons.search,
+                    ),
+                  )
+                ],
               ),
-              GestureDetector(
-                onTap: () {
-                  debugPrint("Click");
-                  var usernameQuery = DatabaseMethods()
-                      .getUserByUserName(searchController.text);
-                  var nameQuery =
-                      DatabaseMethods().getUserByName(searchController.text);
-                  getQueries.value = Future.wait([usernameQuery, nameQuery]);
-                  searchController.text = "";
-                },
-                child: const Icon(
-                  Icons.search,
-                ),
-              )
-            ],
-          ),
-          FutureBuilder<List<QuerySnapshot<Object?>>>(
-            future: getQueries.value,
-            builder: (BuildContext context,
-                AsyncSnapshot<List<QuerySnapshot>> snapshot) {
-              if (!snapshot.hasData) {
-                return const Text("");
-              }
-              bool isLoading =
-                  snapshot.connectionState == ConnectionState.waiting;
-              if (isLoading) {
-                return const Text('Loading');
-              }
-
-              bool? query1HasData = snapshot.data?[0].docs.isNotEmpty;
-              if (query1HasData!) {
-                List<DocumentSnapshot>? documentList = snapshot.data?[0].docs;
-                return userList(documentList);
-              }
-
-              bool? query2HasData = snapshot.data?[1].docs.isNotEmpty;
-              if (query2HasData!) {
-                List<DocumentSnapshot>? documentList = snapshot.data?[1].docs;
-                return userList(documentList);
-              }
-
-              return const Text("There's no one to chat with");
-            },
-          )
-        ],
+            ),
+            FutureBuilder<List<QuerySnapshot<Object?>>>(
+              future: getQueries.value,
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<QuerySnapshot>> snapshot) {
+                if (!snapshot.hasData) {
+                  return const Text("");
+                }
+                bool isLoading =
+                    snapshot.connectionState == ConnectionState.waiting;
+                if (isLoading) {
+                  return const Text('Loading');
+                }
+      
+                bool? query1HasData = snapshot.data?[0].docs.isNotEmpty;
+                if (query1HasData!) {
+                  List<DocumentSnapshot>? documentList = snapshot.data?[0].docs;
+                  return userList(documentList);
+                }
+      
+                bool? query2HasData = snapshot.data?[1].docs.isNotEmpty;
+                if (query2HasData!) {
+                  List<DocumentSnapshot>? documentList = snapshot.data?[1].docs;
+                  return userList(documentList);
+                }
+      
+                return const Text("There's no one to chat with");
+              },
+            )
+          ],
+        ),
       ),
     );
   }

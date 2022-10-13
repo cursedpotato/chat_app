@@ -27,10 +27,10 @@ class ChatInputField extends HookWidget {
 
     // We track input to toggle the mic
     void toggle() {
-      if (messageController.text == "") showMic.value = true;
+      if (messageController.text.isEmpty) showMic.value = true;
       // To avoid the var being constantly called
-      var length = messageController.text.length;
-      if (length == 1) showMic.value = false;
+      var length = messageController.text.isNotEmpty;
+      if (length) showMic.value = false;
     }
 
     useEffect(() {
@@ -124,29 +124,35 @@ class ChatInputField extends HookWidget {
             child: HookBuilder(
               builder: (context) {
                 final toggle = useValueListenable(showMic);
+                final icon = useState(Icons.mic);
 
                 late final animationController = useAnimationController(
-                    duration: const Duration(milliseconds: 500));
+                    duration: const Duration(milliseconds: 180));
                 late final Animation<Offset> offsetAnimation = Tween<Offset>(
                   begin: Offset.zero,
-                  end: const Offset(0.5, 0.0),
+                  end: const Offset(1, 0.0),
                 ).animate(CurvedAnimation(
                   parent: animationController,
-                  curve: Curves.decelerate,
+                  curve: Curves.bounceInOut,
                 ));
 
-                if (toggle) {
-                  animationController.forward();
-                  animationController.reverse();
-                }
+                animationController.addStatusListener((status) { 
+                  if (status == AnimationStatus.completed) {
+                    if (toggle) icon.value = Icons.mic;
+                    if(!toggle) icon.value = Icons.send;
+                    animationController.reverse();
+                  }
+                });
+
+                if (!toggle) animationController.forward();
+                if (toggle) animationController.forward();
                 
 
                 return SlideTransition(
                   position: offsetAnimation,
                   child: IconButton(
                     onPressed: toggle ? () => addMessage(true) : () {},
-                    icon:
-                        toggle ? const Icon(Icons.send) : const Icon(Icons.mic),
+                    icon: Icon(icon.value)
                   ),
                 );
               },
