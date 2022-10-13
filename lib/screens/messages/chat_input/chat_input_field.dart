@@ -128,8 +128,8 @@ class ChatInputField extends HookWidget {
                 late final animationController = useAnimationController(
                     duration: const Duration(milliseconds: 500));
                 late final Animation<Offset> offsetAnimation = Tween<Offset>(
-                  begin: const Offset(0.1, 0.0),
-                  end: Offset.zero,
+                  begin: Offset.zero,
+                  end: const Offset(0.5, 0.0),
                 ).animate(CurvedAnimation(
                   parent: animationController,
                   curve: Curves.decelerate,
