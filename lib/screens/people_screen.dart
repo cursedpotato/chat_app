@@ -1,12 +1,12 @@
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/user_model.dart';
-import 'package:chat_app/screens/chatroom/messages_screen.dart';
+import 'package:chat_app/screens/chatroom/chatroom_screen.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'chatroom/messages_screen.dart';
+import 'chatroom/chatroom_screen.dart';
 
 class PeopleScreen extends HookWidget {
   const PeopleScreen({Key? key}) : super(key: key);

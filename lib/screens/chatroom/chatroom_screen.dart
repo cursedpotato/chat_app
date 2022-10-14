@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:chat_app/globals.dart';
-import 'package:chat_app/screens/chatroom/messages_body.dart';
+import 'package:chat_app/screens/chatroom/chatroom_body.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

@@ -62,20 +62,24 @@ class DatabaseMethods {
         .update(lastMessageInfoMap);
   }
 
-  Future<String> uploadImage(FilePickerResult result) async {
-    String id = const Uuid().v1();
-    String fileName = result.files.first.name;
-    Uint8List? fileBytes = result.files.first.bytes;
-    Reference ref =
-        FirebaseStorage.instance.ref('images/$fileName').child(id);
+  uploadFile() {
     
-    // putting in uint8list format -> Upload task like a future but not future
-    UploadTask uploadTask = ref.putData(fileBytes!);
-
-    TaskSnapshot snapshot = await uploadTask;
-    String downloadUrl = await snapshot.ref.getDownloadURL();
-    return downloadUrl;
   }
+
+  // Future<String> uploadImage(FilePickerResult result) async {
+  //   String id = const Uuid().v1();
+  //   String fileName = result.files.first.name;
+  //   Uint8List? fileBytes = result.files.first.bytes;
+  //   Reference ref =
+  //       FirebaseStorage.instance.ref('images/$fileName').child(id);
+    
+  //   // putting in uint8list format -> Upload task like a future but not future
+  //   UploadTask uploadTask = ref.putData(fileBytes!);
+
+  //   TaskSnapshot snapshot = await uploadTask;
+  //   String downloadUrl = await snapshot.ref.getDownloadURL();
+  //   return downloadUrl;
+  // }
 
   createChatRoom(
       String chatRoomId, Map<String, dynamic> chatRoomInfoMap) async {
