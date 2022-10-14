@@ -40,14 +40,14 @@ class ChatMesssageModel {
   ChatMesssageModel.fromDocument(DocumentSnapshot document) {
     String? myUsername =
         FirebaseAuth.instance.currentUser?.email?.replaceAll("@gmail.com", "");
-    message = document['message'];
+    message = document['message'] ?? '';
     messageType = whatType(document['messageType']);
     // TODO: Find a way to show a message status
     messageStatus = MessageStatus.viewed;
     isSender = myUsername == document['sendBy'];
-    pfpUrl = document['imgUrl'];
-    sendBy = document['sendBy'];
-    timestamp = document['ts'];
+    pfpUrl = document['imgUrl'] ?? "";
+    sendBy = document['sendBy'] ?? "";
+    timestamp = document['ts'] ?? "";
   }
 
   // Map<String, dynamic> toJson() {

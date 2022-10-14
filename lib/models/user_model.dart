@@ -18,21 +18,12 @@ class UserModel {
   });
 
   UserModel.fromDocument(DocumentSnapshot documentSnapshot) {
-    pfpUrl = documentSnapshot['imgUrl'];
-    name = documentSnapshot['name'];
-    email = documentSnapshot['email'];
-    username = documentSnapshot['username'];
-    userActivityTs = documentSnapshot['userActivityTs'];
+    pfpUrl = documentSnapshot['imgUrl'] ?? '';
+    name = documentSnapshot['name'] ?? '';
+    email = documentSnapshot['email'] ?? '';
+    username = documentSnapshot['username'] ?? '';
+    userActivityTs = documentSnapshot['userActivityTs'] ?? '';
     lastSeenDate = (documentSnapshot['userActivityTs'] as Timestamp).toDate();
   }
 
-  // Map<String, dynamic> toJson() {
-  //   final Map<String, dynamic> data = new Map<String, dynamic>();
-  //   data['pfpUrl'] = this.pfpUrl;
-  //   data['name'] = this.name;
-  //   data['email'] = this.email;
-  //   data['username'] = this.username;
-  //   data['userActivityTs'] = this.userActivityTs;
-  //   return data;
-  // }
 }

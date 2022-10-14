@@ -27,10 +27,7 @@ class PeopleScreen extends HookWidget {
       CurvedAnimation(parent: animationController, curve: Curves.bounceInOut),
     );
 
-    useEffect(() {
-      animationController.forward();
-      return (() => animationController.reset());
-    });
+    animationController.forward();
 
     return SafeArea(
       child: Padding(
