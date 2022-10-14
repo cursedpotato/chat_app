@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../globals.dart';
+import '../../../globals.dart';
 
 class VideoWidget extends StatelessWidget {
   const VideoWidget({Key? key}) : super(key: key);

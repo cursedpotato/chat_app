@@ -1,9 +1,11 @@
 import 'package:animate_icons/animate_icons.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:uuid/uuid.dart';
 
-import 'package:random_string/random_string.dart';
+
 
 import '../../../globals.dart';
 import '../../../services/database.dart';
@@ -54,7 +56,7 @@ class ChatInputField extends HookWidget {
 
         //messageId
         if (messageId == "") {
-          messageId = randomAlphaNumeric(12);
+          messageId = const Uuid().v1();
         }
 
         DatabaseMethods()
@@ -151,7 +153,7 @@ class ChatInputField extends HookWidget {
                 return SlideTransition(
                   position: offsetAnimation,
                   child: IconButton(
-                    onPressed: toggle ? () => addMessage(true) : () {},
+                    onPressed: toggle ? () => debugPrint('Add function') : () => addMessage(true),
                     icon: Icon(icon.value)
                   ),
                 );
@@ -213,7 +215,9 @@ class ChatInputField extends HookWidget {
                       child: SlideTransition(
                         position: offsetAnimation,
                         child: IconButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              
+                            },
                             icon: const Icon(Icons.attach_file)),
                       ),
                     ),

@@ -1,8 +1,16 @@
+import 'dart:typed_data';
+
 import 'package:chat_app/globals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
 
 class DatabaseMethods {
+
   updateUserTs() {
     // We need the userId to access the document
     final userId = FirebaseAuth.instance.currentUser?.uid;
@@ -52,6 +60,21 @@ class DatabaseMethods {
         .collection("chatrooms")
         .doc(chatRoomId)
         .update(lastMessageInfoMap);
+  }
+
+  Future<String> uploadImage(FilePickerResult result) async {
+    String id = const Uuid().v1();
+    String fileName = result.files.first.name;
+    Uint8List? fileBytes = result.files.first.bytes;
+    Reference ref =
+        FirebaseStorage.instance.ref('images/$fileName').child(id);
+    
+    // putting in uint8list format -> Upload task like a future but not future
+    UploadTask uploadTask = ref.putData(fileBytes!);
+
+    TaskSnapshot snapshot = await uploadTask;
+    String downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
   }
 
   createChatRoom(
