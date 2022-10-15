@@ -70,6 +70,6 @@ class MediaMenu extends HookWidget {
               ),
             ),
           ],
-        );;
+        );
   }
 }

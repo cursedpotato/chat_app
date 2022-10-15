@@ -1,4 +1,4 @@
-import 'package:animate_icons/animate_icons.dart';
+
 import 'package:chat_app/screens/chatroom/chat_input/media_menu_widget.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,9 +29,7 @@ class ChatInputField extends HookWidget {
     // We track input to toggle the mic
     void toggle() {
       if (messageController.text.isEmpty) showMic.value = true;
-      // To avoid the var being constantly called
-      var length = messageController.text.isNotEmpty;
-      if (length) showMic.value = false;
+      if (messageController.text.isNotEmpty) showMic.value = false;
     }
 
     useEffect(() {
@@ -80,6 +78,27 @@ class ChatInputField extends HookWidget {
       );
     }
 
+    ValueNotifier<bool> showAudioWidget = useState(false);
+    ValueNotifier<double> x = useValueNotifier(0.0);
+    ValueNotifier<double> y = useValueNotifier(0.0);
+
+    
+
+    void _updateLocation(PointerEvent details) {
+      x.value = details.position.dx;
+      y.value = details.position.dy;
+    }
+
+    void _fingerDown(PointerEvent details) {
+      _updateLocation(details);
+      if(showMic.value) showAudioWidget.value = true;
+    }
+
+    void _fingerOff(PointerEvent details) {
+      _updateLocation(details);
+      if(showMic.value) showAudioWidget.value = false;
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: kDefaultPadding,
@@ -97,31 +116,10 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          MediaMenu(),
-          // TextField
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding * 0.75),
-              decoration: BoxDecoration(
-                color: kPrimaryColor.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: TextField(
-                controller: messageController,
-                maxLength: 800,
-                minLines: 1,
-                maxLines: 5, // This way the textfield grows
-                keyboardType: TextInputType.multiline,
-                decoration: const InputDecoration(
-                  // This hides the counter that appears when you set a chat limit
-                  counterText: "",
-                  hintText: "Type a message",
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
+          showAudioWidget.value ? const Expanded(child: TextField(autofocus: true,)) : const MediaMenu(),
+
+          showAudioWidget.value ? const SizedBox() : CustomTextField(messageController: messageController),
+          // Custom send button
           HookBuilder(
             builder: (context) {
               final toggle = useValueListenable(showMic);
@@ -131,7 +129,7 @@ class ChatInputField extends HookWidget {
                   duration: const Duration(milliseconds: 180));
               late final Animation<Offset> offsetAnimation = Tween<Offset>(
                 begin: Offset.zero,
-                end: const Offset(1, 0.0),
+                end: const Offset(1.5, 0.0),
               ).animate(CurvedAnimation(
                 parent: animationController,
                 curve: Curves.bounceInOut,
@@ -145,16 +143,25 @@ class ChatInputField extends HookWidget {
                 }
               });
 
-              if (!toggle) animationController.forward();
-              if (toggle) animationController.forward();
+              if (!showAudioWidget.value) {
+                if (toggle) animationController.forward();
+                if (!toggle) animationController.forward();
+              }
+
+              
 
               return SlideTransition(
                 position: offsetAnimation,
-                child: IconButton(
-                    onPressed: toggle
-                        ? () => debugPrint('Add function')
-                        : () => addMessage(true),
-                    icon: Icon(icon.value)),
+                child: Listener(
+                  onPointerDown: _fingerDown,
+                  onPointerUp: _fingerOff,
+                  onPointerMove: _updateLocation,
+                  child: IconButton(
+                      onPressed: toggle
+                          ? () => debugPrint('Add function')
+                          : () => addMessage(true),
+                      icon: Icon(icon.value)),
+                ),
               );
             },
           )
@@ -162,5 +169,40 @@ class ChatInputField extends HookWidget {
       ),
     );
   }
+}
 
+class CustomTextField extends StatelessWidget {
+  const CustomTextField({
+    Key? key,
+    required this.messageController,
+  }) : super(key: key);
+
+  final TextEditingController messageController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding * 0.75),
+        decoration: BoxDecoration(
+          color: kPrimaryColor.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(40),
+        ),
+        child: TextField(
+          autofocus: true,
+          controller: messageController,
+          maxLength: 800,
+          minLines: 1,
+          maxLines: 5, // This way the textfield grows
+          keyboardType: TextInputType.multiline,
+          decoration: const InputDecoration(
+            // This hides the counter that appears when you set a chat limit
+            counterText: "",
+            hintText: "Type a message",
+            border: InputBorder.none,
+          ),
+        ),
+      ),
+    );
+  }
 }
