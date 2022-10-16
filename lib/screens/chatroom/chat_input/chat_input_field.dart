@@ -1,5 +1,6 @@
 
 import 'package:chat_app/screens/chatroom/chat_input/media_menu_widget.dart';
+import 'package:chat_app/screens/chatroom/chat_input/mic_widget.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -116,7 +117,7 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          showAudioWidget.value ? const Expanded(child: TextField(autofocus: true,)) : const MediaMenu(),
+          showAudioWidget.value ? const MicWidget() : const MediaMenu(),
 
           showAudioWidget.value ? const SizedBox() : CustomTextField(messageController: messageController),
           // Custom send button
@@ -170,6 +171,7 @@ class ChatInputField extends HookWidget {
     );
   }
 }
+
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
