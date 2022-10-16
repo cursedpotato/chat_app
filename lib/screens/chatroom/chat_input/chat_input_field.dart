@@ -149,8 +149,6 @@ class ChatInputField extends HookWidget {
                 if (!toggle) animationController.forward();
               }
 
-              
-
               return SlideTransition(
                 position: offsetAnimation,
                 child: Listener(
