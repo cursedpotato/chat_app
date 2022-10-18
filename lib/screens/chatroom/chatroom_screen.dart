@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/screens/chatroom/chatroom_body.dart';
 import 'package:chat_app/services/database.dart';
@@ -68,15 +69,13 @@ class MessagesScreen extends HookWidget {
     QuerySnapshot? chatteData = useFuture(chatteFuture).data;
 
     String? chattePfp = chatteData?.docs[0]["imgUrl"];
-    String noUser =
-        "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
 
     return AppBar(
       title: Row(
         children: [
           ClipOval(
-            child: Image.network(
-              chattePfp ?? noUser,
+            child: CachedNetworkImage(
+              imageUrl: chattePfp ?? noImage,
               width: 40,
               height: 40,
               fit: BoxFit.cover,

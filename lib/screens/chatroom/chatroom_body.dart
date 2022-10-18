@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/message_model.dart';
 
@@ -82,8 +83,7 @@ class Message extends HookWidget {
     QuerySnapshot? chatteData = useFuture(chatteFuture).data;
 
     String? chattePfp = chatteData?.docs[0]["imgUrl"];
-    String noUser =
-        "https://hope.be/wp-content/uploads/2015/05/no-user-image.gif";
+  
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 4),
@@ -99,7 +99,7 @@ class Message extends HookWidget {
               margin: const EdgeInsets.only(right: kDefaultPadding / 2),
               child: CircleAvatar(
                 radius: 12,
-                backgroundImage: NetworkImage(chattePfp ?? noUser),
+                backgroundImage: CachedNetworkImageProvider(chattePfp ?? noImage),
               ),
             )
           ],

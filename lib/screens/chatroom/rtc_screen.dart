@@ -14,12 +14,12 @@ class VideoCallScreen extends HookWidget {
         tempToken: "",
       ),
     );
-    Future<void> _initAgora() async {
+    Future<void> initAgora() async {
       await client.initialize();
     }
 
     useEffect(() {
-      _initAgora();
+      initAgora();
       return () {};
     });
     return WillPopScope(

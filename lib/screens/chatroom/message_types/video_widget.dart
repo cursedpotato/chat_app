@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../globals.dart';
@@ -16,9 +17,7 @@ class VideoWidget extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                "https://static-cse.canva.com/blob/666309/bestfreestockphotos.jpg"
-              ),
+              child: CachedNetworkImage(imageUrl:  "https://static-cse.canva.com/blob/666309/bestfreestockphotos.jpg",)
             ),
             Container(
               height: 25,

@@ -15,7 +15,7 @@ const kDefaultPadding = 20.0;
 String? email = FirebaseAuth.instance.currentUser?.email;
 String? chatterUsername = email!.substring(0, email?.indexOf('@'));
 String? profilePicUrl = FirebaseAuth.instance.currentUser?.photoURL;
-String noImage =
+const String noImage =
         'https://secure.gravatar.com/avatar/ef9463e636b415ee041791a6a3764104?s=250&d=mm&r=g';
 
 getChatRoomIdByUsernames(String a, String b) {

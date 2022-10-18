@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/chatroom_model.dart';
 import 'package:chat_app/screens/chatroom/chatroom_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -88,7 +89,7 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: NetworkImage(userModel.pfpUrl!),
+                  backgroundImage: CachedNetworkImageProvider(userModel.pfpUrl!),
                 ),
                 isActive ? activityDot(context) : const SizedBox(),
               ],

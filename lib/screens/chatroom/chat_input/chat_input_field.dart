@@ -85,18 +85,18 @@ class ChatInputField extends HookWidget {
 
     
 
-    void _updateLocation(PointerEvent details) {
+    void updateLocation(PointerEvent details) {
       x.value = details.position.dx;
       y.value = details.position.dy;
     }
 
-    void _fingerDown(PointerEvent details) {
-      _updateLocation(details);
+    void fingerDown(PointerEvent details) {
+      updateLocation(details);
       if(showMic.value) showAudioWidget.value = true;
     }
 
-    void _fingerOff(PointerEvent details) {
-      _updateLocation(details);
+    void fingerOff(PointerEvent details) {
+      updateLocation(details);
       if(showMic.value) showAudioWidget.value = false;
     }
 
@@ -152,9 +152,9 @@ class ChatInputField extends HookWidget {
               return SlideTransition(
                 position: offsetAnimation,
                 child: Listener(
-                  onPointerDown: _fingerDown,
-                  onPointerUp: _fingerOff,
-                  onPointerMove: _updateLocation,
+                  onPointerDown: fingerDown,
+                  onPointerUp: fingerOff,
+                  onPointerMove: updateLocation,
                   child: IconButton(
                       onPressed: toggle
                           ? () => debugPrint('Add function')

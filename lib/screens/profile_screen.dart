@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/globals.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +15,7 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 const CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(
+                  backgroundImage: CachedNetworkImageProvider(
                       "https://icon-library.com/images/no-user-image-icon/no-user-image-icon-3.jpg"),
                 ),
                 Positioned(

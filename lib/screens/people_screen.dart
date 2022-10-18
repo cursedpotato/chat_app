@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/screens/chatroom/chatroom_screen.dart';
@@ -6,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'chatroom/chatroom_screen.dart';
+
 
 class PeopleScreen extends HookWidget {
   const PeopleScreen({Key? key}) : super(key: key);
@@ -129,7 +130,7 @@ class PeopleScreen extends HookWidget {
     return ListTile(
       onTap: () => createChat(context, userModel),
       leading: CircleAvatar(
-        backgroundImage: NetworkImage(userModel.pfpUrl!),
+        backgroundImage: CachedNetworkImageProvider(userModel.pfpUrl!),
         radius: 24,
       ),
       title: Text(userModel.name!),

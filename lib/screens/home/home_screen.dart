@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/screens/calls_screen.dart';
 import 'package:chat_app/screens/home/home_body.dart';
@@ -45,7 +46,7 @@ class HomeScreen extends HookWidget {
           const Icon(Icons.call),
           CircleAvatar(
                 radius: 16,
-                backgroundImage: NetworkImage(profilePicUrl ?? noImage),
+                backgroundImage: CachedNetworkImageProvider(profilePicUrl ?? noImage),
               ),
         ],
       ),
