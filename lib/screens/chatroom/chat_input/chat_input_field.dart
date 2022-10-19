@@ -117,6 +117,7 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          
           showAudioWidget.value ? const MicWidget() : const MediaMenu(),
 
           showAudioWidget.value ? const SizedBox() : CustomTextField(messageController: messageController),

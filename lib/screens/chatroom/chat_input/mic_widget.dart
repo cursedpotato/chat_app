@@ -1,4 +1,3 @@
-
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -11,7 +10,7 @@ class MicWidget extends HookWidget {
   Widget build(BuildContext context) {
     FocusNode focusNode = FocusNode();
     final recorder = FlutterSoundRecorder();
-    final isRecorderReady = useState(false);
+    final isRecorderReady  = useState(false);
 
     // TODO: implement necessary implementations for iOS
 
@@ -22,15 +21,13 @@ class MicWidget extends HookWidget {
       }
 
       await recorder.openRecorder();
-
-      recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
-
-      isRecorderReady.value = true;
     }
+
+    initRecorder();
 
     useEffect(() {
       focusNode.requestFocus();
-      initRecorder();
+
       return () {
         recorder.closeRecorder();
         focusNode.dispose();
@@ -38,12 +35,9 @@ class MicWidget extends HookWidget {
     });
 
     Future record() async {
-      if (!isRecorderReady.value) return ; 
-      await recorder.startRecorder(toFile: 'audio'); 
+      if (!isRecorderReady.value) return;
+      await recorder.startRecorder(toFile: 'audio');
     }
-
-
-
 
     return Expanded(
       child: ClipRect(
