@@ -2,6 +2,9 @@ import 'package:agora_uikit/agora_uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:audio_session/audio_session.dart';
+
+
 
 class MicWidget extends HookWidget {
   const MicWidget({Key? key}) : super(key: key);
@@ -9,7 +12,9 @@ class MicWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     FocusNode focusNode = FocusNode();
-    final recorder = FlutterSoundRecorder();
+
+    FlutterSoundRecorder? recorder;
+    
     final isRecorderReady  = useState(false);
 
     // TODO: implement necessary implementations for iOS
@@ -20,23 +25,26 @@ class MicWidget extends HookWidget {
         throw 'Microphone Permission not granted';
       }
 
-      await recorder.openRecorder();
+      recorder = FlutterSoundRecorder();
+
+      recorder!.openRecorder();
+
     }
 
-    initRecorder();
+    
 
     useEffect(() {
       focusNode.requestFocus();
-
+      initRecorder();
       return () {
-        recorder.closeRecorder();
+        recorder!.closeRecorder();
         focusNode.dispose();
       };
     });
 
     Future record() async {
       if (!isRecorderReady.value) return;
-      await recorder.startRecorder(toFile: 'audio');
+      await recorder!.startRecorder(toFile: 'audio');
     }
 
     return Expanded(
@@ -45,9 +53,11 @@ class MicWidget extends HookWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: const [Icon(Icons.mic), Text('0:01')],
             ),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
                 Text('slide to cancel'),
                 Icon(Icons.arrow_back_ios_new_outlined)
