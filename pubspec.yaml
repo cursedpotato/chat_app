@@ -60,7 +60,7 @@ dependencies:
   cached_network_image: ^3.2.2
   intl: ^0.17.0
   flutter_sound: ^9.2.13
-  audio_session: ^0.1.10
+ 
   
 
 dev_dependencies:

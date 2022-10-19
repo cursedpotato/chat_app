@@ -1,56 +1,57 @@
+
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+
 import 'package:flutter_sound/flutter_sound.dart';
-import 'package:audio_session/audio_session.dart';
 
 
 
-class MicWidget extends HookWidget {
+
+class MicWidget extends StatefulWidget {
   const MicWidget({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    FocusNode focusNode = FocusNode();
+  State<MicWidget> createState() => _MicWidgetState();
+}
 
-    FlutterSoundRecorder? recorder;
-    
-    final isRecorderReady  = useState(false);
+class _MicWidgetState extends State<MicWidget> {
+  FocusNode focusNode = FocusNode();
 
-    // TODO: implement necessary implementations for iOS
+  FlutterSoundRecorder? recorder;
 
-    Future initRecorder() async {
-      final status = await Permission.microphone.request();
-      if (status != PermissionStatus.granted) {
-        throw 'Microphone Permission not granted';
-      }
+  bool isRecorderReady = false;
+  Future initRecorder() async {
+    var status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) throw RecordingPermissionException('Microphone permission not granted');
+    recorder = FlutterSoundRecorder();
+    await recorder!.openRecorder();
+  }
 
-      recorder = FlutterSoundRecorder();
 
-      recorder!.openRecorder();
-
-    }
-
-    
-
-    useEffect(() {
-      focusNode.requestFocus();
-      initRecorder();
-      return () {
-        recorder!.closeRecorder();
-        focusNode.dispose();
-      };
+  @override
+  void initState() {
+    super.initState();
+    initRecorder().then((value) {
+      recorder!.setSubscriptionDuration(const Duration(milliseconds: 400));
+      setState(() {
+        isRecorderReady = true;
+      });
     });
+    focusNode.requestFocus();
+  }
 
-    Future record() async {
-      if (!isRecorderReady.value) return;
-      await recorder!.startRecorder(toFile: 'audio');
-    }
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: ClipRect(
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
