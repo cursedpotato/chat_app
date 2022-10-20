@@ -1,5 +1,3 @@
-
-
 import 'package:chat_app/screens/chatroom/chat_input/mic_widget.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -81,25 +79,23 @@ class ChatInputField extends HookWidget {
       );
     }
 
-    
-    ValueNotifier<double> x = useValueNotifier(0.0);
-    ValueNotifier<double> y = useValueNotifier(0.0);
-
-    
+    ValueNotifier<double> x = useState(0.0);
+    ValueNotifier<double> y = useState(0.0);
 
     void updateLocation(PointerEvent details) {
       x.value = details.position.dx;
       y.value = details.position.dy;
+      print('This is the y value: ${y.value}');
     }
 
     void fingerDown(PointerEvent details) {
       updateLocation(details);
-      if(showMic.value) showAudioWidget.value = true;
+      if (showMic.value) showAudioWidget.value = true;
     }
 
     void fingerOff(PointerEvent details) {
       updateLocation(details);
-      if(showMic.value) showAudioWidget.value = false;
+      if (showMic.value) showAudioWidget.value = false;
     }
 
     return Container(
@@ -119,10 +115,11 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-         
           showAudioWidget.value ? const MicWidget() : const MediaMenu(),
 
-          showAudioWidget.value ? const SizedBox() : CustomTextField(messageController: messageController),
+          showAudioWidget.value
+              ? const SizedBox()
+              : CustomTextField(messageController: messageController),
           // Custom send button
           HookBuilder(
             builder: (context) {
@@ -152,17 +149,21 @@ class ChatInputField extends HookWidget {
                 if (!toggle) animationController.forward();
               }
 
-              return SlideTransition(
-                position: offsetAnimation,
-                child: Listener(
-                  onPointerDown: fingerDown,
-                  onPointerUp: fingerOff,
-                  onPointerMove: updateLocation,
-                  child: IconButton(
+              return Listener(
+                onPointerDown: fingerDown,
+                onPointerUp: fingerOff,
+                onPointerMove: updateLocation,
+                child: Transform.translate(
+                  offset: Offset(0.0, y.value - 500),
+                  child: SlideTransition(
+                    position: offsetAnimation,
+                    child: IconButton(
                       onPressed: toggle
                           ? () => debugPrint('Add function')
                           : () => addMessage(true),
-                      icon: Icon(icon.value)),
+                      icon: Icon(icon.value),
+                    ),
+                  ),
                 ),
               );
             },
@@ -172,7 +173,6 @@ class ChatInputField extends HookWidget {
     );
   }
 }
-
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
