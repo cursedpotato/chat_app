@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/message_model.dart';
-import 'package:chat_app/screens/chatroom/chat_input/mic_widget.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -49,7 +48,7 @@ class Body extends HookWidget {
             ),
           ),
         ),
-        const MicWidget(),
+        
         ChatInputField(
           chatteeName: chatteName,
         ),

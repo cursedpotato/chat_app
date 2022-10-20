@@ -1,5 +1,5 @@
 
-import 'package:chat_app/screens/chatroom/chat_input/media_menu_widget.dart';
+
 import 'package:chat_app/screens/chatroom/chat_input/mic_widget.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../globals.dart';
 import '../../../services/database.dart';
+import 'media_menu_widget.dart';
 
 class ChatInputField extends HookWidget {
   final String chatteeName;
@@ -26,6 +27,7 @@ class ChatInputField extends HookWidget {
 
     // This controls whether the mic icon is show or not
     ValueNotifier<bool> showMic = useValueNotifier(true);
+    ValueNotifier<bool> showAudioWidget = useState(false);
 
     // We track input to toggle the mic
     void toggle() {
@@ -79,7 +81,7 @@ class ChatInputField extends HookWidget {
       );
     }
 
-    ValueNotifier<bool> showAudioWidget = useState(false);
+    
     ValueNotifier<double> x = useValueNotifier(0.0);
     ValueNotifier<double> y = useValueNotifier(0.0);
 
@@ -117,7 +119,7 @@ class ChatInputField extends HookWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          
+         
           showAudioWidget.value ? const MicWidget() : const MediaMenu(),
 
           showAudioWidget.value ? const SizedBox() : CustomTextField(messageController: messageController),
