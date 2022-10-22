@@ -1,12 +1,11 @@
+
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // TODO: Do necessary implementations for iOS for flutter sound
 class MicWidget extends HookWidget {
   const MicWidget({Key? key}) : super(key: key);
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -23,88 +22,77 @@ class MicWidget extends HookWidget {
       };
     });
 
-    ValueNotifier<double> centerPosition = useState(0.0);
+    final totalWidth = MediaQuery.of(context).size.width;
+
+    ValueNotifier<double> centerPosition = useState(totalWidth*0.333);
 
     return Expanded(
-      child: MeasurableWidget(
-        onChange: (size) {
-          centerPosition.value = size.width * 0.40;
-        },
-        child: SizedBox(
-          height: 48,
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  children: [
-                    FadeTransition(
-                      opacity: CurvedAnimation(
-                        parent: opacityController,
-                        curve: Curves.easeIn,
-                      ),
-                      child: const Icon(
-                        Icons.surround_sound_outlined,
-                        color: Colors.red,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Text('0:01'),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 0,
-                width: 0,
-                child: TextField(
-                  focusNode: focusNode,
-                  showCursor: false,
-                  decoration: const InputDecoration(border: InputBorder.none),
-                ),
-              ),
 
-              Positioned(
-                top: 10,
-                left: centerPosition.value,
-                child: Row(
-                  children: const [
-                    Text('slide to cancel'),
-                    Icon(Icons.arrow_back_ios_new_outlined)
-                  ],
-                ),
+      child: SizedBox(
+        height: 48,
+        child: Stack(
+          fit: StackFit.loose,
+          children: [
+            Slidable(centerPosition: centerPosition),
+            Container(
+              color: Colors.white,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  FadeTransition(
+                    opacity: CurvedAnimation(
+                      parent: opacityController,
+                      curve: Curves.easeIn,
+                    ),
+                    child: const Icon(
+                      Icons.surround_sound_outlined,
+                      color: Colors.red,
+                    ),
+                  ),
+                  // We place this widget to prevent the keyboard from closing, giving the user a bad experience
+                  SizedBox(
+                    width: 10,
+                    child: TextField(
+                      focusNode: focusNode,
+                      showCursor: false,
+                      decoration:
+                          const InputDecoration(border: InputBorder.none),
+                    ),
+                  ),
+                  const Flexible(child: Text('0:01')),
+                  const SizedBox(width: 10,)
+                ],
               ),
-              // We place this whole widget to avoid the keyboard from closing, giving the user a bad experience
-            ],
-          ),
+            ),
+            
+          ],
         ),
       ),
     );
   }
 }
 
-class MeasureSizeRenderObject extends RenderProxyBox {
-  MeasureSizeRenderObject(this.onChange);
-  void Function(Size size) onChange;
+class Slidable extends ConsumerWidget {
+  const Slidable({
+    Key? key,
+    required this.centerPosition,
+  }) : super(key: key);
 
-  Size _prevSize = Size.zero;
+  final ValueNotifier<double> centerPosition;
+
   @override
-  void performLayout() {
-    super.performLayout();
-    Size newSize = child!.size;
-    if (_prevSize == newSize) return;
-    _prevSize = newSize;
-    WidgetsBinding.instance.addPostFrameCallback((_) => onChange(newSize));
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Transform.translate(
+      offset: Offset(centerPosition.value - 100,0),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children:const [
+          Text('slide to cancel'),
+          SizedBox(height: 48,),
+          Icon(Icons.arrow_back_ios_new_outlined),
+        ],
+      ),
+    );
   }
-}
-
-class MeasurableWidget extends SingleChildRenderObjectWidget {
-  const MeasurableWidget(
-      {Key? key, required this.onChange, required Widget child})
-      : super(key: key, child: child);
-  final void Function(Size size) onChange;
-  @override
-  RenderObject createRenderObject(BuildContext context) =>
-      MeasureSizeRenderObject(onChange);
 }

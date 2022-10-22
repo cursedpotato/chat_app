@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 const khighlightColor = Color(0xFF087949);
 const kPrimaryColor = Color(0xFF00BF6D);
@@ -26,4 +27,29 @@ getChatRoomIdByUsernames(String a, String b) {
     // ignore: unnecessary_string_escapes
     return "$a\_$b";
   }
+}
+
+class MeasureSizeRenderObject extends RenderProxyBox {
+  MeasureSizeRenderObject(this.onChange);
+  void Function(Size size) onChange;
+
+  Size _prevSize = Size.zero;
+  @override
+  void performLayout() {
+    super.performLayout();
+    Size newSize = child!.size;
+    if (_prevSize == newSize) return;
+    _prevSize = newSize;
+    WidgetsBinding.instance.addPostFrameCallback((_) => onChange(newSize));
+  }
+}
+
+class MeasurableWidget extends SingleChildRenderObjectWidget {
+  const MeasurableWidget(
+      {Key? key, required this.onChange, required Widget child})
+      : super(key: key, child: child);
+  final void Function(Size size) onChange;
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      MeasureSizeRenderObject(onChange);
 }

@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+
 class MessagesScreen extends HookWidget {
   final String chatterName;
   final String chatteeName;
@@ -22,17 +23,6 @@ class MessagesScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    Timer? timer;
-
-    useEffect(
-      () {
-        // Put this within a function that repeats this code every minute
-        timer = Timer.periodic(const Duration(seconds: 60), (timer) {
-          DatabaseMethods().updateUserTs();
-        });
-        return () => timer?.cancel();
-      },
-    );
     // we will use getChatRoomMessages method to get the messages stream, this stream will user
 
     final chatroomId = getChatRoomIdByUsernames(chatteeName, chatterName);
@@ -41,6 +31,8 @@ class MessagesScreen extends HookWidget {
         useMemoized((() => DatabaseMethods().getChatRoomMessages(chatroomId)));
 
     Stream<QuerySnapshot>? messagesStream = useFuture(future).data;
+
+    
 
     return Scaffold(
       appBar: buildAppBar(),

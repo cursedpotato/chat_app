@@ -1,8 +1,10 @@
 import 'package:chat_app/screens/chatroom/chat_input/mic_widget.dart';
+import 'package:chat_app/screens/chatroom/chatroom_body.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../globals.dart';
@@ -79,22 +81,15 @@ class ChatInputField extends HookWidget {
       );
     }
 
-    ValueNotifier<double> x = useState(0.0);
-    ValueNotifier<double> y = useState(0.0);
+    
 
-    void updateLocation(PointerEvent details) {
-      x.value = details.position.dx;
-      y.value = details.position.dy;
-      print('This is the y value: ${y.value}');
-    }
+    
 
     void fingerDown(PointerEvent details) {
-      updateLocation(details);
       if (showMic.value) showAudioWidget.value = true;
     }
 
     void fingerOff(PointerEvent details) {
-      updateLocation(details);
       if (showMic.value) showAudioWidget.value = false;
     }
 
@@ -107,69 +102,103 @@ class ChatInputField extends HookWidget {
         color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-              offset: const Offset(0, 4),
-              blurRadius: 32,
-              color: const Color(0xFF087949).withOpacity(0.08)),
+            offset: const Offset(0, 4),
+            blurRadius: 32,
+            color: const Color(0xFF087949).withOpacity(0.08),
+          ),
         ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          // const MicWidget(),
           showAudioWidget.value ? const MicWidget() : const MediaMenu(),
 
           showAudioWidget.value
               ? const SizedBox()
               : CustomTextField(messageController: messageController),
           // Custom send button
-          HookBuilder(
-            builder: (context) {
-              final toggle = useValueListenable(showMic);
-              final icon = useState(Icons.mic);
-
-              late final animationController = useAnimationController(
-                  duration: const Duration(milliseconds: 180));
-              late final Animation<Offset> offsetAnimation = Tween<Offset>(
-                begin: Offset.zero,
-                end: const Offset(1.5, 0.0),
-              ).animate(CurvedAnimation(
-                parent: animationController,
-                curve: Curves.bounceInOut,
-              ));
-
-              animationController.addStatusListener((status) {
-                if (status == AnimationStatus.completed) {
-                  if (toggle) icon.value = Icons.mic;
-                  if (!toggle) icon.value = Icons.send;
-                  animationController.reverse();
-                }
-              });
-
-              if (!showAudioWidget.value) {
-                if (toggle) animationController.forward();
-                if (!toggle) animationController.forward();
-              }
-
-              return Listener(
-                onPointerDown: fingerDown,
-                onPointerUp: fingerOff,
-                onPointerMove: updateLocation,
-                child: Transform.translate(
-                  offset: Offset(0.0, y.value - 500),
-                  child: SlideTransition(
-                    position: offsetAnimation,
-                    child: IconButton(
-                      onPressed: toggle
-                          ? () => debugPrint('Add function')
-                          : () => addMessage(true),
-                      icon: Icon(icon.value),
-                    ),
-                  ),
-                ),
-              );
-            },
+          CustomSendButton(
+            showMic: showMic,
+            showAudioWidget: showAudioWidget,
+            addMessage: addMessage,
+            fingerDown: fingerDown,
+            fingerOff: fingerOff,
           )
         ],
       ),
+    );
+  }
+}
+
+class CustomSendButton extends HookWidget {
+  const CustomSendButton({
+    Key? key,
+    required this.fingerDown,
+    required this.fingerOff,
+    required this.showMic,
+    required this.showAudioWidget,
+    required this.addMessage,
+  }) : super(key: key);
+
+  final ValueNotifier<bool> showMic;
+  final ValueNotifier<bool> showAudioWidget;
+  final void Function(bool) addMessage;
+  final void Function(PointerEvent details) fingerDown;
+  final void Function(PointerEvent details) fingerOff;
+
+  @override
+  Widget build(BuildContext context) {
+    final toggle = useValueListenable(showMic);
+    final icon = useState(Icons.mic);
+
+    late final animationController =
+        useAnimationController(duration: const Duration(milliseconds: 180));
+    late final Animation<Offset> offsetAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(1.5, 0.0),
+    ).animate(CurvedAnimation(
+      parent: animationController,
+      curve: Curves.bounceInOut,
+    ));
+
+    animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (toggle) icon.value = Icons.mic;
+        if (!toggle) icon.value = Icons.send;
+        animationController.reverse();
+      }
+    });
+
+    if (!showAudioWidget.value) {
+      if (toggle) animationController.forward();
+      if (!toggle) animationController.forward();
+    }
+
+    return Consumer(
+      builder: (context, ref, child) {
+        void updateLocation(PointerEvent details) {
+          print(details.distance);
+          // ref.read(sliderPosition.notifier).state == details.distance;
+        }
+        return Listener(
+          onPointerMove: updateLocation,
+          onPointerDown: fingerDown,
+          onPointerUp: fingerOff,
+          child: Transform(
+            transform: Matrix4.identity(),
+            child: SlideTransition(
+              position: offsetAnimation,
+              child: IconButton(
+                onPressed: toggle
+                    ? () => debugPrint('Add function')
+                    : () => addMessage(true),
+                icon: Icon(icon.value),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../services/database.dart';
 
@@ -16,6 +17,8 @@ import 'message_types/audio_message_widget.dart';
 import 'chat_input/chat_input_field.dart';
 import 'dot_indicator_widget.dart';
 
+
+final sliderPosition = StateProvider((ref) => 0.0,);
 class Body extends HookWidget {
   final List<QueryDocumentSnapshot> querySnapshot;
   final String chatteName;
