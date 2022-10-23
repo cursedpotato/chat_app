@@ -11,7 +11,10 @@ import '../../../globals.dart';
 import '../../../services/database.dart';
 import 'media_menu_widget.dart';
 
+
+final sliderPosition = StateProvider.autoDispose((ref) => 0.0,);
 class ChatInputField extends HookWidget {
+  
   final String chatteeName;
   const ChatInputField({
     Key? key,
@@ -178,8 +181,8 @@ class CustomSendButton extends HookWidget {
     return Consumer(
       builder: (context, ref, child) {
         void updateLocation(PointerEvent details) {
-          print(details.distance);
-          // ref.read(sliderPosition.notifier).state == details.distance;
+          
+          ref.read(sliderPosition.notifier).state = details.position.dx;
         }
         return Listener(
           onPointerMove: updateLocation,

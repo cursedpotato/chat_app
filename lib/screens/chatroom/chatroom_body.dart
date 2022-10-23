@@ -18,7 +18,7 @@ import 'chat_input/chat_input_field.dart';
 import 'dot_indicator_widget.dart';
 
 
-final sliderPosition = StateProvider((ref) => 0.0,);
+
 class Body extends HookWidget {
   final List<QueryDocumentSnapshot> querySnapshot;
   final String chatteName;

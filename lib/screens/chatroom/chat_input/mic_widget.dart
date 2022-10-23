@@ -1,4 +1,6 @@
 
+
+import 'package:chat_app/screens/chatroom/chat_input/chat_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,18 +24,15 @@ class MicWidget extends HookWidget {
       };
     });
 
-    final totalWidth = MediaQuery.of(context).size.width;
-
-    ValueNotifier<double> centerPosition = useState(totalWidth*0.333);
+    
 
     return Expanded(
 
       child: SizedBox(
         height: 48,
         child: Stack(
-          fit: StackFit.loose,
           children: [
-            Slidable(centerPosition: centerPosition),
+            const Slidable(),
             Container(
               color: Colors.white,
               child: Row(
@@ -76,15 +75,23 @@ class MicWidget extends HookWidget {
 class Slidable extends ConsumerWidget {
   const Slidable({
     Key? key,
-    required this.centerPosition,
+
   }) : super(key: key);
 
-  final ValueNotifier<double> centerPosition;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    late final totalWidth = MediaQuery.of(context).size.width;
+
+    late final double centerPosition = totalWidth*0.333;
+
+    late final double offset = ((ref.watch(sliderPosition) - totalWidth).abs() * 0.5);
+
+    Offset position = Offset(centerPosition - offset, 0);
+    if (offset > totalWidth * 0.45) position = Offset(centerPosition, 0);
     return Transform.translate(
-      offset: Offset(centerPosition.value - 100,0),
+      offset: position,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children:const [
