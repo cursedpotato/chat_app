@@ -1,6 +1,4 @@
 import 'package:chat_app/screens/chatroom/chat_input/mic_widget.dart';
-import 'package:chat_app/screens/chatroom/chatroom_body.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -12,7 +10,7 @@ import '../../../services/database.dart';
 import 'media_menu_widget.dart';
 
 
-final sliderPosition = StateProvider.autoDispose((ref) => 0.0,);
+final sliderPosition = StateProvider.autoDispose((ref) => 0.0);
 class ChatInputField extends HookWidget {
   
   final String chatteeName;
