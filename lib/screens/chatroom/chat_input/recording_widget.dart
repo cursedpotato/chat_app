@@ -1,4 +1,4 @@
-import 'dart:ui';
+
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:chat_app/screens/chatroom/chat_input/chat_input_field.dart';
@@ -7,8 +7,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // TODO: Do necessary implementations for iOS for flutter sound
-class MicWidget extends HookWidget {
-  const MicWidget({Key? key}) : super(key: key);
+class RecordingWidget extends HookWidget {
+  const RecordingWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
