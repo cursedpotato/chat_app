@@ -1,4 +1,4 @@
-import 'package:chat_app/screens/chatroom/chat_input/mic_widget.dart';
+import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -26,9 +26,11 @@ class ChatInputField extends HookWidget {
     TextEditingController messageController = useTextEditingController();
     String chatRoomId = getChatRoomIdByUsernames(chatteeName, chatterUsername!);
 
-    // This controls whether the mic icon is show or not
+    // This controls whether the mic icon is shown or not
+    // TODO: may make this all global to be consumed by a consumer widget
     ValueNotifier<bool> showMic = useValueNotifier(true);
     ValueNotifier<bool> showAudioWidget = useState(false);
+    ValueNotifier<bool> wasAudioDiscarted = useState(false);
 
     // We track input to toggle the mic
     void toggle() {
@@ -82,10 +84,6 @@ class ChatInputField extends HookWidget {
       );
     }
 
-    
-
-    
-
     void fingerDown(PointerEvent details) {
       if (showMic.value) showAudioWidget.value = true;
     }
@@ -111,8 +109,10 @@ class ChatInputField extends HookWidget {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
+        // TODO: May give this row a consumer that returns different configurations depending on the state of the app
         children: [
-          // const MicWidget(),
+          
+          
           showAudioWidget.value ? const MicWidget() : const MediaMenu(),
 
           showAudioWidget.value
@@ -152,34 +152,34 @@ class CustomSendButton extends HookWidget {
   Widget build(BuildContext context) {
     final toggle = useValueListenable(showMic);
     final icon = useState(Icons.mic);
-
-    late final animationController =
+    // Slide Transition animation related
+    late final toggleTransitionController =
         useAnimationController(duration: const Duration(milliseconds: 180));
     late final Animation<Offset> offsetAnimation = Tween<Offset>(
       begin: Offset.zero,
       end: const Offset(1.5, 0.0),
     ).animate(CurvedAnimation(
-      parent: animationController,
+      parent: toggleTransitionController,
       curve: Curves.bounceInOut,
     ));
 
-    animationController.addStatusListener((status) {
+    toggleTransitionController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         if (toggle) icon.value = Icons.mic;
         if (!toggle) icon.value = Icons.send;
-        animationController.reverse();
+        toggleTransitionController.reverse();
       }
     });
 
     if (!showAudioWidget.value) {
-      if (toggle) animationController.forward();
-      if (!toggle) animationController.forward();
+      if (toggle) toggleTransitionController.forward();
+      if (!toggle) toggleTransitionController.forward();
     }
 
     return Consumer(
       builder: (context, ref, child) {
         void updateLocation(PointerEvent details) {
-          
+          // The listener will update the positon of the slider that is found in the recording Widget
           ref.read(sliderPosition.notifier).state = details.position.dx;
         }
         return Listener(

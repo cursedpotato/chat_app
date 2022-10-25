@@ -1,8 +1,10 @@
+import 'dart:ui';
+
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:chat_app/screens/chatroom/chat_input/chat_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:math' as math;
 
 // TODO: Do necessary implementations for iOS for flutter sound
 class MicWidget extends HookWidget {
@@ -77,7 +79,7 @@ class Slidable extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // References
-    double pointerPosition = ref.watch(sliderPosition);
+    late final double pointerPosition = ref.watch(sliderPosition);
     late final double screenWidth = MediaQuery.of(context).size.width;
     late final double centerPosition = screenWidth * 0.333;
     /* We use a ternary operator because
@@ -85,26 +87,34 @@ class Slidable extends ConsumerWidget {
      the screenWidth remains which makes the widget go offscreen,
      therefore I chose to give a zero 
      value first so the offset doesn't get the widget out of screen */
-    double offset =
-        (pointerPosition == 0.0 ? 0.0 : pointerPosition - screenWidth).abs()/2;
-    double opacity =
-        (pointerPosition == 0.0 ? 1.0 : (pointerPosition / screenWidth) - offset * 0.0034).abs();
+    late final double offset = (pointerPosition == 0.0 ? 0.0 : pointerPosition - screenWidth).abs()/2;
+    late final double opacity = (pointerPosition == 0.0 ? 1.0: (pointerPosition / screenWidth) - offset * 0.005);
 
-    
-   
+    const colorizeColors = [
+      Colors.black,
+      Colors.grey,
+    ];
+
 
     return Transform.translate(
       offset: Offset(centerPosition - offset, 0),
       child: Opacity(
-        opacity: opacity,
+        // If opacity is less than zero return zero
+        opacity: opacity < 0 ? 0.0: opacity,
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: const [
-            Text('slide to cancel'),
-            SizedBox(
+          children: [
+            AnimatedTextKit(repeatForever: true, animatedTexts: [
+              ColorizeAnimatedText('slide to cancel',
+                  textStyle: Theme.of(context).textTheme.bodyMedium!,
+                  colors: colorizeColors)
+            ]),
+            // Text('slide to cancel' ),
+            const SizedBox(
               height: 48,
             ),
-            Icon(Icons.arrow_back_ios_new_outlined),
+
+            const Icon(Icons.arrow_back_ios_new_outlined),
           ],
         ),
       ),
