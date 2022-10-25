@@ -23,31 +23,24 @@ class ChatInputField extends HookWidget {
   @override
   Widget build(BuildContext context) {
     String messageId = "";
-    String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
+    
     TextEditingController messageController = useTextEditingController();
-    String chatRoomId = getChatRoomIdByUsernames(chatteeName, chatterUsername!);
+    
 
-    // This controls whether the mic icon is shown or not
-    // ignore: todo
-    // TODO: may make this all global to be consumed by a consumer widget
-    // ValueNotifier<bool> showMic = useValueNotifier(true);
-    // ValueNotifier<bool> showAudioWidget = useState(false);
-    // ValueNotifier<bool> wasAudioDiscarted = useState(false);
-
- 
 
     void addMessage(bool sendClicked) {
       if (messageController.text.isEmpty) return;
 
       String message = messageController.text;
-
+      String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
+      String chatRoomId = getChatRoomIdByUsernames(chatteeName, chatterUsername!);
       var lastMessageTs = DateTime.now();
 
       Map<String, dynamic> messageInfoMap = {
         "message": message,
+        "imgUrl": chatterPfp,
         "sendBy": chatterUsername,
         "ts": lastMessageTs,
-        "imgUrl": chatterPfp,
         "resUrl": '',
         "messageType": "text",
       };
