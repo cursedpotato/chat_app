@@ -1,3 +1,5 @@
+import 'package:chat_app/screens/chatroom/chat_input/media_menu_widget.dart';
+import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -8,8 +10,7 @@ import '../../../globals.dart';
 import '../../../services/database.dart';
 
 final sliderPosition = StateProvider.autoDispose((ref) => 0.0);
-final showMic = StateProvider.autoDispose((ref) => true);
-final showAudioWidget = StateProvider.autoDispose((ref) => false);
+final showAudioWidgetProvider = StateProvider.autoDispose((ref) => false);
 final wasAudioDiscarted = StateProvider.autoDispose((ref) => false);
 
 class ChatInputField extends HookWidget {
@@ -33,7 +34,7 @@ class ChatInputField extends HookWidget {
     // ValueNotifier<bool> showAudioWidget = useState(false);
     // ValueNotifier<bool> wasAudioDiscarted = useState(false);
 
-    // We track input to toggle the mic
+ 
 
     void addMessage(bool sendClicked) {
       if (messageController.text.isEmpty) return;
@@ -93,28 +94,22 @@ class ChatInputField extends HookWidget {
       ),
       child: Consumer(
         builder: (context, ref, child) {
-          List<Widget> rowList = [];
-          return Row(children: rowList);
+          List<Widget> rowList() {
+            if (ref.watch(showAudioWidgetProvider)) return [const RecordingWidget(), const CustomSendButton()];
+            
+            return [
+              const MediaMenu(),
+              CustomTextField(messageController: messageController),
+              CustomSendButton(
+                addMessage: addMessage,
+                messageController: messageController,
+              )
+            ];
+          }
+
+          return Row(children: rowList());
         },
       ),
-      // child: Row(
-      //   crossAxisAlignment: CrossAxisAlignment.end,
-      //   children: [
-      //     showAudioWidget.value ? const MicWidget() : const MediaMenu(),
-
-      //     showAudioWidget.value
-      //         ? const SizedBox()
-      //         : CustomTextField(messageController: messageController),
-      //     // Custom send button
-      //     CustomSendButton(
-      //       showMic: showMic,
-      //       showAudioWidget: showAudioWidget,
-      //       addMessage: addMessage,
-      //       fingerDown: fingerDown,
-      //       fingerOff: fingerOff,
-      //     )
-      //   ],
-      // ),
     );
   }
 }
@@ -122,12 +117,13 @@ class ChatInputField extends HookWidget {
 class CustomSendButton extends HookWidget {
   const CustomSendButton({
     Key? key,
-    required this.addMessage,
-    required this.messageController,
+    this.addMessage,
+    this.messageController,
   }) : super(key: key);
 
-  final void Function(bool) addMessage;
-  final TextEditingController messageController;
+  // Parameters are optional because the app is not always in "send-message-state"
+  final void Function(bool)? addMessage;
+  final TextEditingController? messageController;
 
   @override
   Widget build(BuildContext context) {
@@ -136,17 +132,16 @@ class CustomSendButton extends HookWidget {
     final icon = useState(Icons.mic);
 
     void toggle() {
-      if (messageController.text.isEmpty) showMic.value = true;
-      if (messageController.text.isNotEmpty) showMic.value = false;
+      if (messageController!.text.isEmpty) showMic.value = true;
+      if (messageController!.text.isNotEmpty) showMic.value = false;
     }
-
+    // We listen input to toggle the mic
     useEffect(() {
-      messageController.addListener(toggle);
-      return () => messageController.removeListener(toggle);
+      messageController?.addListener(toggle);
+      return () => messageController?.removeListener(toggle);
     });
 
-    late final toggleTransitionController =
-        useAnimationController(duration: const Duration(milliseconds: 180));
+    late final toggleTransitionController = useAnimationController(duration: const Duration(milliseconds: 180));
     late final Animation<Offset> offsetAnimation = Tween<Offset>(
       begin: Offset.zero,
       end: const Offset(1.5, 0.0),
@@ -166,26 +161,24 @@ class CustomSendButton extends HookWidget {
     return Consumer(
       builder: (context, ref, child) {
         // This prevents the slide transition to trigger everytime the user taps over the mic
-        if (!ref.watch(showAudioWidget)) toggleTransitionController.forward();
+        if (!ref.watch(showAudioWidgetProvider)) toggleTransitionController.forward();
 
-        // ignore: no_leading_underscores_for_local_identifiers, unused_local_variable
-        bool _showAudioWidget = ref.read(showAudioWidget.notifier).state;
 
+        // Listener related functions
         void fingerDown(PointerEvent details) {
-          if (showMic.value) _showAudioWidget = true;
+          if (!showMic.value)  return;
+          ref.read(showAudioWidgetProvider.notifier).state = true;
         }
 
         void fingerOff(PointerEvent details) {
-          if (showMic.value) _showAudioWidget = false;
-        }
-
-        void updateLocation(PointerEvent details) {
-          // The listener will update the positon of the slider that is found in the recording Widget
-          ref.read(sliderPosition.notifier).state = details.position.dx;
+          if (!showMic.value) return;
+          ref.read(showAudioWidgetProvider.notifier).state = false;
         }
 
         return Listener(
-          onPointerMove: updateLocation,
+          // The listener will update the positon of the slider that is found in the recording Widget
+          onPointerMove: (PointerEvent details) =>
+              ref.read(sliderPosition.notifier).state = details.position.dx,
           onPointerDown: fingerDown,
           onPointerUp: fingerOff,
           child: Transform(
@@ -195,7 +188,7 @@ class CustomSendButton extends HookWidget {
               child: IconButton(
                 onPressed: showMic.value
                     ? () => debugPrint('Add function')
-                    : () => addMessage(true),
+                    : () => addMessage!(true),
                 icon: Icon(icon.value),
               ),
             ),
@@ -213,6 +206,7 @@ class CustomTextField extends StatelessWidget {
   }) : super(key: key);
 
   final TextEditingController messageController;
+  
 
   @override
   Widget build(BuildContext context) {
