@@ -1,4 +1,3 @@
-import 'package:chat_app/screens/chatroom/chat_input/media_menu_widget.dart';
 import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +8,7 @@ import 'package:uuid/uuid.dart';
 import '../../../globals.dart';
 import '../../../services/database.dart';
 
-final sliderPosition = StateProvider.autoDispose((ref) => 0.0);
-final showAudioWidgetProvider = StateProvider.autoDispose((ref) => false);
-final wasAudioDiscarted = StateProvider.autoDispose((ref) => false);
+
 
 class ChatInputField extends HookWidget {
   final String chatteeName;
@@ -23,17 +20,15 @@ class ChatInputField extends HookWidget {
   @override
   Widget build(BuildContext context) {
     String messageId = "";
-    
     TextEditingController messageController = useTextEditingController();
-    
-
 
     void addMessage(bool sendClicked) {
       if (messageController.text.isEmpty) return;
 
       String message = messageController.text;
       String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
-      String chatRoomId = getChatRoomIdByUsernames(chatteeName, chatterUsername!);
+      String chatRoomId =
+          getChatRoomIdByUsernames(chatteeName, chatterUsername!);
       var lastMessageTs = DateTime.now();
 
       Map<String, dynamic> messageInfoMap = {
@@ -88,18 +83,16 @@ class ChatInputField extends HookWidget {
       child: Consumer(
         builder: (context, ref, child) {
           List<Widget> rowList() {
-            if (ref.watch(showAudioWidgetProvider)) return [const RecordingWidget(), const CustomSendButton()];
-            
-            return [
-              const MediaMenu(),
-              CustomTextField(messageController: messageController),
-              CustomSendButton(
-                addMessage: addMessage,
-                messageController: messageController,
-              )
-            ];
-          }
+            // if (ref.watch(showAudioWidgetProvider)) return const [RecordingWidget(), CustomSendButton()];
 
+            // return [
+            //   const MediaMenu(),
+            //   ChatRoomTextField(messageController: messageController),
+            //   CustomSendButton(addMessage: addMessage, messageController: messageController)
+            // ];
+
+            return const [RecordingWidget(), CustomSendButton()];
+          }
           return Row(children: rowList());
         },
       ),
@@ -128,13 +121,15 @@ class CustomSendButton extends HookWidget {
       if (messageController!.text.isEmpty) showMic.value = true;
       if (messageController!.text.isNotEmpty) showMic.value = false;
     }
+
     // We listen input to toggle the mic
     useEffect(() {
       messageController?.addListener(toggle);
       return () => messageController?.removeListener(toggle);
     });
 
-    late final toggleTransitionController = useAnimationController(duration: const Duration(milliseconds: 180));
+    late final toggleTransitionController =
+        useAnimationController(duration: const Duration(milliseconds: 180));
     late final Animation<Offset> offsetAnimation = Tween<Offset>(
       begin: Offset.zero,
       end: const Offset(1.5, 0.0),
@@ -156,31 +151,35 @@ class CustomSendButton extends HookWidget {
         // This prevents the slide transition to trigger everytime the user taps over the mic
         if (!ref.watch(showAudioWidgetProvider)) toggleTransitionController.forward();
 
-
         // Listener related functions
         void fingerDown(PointerEvent details) {
-          if (!showMic.value)  return;
+          if (!showMic.value) return;
           ref.read(showAudioWidgetProvider.notifier).state = true;
         }
 
         void fingerOff(PointerEvent details) {
           if (!showMic.value) return;
+          // If the animation is in progress we don't want to show everything else yet 
+          if (ref.watch(wasAudioDiscarted)) return;
           ref.read(showAudioWidgetProvider.notifier).state = false;
+        }
+
+        void updateLocation(PointerEvent details) {
+          ref.read(sliderPosition.notifier).state = details.position.dx;
         }
 
         return Listener(
           // The listener will update the positon of the slider that is found in the recording Widget
-          onPointerMove: (PointerEvent details) =>
-              ref.read(sliderPosition.notifier).state = details.position.dx,
-          onPointerDown: fingerDown,
           onPointerUp: fingerOff,
-          child: Transform(
-            transform: Matrix4.identity(),
-            child: SlideTransition(
-              position: offsetAnimation,
+          onPointerDown: fingerDown,
+          onPointerMove: updateLocation,
+          child: SlideTransition(
+            position: offsetAnimation,
+            child: Transform(
+              transform: Matrix4.identity(),
               child: IconButton(
                 onPressed: showMic.value
-                    ? () => debugPrint('Add function')
+                    ? () {}
                     : () => addMessage!(true),
                 icon: Icon(icon.value),
               ),
@@ -192,14 +191,13 @@ class CustomSendButton extends HookWidget {
   }
 }
 
-class CustomTextField extends StatelessWidget {
-  const CustomTextField({
+class ChatRoomTextField extends StatelessWidget {
+  const ChatRoomTextField({
     Key? key,
     required this.messageController,
   }) : super(key: key);
 
   final TextEditingController messageController;
-  
 
   @override
   Widget build(BuildContext context) {
