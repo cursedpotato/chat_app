@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -14,13 +16,6 @@ class RecordingWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final focusNode = useFocusNode();
-    useEffect(
-      () {
-        focusNode.requestFocus();
-        return;
-      },
-    );
     return Expanded(
       child: SizedBox(
         height: 48,
@@ -68,21 +63,123 @@ class AnimatedTrash extends HookWidget {
     AnimationController animationController =
         useAnimationController(duration: const Duration(milliseconds: 2500));
 
+    useEffect(
+      () {
+        animationController.forward();
+        return;
+      },
+    );
+
     final animation = Tween(begin: 0.0, end: 0.0).animate(
       CurvedAnimation(
         parent: animationController,
         curve: Curves.easeOut,
       ),
     );
-    return Column(
-      children: [
-        AnimatedBuilder(
-          animation: animation,
-          builder: (context, child) {
-            return SizedBox();
-          },
-        ),
-      ],
+
+    //Trash Can
+    Animation<double> trashWithCoverTranslateTop;
+    Animation<double> trashCoverRotationFirst;
+    Animation<double> trashCoverTranslateLeft;
+    Animation<double> trashCoverRotationSecond;
+    Animation<double> trashCoverTranslateRight;
+    Animation<double> trashWithCoverTranslateDown;
+
+    trashWithCoverTranslateTop = Tween(begin: 30.0, end: -25.0).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: const Interval(0.0, 0.45),
+      ),
+    );
+
+    trashCoverRotationFirst = Tween(begin: 0.0, end: -pi / 3).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: const Interval(0.45, 0.55),
+      ),
+    );
+
+    trashCoverTranslateLeft = Tween(begin: 0.0, end: -18.0).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: const Interval(0.45, 0.55),
+      ),
+    );
+
+    trashCoverRotationSecond = Tween(begin: 0.0, end: pi / 3).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: const Interval(0.65, 0.75),
+      ),
+    );
+
+    trashCoverTranslateRight = Tween(begin: 0.0, end: 18.0).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: const Interval(0.65, 0.75),
+      ),
+    );
+
+    trashWithCoverTranslateDown = Tween(begin: 0.0, end: 55.0).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: const Interval(0.80, 1.0),
+      ),
+    );
+
+    return Consumer(
+      builder: (context, ref, child) {
+        animationController.addStatusListener((status) {
+          print('This is the status of the animation: $status');
+        });
+        return Column(
+          children: [
+            AnimatedBuilder(
+              animation: animation,
+              builder: (context, child) {
+                return Transform(
+                  transform: Matrix4.identity()
+                    ..translate(trashWithCoverTranslateTop.value)
+                    ..translate(trashWithCoverTranslateDown.value),
+                  child: child,
+                );
+              },
+              child: Column(
+                children: [
+                  AnimatedBuilder(
+                    animation: animation,
+                    builder: (context, child) {
+                      return Transform(
+                        transform: Matrix4.identity()
+                          ..translate(trashCoverTranslateLeft.value)
+                          ..translate(trashCoverTranslateRight.value),
+                        child: Transform.rotate(
+                          angle: trashCoverRotationSecond.value,
+                          child: Transform.rotate(
+                            angle: trashCoverRotationFirst.value,
+                            child: child,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Image(
+                      image: AssetImage('assets/images/trash_cover.png'),
+                      width: 30,
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 5),
+                    child: Image(
+                      image: AssetImage('assets/images/trash_container.png'),
+                      width: 30,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
