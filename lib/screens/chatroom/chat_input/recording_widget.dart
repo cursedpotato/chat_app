@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 // Recording widget related variables
 final sliderPosition = StateProvider.autoDispose((ref) => 0.0);
 final showAudioWidgetProvider = StateProvider.autoDispose((ref) => false);
@@ -15,6 +14,13 @@ class RecordingWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final focusNode = useFocusNode();
+    useEffect(
+      () {
+        focusNode.requestFocus();
+        return;
+      },
+    );
     return Expanded(
       child: SizedBox(
         height: 48,
@@ -22,14 +28,61 @@ class RecordingWidget extends HookWidget {
           builder: (context, ref, child) {
             List<Widget> stackList() {
               if (ref.watch(wasAudioDiscarted)) {
-                
+                return const [AnimatedTrash(), PreventKeyboardClosing()];
               }
-              return const [Slidable(), RecordingCounter()];
+              return const [
+                Slidable(),
+                RecordingCounter(),
+                PreventKeyboardClosing()
+              ];
             }
+
             return Stack(children: stackList());
           },
         ),
       ),
+    );
+  }
+}
+
+// Flutter hasn't implemented yet the option to open the keyboard without the need of a textfield
+class PreventKeyboardClosing extends HookWidget {
+  const PreventKeyboardClosing({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final focusNode = useFocusNode()..requestFocus();
+    return TextField(
+      focusNode: focusNode,
+      showCursor: false,
+      decoration: const InputDecoration(border: InputBorder.none),
+    );
+  }
+}
+
+class AnimatedTrash extends HookWidget {
+  const AnimatedTrash({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    AnimationController animationController =
+        useAnimationController(duration: const Duration(milliseconds: 2500));
+
+    final animation = Tween(begin: 0.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.easeOut,
+      ),
+    );
+    return Column(
+      children: [
+        AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) {
+            return SizedBox();
+          },
+        ),
+      ],
     );
   }
 }
@@ -42,7 +95,7 @@ class RecordingCounter extends HookWidget {
   @override
   Widget build(BuildContext context) {
     // We use focus node instead of autofocus, because the later doesn't work when the textfield is nested
-    FocusNode focusNode = useFocusNode()..requestFocus();
+
     AnimationController opacityController =
         useAnimationController(duration: const Duration(milliseconds: 800))
           ..repeat(reverse: true);
@@ -63,13 +116,9 @@ class RecordingCounter extends HookWidget {
             ),
           ),
           // We place this widget to prevent the keyboard from closing, giving the user a bad experience
-          SizedBox(
+          const SizedBox(
             width: 10,
-            child: TextField(
-              focusNode: focusNode,
-              showCursor: false,
-              decoration: const InputDecoration(border: InputBorder.none),
-            ),
+            height: 48,
           ),
           const Flexible(child: Text('0:01')),
           const SizedBox(width: 10)
@@ -95,17 +144,19 @@ class Slidable extends ConsumerWidget {
      the screenWidth remains which makes the widget go offscreen,
      therefore I chose to give a zero 
      value first so the offset doesn't get the widget out of screen */
-    late final double offset = (pointerPosition == 0.0 ? 0.0 : pointerPosition - screenWidth).abs() / 2;
-    late final double opacity = (pointerPosition == 0.0 ? 1.0 : (pointerPosition / screenWidth) - offset * 0.005);
+    late final double offset =
+        (pointerPosition == 0.0 ? 0.0 : pointerPosition - screenWidth).abs() /
+            2;
+    late final double opacity = (pointerPosition == 0.0
+        ? 1.0
+        : (pointerPosition / screenWidth) - offset * 0.005);
 
-    
-    () {
+    // We may only call this if the recording duration is more than 1 second
     if (opacity < 0) {
-       ref.read(wasAudioDiscarted.notifier).state = true;
-       return ;
+      // Our provider is wrapped inside a future delayed to avoid calling this over and over again in a rebuild
+      Future.delayed(Duration.zero,
+          () => ref.read(wasAudioDiscarted.notifier).state = true);
     }
-    };
-    
 
     const colorizeColors = [
       Colors.black,
