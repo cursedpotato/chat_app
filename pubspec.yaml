@@ -51,7 +51,7 @@ dependencies:
   google_fonts: ^3.0.1
   # To reduce boilerplate
   flutter_hooks: ^0.18.3 
-  flutter_riverpod: ^2.0.2
+  hooks_riverpod: ^2.0.2
   # Animations 
   curved_navigation_bar: ^1.0.3
   animate_icons: ^2.0.0
@@ -60,6 +60,7 @@ dependencies:
   file_picker: ^5.2.1
   cached_network_image: ^3.2.2
   intl: ^0.17.0
+  
   
  
   

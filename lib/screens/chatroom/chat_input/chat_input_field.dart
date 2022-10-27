@@ -2,13 +2,12 @@ import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../globals.dart';
 import '../../../services/database.dart';
-
-
+import 'media_menu_widget.dart';
 
 class ChatInputField extends HookWidget {
   final String chatteeName;
@@ -19,6 +18,7 @@ class ChatInputField extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     String messageId = "";
     TextEditingController messageController = useTextEditingController();
 
@@ -82,17 +82,19 @@ class ChatInputField extends HookWidget {
       ),
       child: Consumer(
         builder: (context, ref, child) {
-          List<Widget> rowList() {
-            // if (ref.watch(showAudioWidgetProvider)) return const [RecordingWidget(), CustomSendButton()];
+          List<Widget> rowList() { 
+            if (ref.watch(wasAudioDiscarted)) return const [RecordingWidget()];
+            
+            if(ref.watch(showAudioWidget)) return const [RecordingWidget(), CustomSendButton()];
 
-            // return [
-            //   const MediaMenu(),
-            //   ChatRoomTextField(messageController: messageController),
-            //   CustomSendButton(addMessage: addMessage, messageController: messageController)
-            // ];
-
-            return const [RecordingWidget(), CustomSendButton()];
+            return [
+              const MediaMenu(),
+              ChatRoomTextField(messageController: messageController),
+              CustomSendButton(
+                  addMessage: addMessage, messageController: messageController)
+            ];
           }
+
           return Row(children: rowList());
         },
       ),
@@ -115,6 +117,7 @@ class CustomSendButton extends HookWidget {
   Widget build(BuildContext context) {
     // Slide Transition animation related
     final showMic = useState(true);
+
     final icon = useState(Icons.mic);
 
     void toggle() {
@@ -123,45 +126,43 @@ class CustomSendButton extends HookWidget {
     }
 
     // We listen input to toggle the mic
+
+    late final animationController =
+        useAnimationController(duration: const Duration(milliseconds: 180));
+
     useEffect(() {
       messageController?.addListener(toggle);
       return () => messageController?.removeListener(toggle);
     });
 
-    late final toggleTransitionController =
-        useAnimationController(duration: const Duration(milliseconds: 180));
+    animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (showMic.value) icon.value = Icons.mic;
+        if (!showMic.value) icon.value = Icons.send;
+        animationController.reverse();
+      }
+    });
     late final Animation<Offset> offsetAnimation = Tween<Offset>(
       begin: Offset.zero,
       end: const Offset(1.5, 0.0),
     ).animate(CurvedAnimation(
-      parent: toggleTransitionController,
+      parent: animationController,
       curve: Curves.bounceInOut,
     ));
 
-    toggleTransitionController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        if (showMic.value) icon.value = Icons.mic;
-        if (!showMic.value) icon.value = Icons.send;
-        toggleTransitionController.reverse();
-      }
-    });
-
     return Consumer(
       builder: (context, ref, child) {
-        // This prevents the slide transition to trigger everytime the user taps over the mic
-        if (!ref.watch(showAudioWidgetProvider)) toggleTransitionController.forward();
-
         // Listener related functions
         void fingerDown(PointerEvent details) {
           if (!showMic.value) return;
-          ref.read(showAudioWidgetProvider.notifier).state = true;
+          ref.read(showAudioWidget.notifier).state = true;
         }
 
         void fingerOff(PointerEvent details) {
           if (!showMic.value) return;
-          // If the animation is in progress we don't want to show everything else yet 
+          // If the animation is in progress we don't want to show everything else yet
           if (ref.watch(wasAudioDiscarted)) return;
-          ref.read(showAudioWidgetProvider.notifier).state = false;
+          ref.read(showAudioWidget.notifier).state = false;
         }
 
         void updateLocation(PointerEvent details) {
@@ -175,14 +176,9 @@ class CustomSendButton extends HookWidget {
           onPointerMove: updateLocation,
           child: SlideTransition(
             position: offsetAnimation,
-            child: Transform(
-              transform: Matrix4.identity(),
-              child: IconButton(
-                onPressed: showMic.value
-                    ? () {}
-                    : () => addMessage!(true),
-                icon: Icon(icon.value),
-              ),
+            child: IconButton(
+              onPressed: showMic.value ? () {} : () => addMessage!(true),
+              icon: Icon(icon.value),
             ),
           ),
         );
