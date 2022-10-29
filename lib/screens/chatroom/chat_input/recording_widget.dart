@@ -4,6 +4,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:vector_math/vector_math_64.dart' as vmath;
 
 // Recording widget related variables
 final sliderPosition = StateProvider.autoDispose((ref) => 0.0);
@@ -11,9 +12,6 @@ final sliderPosition = StateProvider.autoDispose((ref) => 0.0);
 final showAudioWidget = StateProvider.autoDispose((ref) => false);
 
 final wasAudioDiscarted = StateProvider.autoDispose((ref) => false);
-
-
-
 
 // TODO: Do necessary implementations for iOS for flutter sound
 class RecordingWidget extends HookWidget {
@@ -28,14 +26,17 @@ class RecordingWidget extends HookWidget {
           builder: (context, ref, child) {
             List<Widget> stackList() {
               if (ref.watch(wasAudioDiscarted)) {
-                return const [PreventKeyboardClosing(),AnimatedMic(), AnimatedTrash(),]; 
+                return const [
+                  PreventKeyboardClosing(),
+                  AnimatedMic(),
+                  AnimatedTrash(),
+                ];
               }
               return const [
                 Slidable(),
                 RecordingCounter(),
                 PreventKeyboardClosing()
               ];
-              
             }
 
             return Stack(children: stackList());
@@ -71,7 +72,7 @@ class AnimatedMic extends HookConsumerWidget {
     AnimationController animationController =
         useAnimationController(duration: animationDuration);
 
-    animationController.addStatusListener((status) { 
+    animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         ref.read(showAudioWidget.notifier).state = false;
         ref.read(wasAudioDiscarted.notifier).state = false;
@@ -124,7 +125,6 @@ class AnimatedMic extends HookConsumerWidget {
       ),
     );
 
-
     micRotationSecond = Tween(begin: 0.0, end: pi).animate(
       CurvedAnimation(
         parent: animationController,
@@ -160,19 +160,12 @@ class AnimatedMic extends HookConsumerWidget {
         builder: (context, child) {
           return Transform(
             transform: Matrix4.identity()
-              ..translate(micTranslateLeftFirst.value, micTranslateTop.value)
-              ..translate(micTranslateLeftSecond.value, micTranslateDown.value)
-              ..translate(0.0, micInsideTrashTranslateDown.value),
-            child: Transform.rotate(
-              angle: micRotationFirst.value,
-              child: Transform.rotate(
-                angle: micRotationSecond.value,
-                child: Transform.rotate(
-                  angle: micRotationThird.value,
-                  child: child,
-                ),
-              ),
-            ),
+              ..rotate(vmath.Vector3(1.0, 0.3, 0.0), micRotationSecond.value),
+              // ..translate(micTranslateLeftFirst.value, micTranslateTop.value)
+              // ..rotate(vmath.Vector3.all(0.0), micRotationSecond.value)
+              // ..translate(micTranslateLeftSecond.value, micTranslateDown.value)..rotate(vmath.Vector3.all(0.0), micRotationThird.value)
+              // ..translate(0.0, micInsideTrashTranslateDown.value),
+            child: child,
           );
         },
         child: const SizedBox(
@@ -254,55 +247,54 @@ class AnimatedTrash extends HookWidget {
     );
 
     return AnimatedBuilder(
-          animation: trashWithCoverTranslateTop,
-          builder: (context, child) {
-            return Transform.translate(
-              offset: trashWithCoverTranslateTop.value,
-              child: Transform.translate(
-                offset: trashWithCoverTranslateDown.value,
-                child: child,
-              ),
-            );
-          },
-          child: Column(
-            children: [
-              AnimatedBuilder(
-                animation: trashCoverRotationFirst,
-                builder: (context, child) {
-                  return Transform(
-                    transform: Matrix4.identity()
-                      ..translate(trashCoverTranslateLeft.value)
-                      ..translate(trashCoverTranslateRight.value),
-                    child: Transform.rotate(
-                      angle: trashCoverRotationSecond.value,
-                      child: Transform.rotate(
-                        angle: trashCoverRotationFirst.value,
-                        child: child,
-                      ),
-                    ),
-                  );
-                },
-                child: const Image(
-                  image: AssetImage('assets/images/trash_cover.png'),
-                  width: 30,
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(
-                  top: 2,
-                  right: 0.5,
-                ),
-                child: Image(
-                  image: AssetImage('assets/images/trash_container.png'),
-                  width: 30,
-                ),
-              ),
-            ],
+      animation: trashWithCoverTranslateTop,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: trashWithCoverTranslateTop.value,
+          child: Transform.translate(
+            offset: trashWithCoverTranslateDown.value,
+            child: child,
           ),
         );
-      }
+      },
+      child: Column(
+        children: [
+          AnimatedBuilder(
+            animation: trashCoverRotationFirst,
+            builder: (context, child) {
+              return Transform(
+                transform: Matrix4.identity()
+                  ..translate(trashCoverTranslateLeft.value)
+                  ..translate(trashCoverTranslateRight.value),
+                child: Transform.rotate(
+                  angle: trashCoverRotationSecond.value,
+                  child: Transform.rotate(
+                    angle: trashCoverRotationFirst.value,
+                    child: child,
+                  ),
+                ),
+              );
+            },
+            child: const Image(
+              image: AssetImage('assets/images/trash_cover.png'),
+              width: 30,
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(
+              top: 2,
+              right: 0.5,
+            ),
+            child: Image(
+              image: AssetImage('assets/images/trash_container.png'),
+              width: 30,
+            ),
+          ),
+        ],
+      ),
+    );
   }
-
+}
 
 class RecordingCounter extends HookWidget {
   const RecordingCounter({
