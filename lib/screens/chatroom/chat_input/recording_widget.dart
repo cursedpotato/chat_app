@@ -14,6 +14,7 @@ final wasAudioDiscarted = StateProvider.autoDispose((ref) => false);
 
 
 
+
 // TODO: Do necessary implementations for iOS for flutter sound
 class RecordingWidget extends HookWidget {
   const RecordingWidget({Key? key}) : super(key: key);
@@ -26,19 +27,15 @@ class RecordingWidget extends HookWidget {
         child: Consumer(
           builder: (context, ref, child) {
             List<Widget> stackList() {
-              // if (ref.watch(wasAudioDiscarted)) {
-              //   return const [PreventKeyboardClosing(),AnimatedMic(), AnimatedTrash(),]; 
-              // }
-              // return const [
-              //   Slidable(),
-              //   RecordingCounter(),
-              //   PreventKeyboardClosing()
-              // ];
+              if (ref.watch(wasAudioDiscarted)) {
+                return const [PreventKeyboardClosing(),AnimatedMic(), AnimatedTrash(),]; 
+              }
               return const [
-                PreventKeyboardClosing(),
-                AnimatedMic(),
-                AnimatedTrash(),
+                Slidable(),
+                RecordingCounter(),
+                PreventKeyboardClosing()
               ];
+              
             }
 
             return Stack(children: stackList());
@@ -77,6 +74,7 @@ class AnimatedMic extends HookConsumerWidget {
     animationController.addStatusListener((status) { 
       if (status == AnimationStatus.completed) {
         ref.read(showAudioWidget.notifier).state = false;
+        ref.read(wasAudioDiscarted.notifier).state = false;
       }
     });
 
@@ -111,7 +109,7 @@ class AnimatedMic extends HookConsumerWidget {
       ),
     );
 
-    micTranslateLeftFirst = Tween(begin: 0.0, end: -screenWidth * 0.39).animate(
+    micTranslateLeftFirst = Tween(begin: 60.0, end: -screenWidth * 0.28).animate(
       CurvedAnimation(
         parent: animationController,
         curve: const Interval(0.0, 0.35),
@@ -368,11 +366,6 @@ class Slidable extends ConsumerWidget {
     late final double opacity = (pointerPosition == 0.0
         ? 1.0
         : (pointerPosition / screenWidth) - offset * 0.005);
-
-    
-    if (opacity < 0) {
-      ref.read(wasAudioDiscarted.notifier).state = true;
-    }
 
     const colorizeColors = [
       Colors.black,
