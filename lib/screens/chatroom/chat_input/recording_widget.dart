@@ -109,7 +109,7 @@ class AnimatedMic extends HookConsumerWidget {
       ),
     );
 
-    micTranslateLeftFirst = Tween(begin: 60.0, end: -screenWidth * 0.28).animate(
+    micTranslateLeftFirst = Tween(begin: 0.0, end: -screenWidth * 0.39).animate(
       CurvedAnimation(
         parent: animationController,
         curve: const Interval(0.0, 0.35),
@@ -123,6 +123,7 @@ class AnimatedMic extends HookConsumerWidget {
         curve: const Interval(0.35, 0.63),
       ),
     );
+
 
     micRotationSecond = Tween(begin: 0.0, end: pi).animate(
       CurvedAnimation(
