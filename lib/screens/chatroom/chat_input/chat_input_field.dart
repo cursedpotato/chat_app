@@ -9,7 +9,7 @@ import '../../../globals.dart';
 import '../../../services/database.dart';
 import 'media_menu_widget.dart';
 
-class ChatInputField extends HookWidget {
+class ChatInputField extends HookConsumerWidget {
   final String chatteeName;
   const ChatInputField({
     Key? key,
@@ -17,10 +17,31 @@ class ChatInputField extends HookWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    
+  Widget build(BuildContext context, WidgetRef ref) {
     String messageId = "";
     TextEditingController messageController = useTextEditingController();
+    final showMic = useState(true);
+
+    late final double screenWidth = MediaQuery.of(context).size.width;
+    // Listener related functions
+    void fingerDown(PointerEvent details) {
+      if (!showMic.value) return;
+      ref.read(showAudioWidget.notifier).state = true;
+    }
+
+    void fingerOff(PointerEvent details) {
+      if (!showMic.value) return;
+      // If the animation is in progress we don't want to show everything else yet
+      if (ref.watch(wasAudioDiscarted)) return;
+      ref.read(showAudioWidget.notifier).state = false;
+    }
+
+    void updateLocation(PointerEvent details) {
+      ref.read(sliderPosition.notifier).state = details.position.dx;
+      if (details.position.dx < screenWidth * 0.5) {
+        ref.read(wasAudioDiscarted.notifier).state = true;
+      }
+    }
 
     void addMessage(bool sendClicked) {
       if (messageController.text.isEmpty) return;
@@ -65,58 +86,74 @@ class ChatInputField extends HookWidget {
       );
     }
 
+    List<Widget> rowList() {
+      if (ref.watch(wasAudioDiscarted)) return [const RecordingWidget()];
+      if (ref.watch(showAudioWidget)) {
+        return [
+          const RecordingWidget(),
+          CustomSendButton(
+            showMic: showMic,
+            fingerDown: fingerDown,
+            fingerOff: fingerOff,
+            updateLocation: updateLocation,
+          )
+        ];
+      }
+      return [
+        const MediaMenu(),
+        ChatRoomTextField(messageController: messageController),
+        CustomSendButton(
+          showMic: showMic,
+          addMessage: addMessage,
+          messageController: messageController,
+          fingerDown: fingerDown,
+          fingerOff: fingerOff,
+          updateLocation: updateLocation,
+        )
+      ];
+    }
+
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: kDefaultPadding,
-        vertical: kDefaultPadding / 2,
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, 4),
-            blurRadius: 32,
-            color: const Color(0xFF087949).withOpacity(0.08),
-          ),
-        ],
-      ),
-      child: Consumer(
-        builder: (context, ref, child) {
-          List<Widget> rowList() { 
-            if (ref.watch(wasAudioDiscarted)) return const [RecordingWidget()];
-            
-            if(ref.watch(showAudioWidget)) return const [RecordingWidget(), CustomSendButton()];
-
-            return [
-              const MediaMenu(),
-              ChatRoomTextField(messageController: messageController),
-              CustomSendButton(
-                  addMessage: addMessage, messageController: messageController)
-            ];
-          }
-
-          return Row(children: rowList());
-        },
-      ),
-    );
+        padding: const EdgeInsets.symmetric(
+          horizontal: kDefaultPadding,
+          vertical: kDefaultPadding / 2,
+        ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          boxShadow: [
+            BoxShadow(
+              offset: const Offset(0, 4),
+              blurRadius: 32,
+              color: const Color(0xFF087949).withOpacity(0.08),
+            ),
+          ],
+        ),
+        child: Row(children: rowList()));
   }
 }
 
 class CustomSendButton extends HookWidget {
   const CustomSendButton({
     Key? key,
-    this.addMessage,
     this.messageController,
+    this.addMessage,
+    this.updateLocation,
+    this.fingerDown,
+    this.fingerOff,
+    required this.showMic,
   }) : super(key: key);
 
   // Parameters are optional because the app is not always in "send-message-state"
-  final void Function(bool)? addMessage;
   final TextEditingController? messageController;
+  final void Function(bool)? addMessage;
+  final void Function(PointerEvent)? updateLocation;
+  final void Function(PointerEvent)? fingerDown;
+  final void Function(PointerEvent)? fingerOff;
+  final ValueNotifier<bool> showMic;
 
   @override
   Widget build(BuildContext context) {
     // Slide Transition animation related
-    final showMic = useState(true);
 
     final icon = useState(Icons.mic);
 
@@ -152,23 +189,6 @@ class CustomSendButton extends HookWidget {
 
     return Consumer(
       builder: (context, ref, child) {
-        // Listener related functions
-        void fingerDown(PointerEvent details) {
-          if (!showMic.value) return;
-          ref.read(showAudioWidget.notifier).state = true;
-        }
-
-        void fingerOff(PointerEvent details) {
-          if (!showMic.value) return;
-          // If the animation is in progress we don't want to show everything else yet
-          if (ref.watch(wasAudioDiscarted)) return;
-          ref.read(showAudioWidget.notifier).state = false;
-        }
-
-        void updateLocation(PointerEvent details) {
-          ref.read(sliderPosition.notifier).state = details.position.dx;
-        }
-
         return Listener(
           // The listener will update the positon of the slider that is found in the recording Widget
           onPointerUp: fingerOff,
