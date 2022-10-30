@@ -13,36 +13,32 @@ final showAudioWidget = StateProvider.autoDispose((ref) => false);
 
 final wasAudioDiscarted = StateProvider.autoDispose((ref) => false);
 
+final stackSize = StateProvider((ref) => 0.0);
+
 // TODO: Do necessary implementations for iOS for flutter sound
-class RecordingWidget extends HookWidget {
+class RecordingWidget extends HookConsumerWidget {
   const RecordingWidget({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MeasurableWidget(
-      onChange: (size) => size,
-      child: Expanded(
-        child: SizedBox(
-          height: 48,
-          child: Consumer(
-            builder: (context, ref, child) {
-              List<Widget> stackList() {
-                if (ref.watch(wasAudioDiscarted)) {
-                  return const [
-                    PreventKeyboardClosing(),
-                    AnimatedMic(),
-                    AnimatedTrash(),
-                  ];
-                }
-                return const [
-                  Slidable(),
-                  RecordingCounter(),
-                  PreventKeyboardClosing()
-                ];
-              }
-    
-              return Stack(children: stackList());
-            },
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<Widget> stackList() {
+      if (ref.watch(wasAudioDiscarted)) {
+        return const [
+          PreventKeyboardClosing(),
+          AnimatedMic(),
+          AnimatedTrash(),
+        ];
+      }
+      return const [Slidable(), RecordingCounter(), PreventKeyboardClosing()];
+    }
+
+    return Expanded(
+      child: SizedBox(
+        height: 48,
+        child: MeasurableWidget(
+          onChange: (Size size) => ref.read(stackSize.notifier).state = size.width,
+          child: Stack(
+            children: stackList(),
           ),
         ),
       ),
@@ -82,7 +78,7 @@ class AnimatedMic extends HookConsumerWidget {
       }
     });
 
-    double screenWidth = MediaQuery.of(context).size.width;
+    late final double screenWidth = ref.watch(stackSize);
 
     useEffect(() {
       animationController.forward();
@@ -111,7 +107,7 @@ class AnimatedMic extends HookConsumerWidget {
       ),
     );
 
-    micTranslateLeftFirst = Tween(begin: 0.0, end: -screenWidth * 0.42).animate(
+    micTranslateLeftFirst = Tween(begin: 0.0, end: -screenWidth * 0.4635).animate(
       CurvedAnimation(
         parent: animationController,
         curve: const Interval(0.0, 0.35),
@@ -126,7 +122,7 @@ class AnimatedMic extends HookConsumerWidget {
     );
 
     micTranslateLeftSecond =
-        Tween(begin: 0.0, end: -screenWidth * 0.42).animate(
+        Tween(begin: 0.0, end: -screenWidth * 0.4635).animate(
       CurvedAnimation(
         parent: animationController,
         curve: const Interval(0.35, 0.63),
@@ -157,7 +153,7 @@ class AnimatedMic extends HookConsumerWidget {
           );
         },
         child: const SizedBox(
-          height   : 48,
+          height: 48,
           child: Icon(Icons.mic),
         ),
       ),
@@ -318,7 +314,7 @@ class RecordingCounter extends HookWidget {
             width: 10,
             height: 48,
           ),
-          const Flexible(child: Text('0:01')),
+          const Flexible(child: Text('0:00')),
           const SizedBox(width: 10)
         ],
       ),
