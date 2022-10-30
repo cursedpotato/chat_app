@@ -9,7 +9,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-
 class MessagesScreen extends HookWidget {
   final String chatterName;
   final String chatteeName;
@@ -31,8 +30,6 @@ class MessagesScreen extends HookWidget {
         useMemoized((() => DatabaseMethods().getChatRoomMessages(chatroomId)));
 
     Stream<QuerySnapshot>? messagesStream = useFuture(future).data;
-
-    
 
     return Scaffold(
       appBar: buildAppBar(),
@@ -64,6 +61,7 @@ class MessagesScreen extends HookWidget {
 
     return AppBar(
       title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ClipOval(
             child: CachedNetworkImage(
@@ -73,7 +71,7 @@ class MessagesScreen extends HookWidget {
               fit: BoxFit.cover,
             ),
           ),
-          const SizedBox(width: kDefaultPadding * 0.75),
+          const SizedBox(),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -88,22 +86,18 @@ class MessagesScreen extends HookWidget {
                 style: const TextStyle(fontSize: 12),
               ),
             ],
-          )
+          ),
+          const SizedBox(),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.local_phone),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.videocam),
+          ),
         ],
       ),
-      actions: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.local_phone),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.videocam),
-        ),
-        const SizedBox(
-          width: kDefaultPadding / 2,
-        )
-      ],
     );
   }
 }
