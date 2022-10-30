@@ -234,7 +234,7 @@ class ChatRoomTextField extends StatelessWidget {
           decoration: const InputDecoration(
             // This hides the counter that appears when you set a chat limit
             counterText: "",
-            hintText: "Type a message",
+            hintText: "Aa",
             border: InputBorder.none,
           ),
         ),

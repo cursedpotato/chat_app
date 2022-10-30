@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:chat_app/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,34 +13,37 @@ final showAudioWidget = StateProvider.autoDispose((ref) => false);
 
 final wasAudioDiscarted = StateProvider.autoDispose((ref) => false);
 
-
-
-
 // TODO: Do necessary implementations for iOS for flutter sound
 class RecordingWidget extends HookWidget {
   const RecordingWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: SizedBox(
-        height: 48,
-        child: Consumer(
-          builder: (context, ref, child) {
-            List<Widget> stackList() {
-              if (ref.watch(wasAudioDiscarted)) {
-                return const [PreventKeyboardClosing(),AnimatedMic(), AnimatedTrash(),]; 
+    return MeasurableWidget(
+      onChange: (size) => size,
+      child: Expanded(
+        child: SizedBox(
+          height: 48,
+          child: Consumer(
+            builder: (context, ref, child) {
+              List<Widget> stackList() {
+                if (ref.watch(wasAudioDiscarted)) {
+                  return const [
+                    PreventKeyboardClosing(),
+                    AnimatedMic(),
+                    AnimatedTrash(),
+                  ];
+                }
+                return const [
+                  Slidable(),
+                  RecordingCounter(),
+                  PreventKeyboardClosing()
+                ];
               }
-              return const [
-                Slidable(),
-                RecordingCounter(),
-                PreventKeyboardClosing()
-              ];
-              
-            }
-
-            return Stack(children: stackList());
-          },
+    
+              return Stack(children: stackList());
+            },
+          ),
         ),
       ),
     );
@@ -71,7 +75,7 @@ class AnimatedMic extends HookConsumerWidget {
     AnimationController animationController =
         useAnimationController(duration: animationDuration);
 
-    animationController.addStatusListener((status) { 
+    animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         ref.read(showAudioWidget.notifier).state = false;
         ref.read(wasAudioDiscarted.notifier).state = false;
@@ -86,14 +90,19 @@ class AnimatedMic extends HookConsumerWidget {
     });
 
     //Mic
+    Animation<double> micRotation;
     Animation<double> micTranslateTop;
-    Animation<double> micRotationFirst;
     Animation<double> micTranslateLeftFirst;
-    Animation<double> micTranslateLeftSecond;
-    Animation<double> micRotationSecond;
     Animation<double> micTranslateDown;
-    Animation<double> micRotationThird;
+    Animation<double> micTranslateLeftSecond;
     Animation<double> micInsideTrashTranslateDown;
+
+    micRotation = Tween(begin: 0.0, end: pi * 3).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: const Interval(0.0, 0.70),
+      ),
+    );
 
     micTranslateTop = Tween(begin: 0.0, end: -100.0).animate(
       CurvedAnimation(
@@ -102,33 +111,10 @@ class AnimatedMic extends HookConsumerWidget {
       ),
     );
 
-    micRotationFirst = Tween(begin: 0.0, end: pi).animate(
-      CurvedAnimation(
-        parent: animationController,
-        curve: const Interval(0.0, 0.2),
-      ),
-    );
-
-    micTranslateLeftFirst = Tween(begin: 0.0, end: -screenWidth * 0.39).animate(
+    micTranslateLeftFirst = Tween(begin: 0.0, end: -screenWidth * 0.42).animate(
       CurvedAnimation(
         parent: animationController,
         curve: const Interval(0.0, 0.35),
-      ),
-    );
-
-    micTranslateLeftSecond =
-        Tween(begin: 0.0, end: -screenWidth * 0.43).animate(
-      CurvedAnimation(
-        parent: animationController,
-        curve: const Interval(0.35, 0.63),
-      ),
-    );
-
-
-    micRotationSecond = Tween(begin: 0.0, end: pi).animate(
-      CurvedAnimation(
-        parent: animationController,
-        curve: const Interval(0.2, 0.45),
       ),
     );
 
@@ -139,10 +125,11 @@ class AnimatedMic extends HookConsumerWidget {
       ),
     );
 
-    micRotationThird = Tween(begin: 0.0, end: pi).animate(
+    micTranslateLeftSecond =
+        Tween(begin: 0.0, end: -screenWidth * 0.42).animate(
       CurvedAnimation(
         parent: animationController,
-        curve: const Interval(0.45, 0.70),
+        curve: const Interval(0.35, 0.63),
       ),
     );
 
@@ -164,19 +151,13 @@ class AnimatedMic extends HookConsumerWidget {
               ..translate(micTranslateLeftSecond.value, micTranslateDown.value)
               ..translate(0.0, micInsideTrashTranslateDown.value),
             child: Transform.rotate(
-              angle: micRotationFirst.value,
-              child: Transform.rotate(
-                angle: micRotationSecond.value,
-                child: Transform.rotate(
-                  angle: micRotationThird.value,
-                  child: child,
-                ),
-              ),
+              angle: micRotation.value,
+              child: child,
             ),
           );
         },
         child: const SizedBox(
-          width: 48,
+          height   : 48,
           child: Icon(Icons.mic),
         ),
       ),
@@ -200,16 +181,14 @@ class AnimatedTrash extends HookWidget {
     );
 
     //Trash Can
-    Animation<Offset> trashWithCoverTranslateTop;
+    Animation<double> trashWithCoverTranslateTop;
     Animation<double> trashCoverRotationFirst;
     Animation<double> trashCoverTranslateLeft;
     Animation<double> trashCoverRotationSecond;
     Animation<double> trashCoverTranslateRight;
-    Animation<Offset> trashWithCoverTranslateDown;
+    Animation<double> trashWithCoverTranslateDown;
 
-    trashWithCoverTranslateTop =
-        Tween<Offset>(begin: const Offset(0.0, 60), end: const Offset(0.0, 0.0))
-            .animate(
+    trashWithCoverTranslateTop = Tween(begin: 60.0, end: 0.0).animate(
       CurvedAnimation(
         parent: animationController,
         curve: const Interval(0.0, 0.45),
@@ -244,24 +223,25 @@ class AnimatedTrash extends HookWidget {
       ),
     );
 
-    trashWithCoverTranslateDown =
-        Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(0.0, 60))
-            .animate(
+    trashWithCoverTranslateDown = Tween(begin: 0.0, end: 60.0).animate(
       CurvedAnimation(
         parent: animationController,
         curve: const Interval(0.9, 1.0),
       ),
     );
 
-    return AnimatedBuilder(
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: SizedBox(
+        height: 48,
+        child: AnimatedBuilder(
           animation: trashWithCoverTranslateTop,
           builder: (context, child) {
-            return Transform.translate(
-              offset: trashWithCoverTranslateTop.value,
-              child: Transform.translate(
-                offset: trashWithCoverTranslateDown.value,
-                child: child,
-              ),
+            return Transform(
+              transform: Matrix4.identity()
+                ..translate(0.0, trashWithCoverTranslateTop.value)
+                ..translate(0.0, trashWithCoverTranslateDown.value),
+              child: child,
             );
           },
           child: Column(
@@ -299,10 +279,11 @@ class AnimatedTrash extends HookWidget {
               ),
             ],
           ),
-        );
-      }
+        ),
+      ),
+    );
   }
-
+}
 
 class RecordingCounter extends HookWidget {
   const RecordingCounter({
@@ -317,7 +298,7 @@ class RecordingCounter extends HookWidget {
         useAnimationController(duration: const Duration(milliseconds: 800))
           ..repeat(reverse: true);
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
