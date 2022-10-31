@@ -6,6 +6,7 @@ import 'package:chat_app/screens/chatroom/chatroom_body.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -27,7 +28,7 @@ class MessagesScreen extends HookWidget {
     final chatroomId = getChatRoomIdByUsernames(chatteeName, chatterName);
 
     final future =
-        useMemoized((() => DatabaseMethods().getChatRoomMessages(chatroomId)));
+        useMemoized(() =>DatabaseMethods().getChatRoomMessages(chatroomId));
 
     Stream<QuerySnapshot>? messagesStream = useFuture(future).data;
 
