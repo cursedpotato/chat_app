@@ -9,6 +9,9 @@ import '../../../globals.dart';
 import '../../../services/database.dart';
 import 'media_menu_widget.dart';
 
+final showMicProvider = StateProvider((ref) => true);
+final canAnimateProvider = StateProvider((ref) => false);
+
 class ChatInputField extends HookConsumerWidget {
   final String chatteeName;
   const ChatInputField({
@@ -20,17 +23,21 @@ class ChatInputField extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     String messageId = "";
     TextEditingController messageController = useTextEditingController();
-    final showMic = useState(true);
-
+    final showMic = ref.watch(showMicProvider);
+    // ---------------------------------------------
+    // Custom Send Button Listener related functions
+    // ---------------------------------------------
+    // We put this functions here because the custom send button gets dropped off the widget tree to do an animation,
+    // and riverpod doesn't like when you listen to functions that are in a widget that is no longer in the widget tree
     late final double screenWidth = MediaQuery.of(context).size.width;
-    // Listener related functions
     void fingerDown(PointerEvent details) {
-      if (!showMic.value) return;
+      if (!showMic) return;
       ref.read(showAudioWidget.notifier).state = true;
+      ref.read(canAnimateProvider.notifier).state = false;
     }
 
     void fingerOff(PointerEvent details) {
-      if (!showMic.value) return;
+      if (!showMic) return;
       // If the animation is in progress we don't want to show everything else yet
       if (ref.watch(wasAudioDiscarted)) return;
       ref.read(showAudioWidget.notifier).state = false;
@@ -92,7 +99,6 @@ class ChatInputField extends HookConsumerWidget {
         return [
           const RecordingWidget(),
           CustomSendButton(
-            showMic: showMic,
             fingerDown: fingerDown,
             fingerOff: fingerOff,
             updateLocation: updateLocation,
@@ -103,9 +109,7 @@ class ChatInputField extends HookConsumerWidget {
         const MediaMenu(),
         ChatRoomTextField(messageController: messageController),
         CustomSendButton(
-          showMic: showMic,
           addMessage: addMessage,
-          messageController: messageController,
           fingerDown: fingerDown,
           fingerOff: fingerOff,
           updateLocation: updateLocation,
@@ -132,53 +136,30 @@ class ChatInputField extends HookConsumerWidget {
   }
 }
 
-class CustomSendButton extends HookWidget {
+class CustomSendButton extends HookConsumerWidget {
   const CustomSendButton({
     Key? key,
-    this.messageController,
     this.addMessage,
     this.updateLocation,
     this.fingerDown,
     this.fingerOff,
-    required this.showMic,
   }) : super(key: key);
 
   // Parameters are optional because the app is not always in "send-message-state"
-  final TextEditingController? messageController;
+
   final void Function(bool)? addMessage;
   final void Function(PointerEvent)? updateLocation;
   final void Function(PointerEvent)? fingerDown;
   final void Function(PointerEvent)? fingerOff;
-  final ValueNotifier<bool> showMic;
 
   @override
-  Widget build(BuildContext context) {
-    // Slide Transition animation related
-
+  Widget build(BuildContext context, WidgetRef ref) {
     final icon = useState(Icons.mic);
+    final showMic = ref.watch(showMicProvider);
 
-    void toggle() {
-      if (messageController!.text.isEmpty) showMic.value = true;
-      if (messageController!.text.isNotEmpty) showMic.value = false;
-    }
-
-    // We listen input to toggle the mic
-
-    late final animationController =
+    final animationController =
         useAnimationController(duration: const Duration(milliseconds: 180));
-
-    useEffect(() {
-      messageController?.addListener(toggle);
-      return () => messageController?.removeListener(toggle);
-    });
-
-    animationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        if (showMic.value) icon.value = Icons.mic;
-        if (!showMic.value) icon.value = Icons.send;
-        animationController.reverse();
-      }
-    });
+        
     late final Animation<Offset> offsetAnimation = Tween<Offset>(
       begin: Offset.zero,
       end: const Offset(1.5, 0.0),
@@ -187,27 +168,36 @@ class CustomSendButton extends HookWidget {
       curve: Curves.bounceInOut,
     ));
 
-    return Consumer(
-      builder: (context, ref, child) {
-        return Listener(
-          // The listener will update the positon of the slider that is found in the recording Widget
-          onPointerUp: fingerOff,
-          onPointerDown: fingerDown,
-          onPointerMove: updateLocation,
-          child: SlideTransition(
-            position: offsetAnimation,
-            child: IconButton(
-              onPressed: showMic.value ? () {} : () => addMessage!(true),
-              icon: Icon(icon.value),
-            ),
-          ),
-        );
-      },
+    if (ref.watch(canAnimateProvider)) {
+      animationController.forward();
+      if (!ref.watch(showMicProvider)) animationController.forward();
+    }
+
+    animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        icon.value = Icons.mic;
+        if (!showMic) icon.value = Icons.send;
+        animationController.reverse();
+      }
+    });
+    
+
+    return Listener(
+      onPointerUp: fingerOff,
+      onPointerDown: fingerDown,
+      onPointerMove: updateLocation,
+      child: SlideTransition(
+        position: offsetAnimation,
+        child: IconButton(
+          onPressed: showMic ? () {} : () => addMessage!(true),
+          icon: Icon(icon.value),
+        ),
+      ),
     );
   }
 }
 
-class ChatRoomTextField extends StatelessWidget {
+class ChatRoomTextField extends HookConsumerWidget {
   const ChatRoomTextField({
     Key? key,
     required this.messageController,
@@ -216,7 +206,25 @@ class ChatRoomTextField extends StatelessWidget {
   final TextEditingController messageController;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Everytime the user writes we want to switch between the mic and the send button
+    void toggle() {
+      // The animation triggers when the user types,
+      // it looks kind of annoying when the animation triggers everytime
+      ref.read(canAnimateProvider.notifier).state = true;
+      if (messageController.text.isEmpty) {
+        ref.read(showMicProvider.notifier).state = true;
+      }
+      if (messageController.text.isNotEmpty) {
+        ref.read(showMicProvider.notifier).state = false;
+      }
+    }
+
+    // We listen input to toggle the mic
+    useEffect(() {
+      messageController.addListener(toggle);
+      return () => messageController.removeListener(toggle);
+    });
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding * 0.75),
