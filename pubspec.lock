@@ -436,6 +436,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.7.0"
+  just_waveform:
+    dependency: "direct main"
+    description:
+      name: just_waveform
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   lints:
     dependency: transitive
     description:
@@ -604,6 +611,48 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.0"
+  record:
+    dependency: "direct main"
+    description:
+      name: record
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.4.3"
+  record_linux:
+    dependency: transitive
+    description:
+      name: record_linux
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.4"
+  record_macos:
+    dependency: transitive
+    description:
+      name: record_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.2"
+  record_platform_interface:
+    dependency: transitive
+    description:
+      name: record_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
+  record_web:
+    dependency: transitive
+    description:
+      name: record_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
+  record_windows:
+    dependency: transitive
+    description:
+      name: record_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.2"
   riverpod:
     dependency: transitive
     description:

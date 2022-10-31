@@ -78,7 +78,7 @@ class MessagesScreen extends HookWidget {
             children: [
               Text(
                 chatteeName,
-                overflow: TextOverflow.ellipsis,
+                                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 16),
               ),
               Text(

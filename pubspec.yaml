@@ -29,10 +29,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-
-  
-    
   # Auth
   google_sign_in: ^5.2.4
   flutter_facebook_auth: ^4.3.4+2
@@ -57,9 +53,12 @@ dependencies:
   animate_icons: ^2.0.0
   animated_text_kit: ^4.2.2
   # Files 
+  record: ^4.4.3
   file_picker: ^5.2.1
   cached_network_image: ^3.2.2
   intl: ^0.17.0
+  # Audio Recorder
+  just_waveform: ^0.0.3
 
   
  
