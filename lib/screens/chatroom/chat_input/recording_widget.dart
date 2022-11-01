@@ -36,10 +36,10 @@ class RecordingWidget extends HookConsumerWidget {
       child: SizedBox(
         height: 48,
         child: MeasurableWidget(
-          onChange: (Size size) => ref.read(stackSize.notifier).state = size.width,
-          child: Stack(
-            children: stackList(),
-          ),
+          onChange: (Size size) =>
+              ref.read(stackSize.notifier).state = size.width,
+          // showControlRec ? Column : Stack
+          child: Stack(children: stackList()),
         ),
       ),
     );
@@ -107,7 +107,8 @@ class AnimatedMic extends HookConsumerWidget {
       ),
     );
 
-    micTranslateLeftFirst = Tween(begin: 0.0, end: -screenWidth * 0.4635).animate(
+    micTranslateLeftFirst =
+        Tween(begin: 0.0, end: -screenWidth * 0.4635).animate(
       CurvedAnimation(
         parent: animationController,
         curve: const Interval(0.0, 0.35),
@@ -277,6 +278,30 @@ class AnimatedTrash extends HookWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class ControlRecordingWidget extends HookWidget {
+  const ControlRecordingWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final toggleRec = useState(true);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+            onPressed: () {}, icon: const Icon(Icons.restore_from_trash)),
+        IconButton(
+          onPressed: () {
+            toggleRec.value = !toggleRec.value;
+          },
+          icon:
+              toggleRec.value ? const Icon(Icons.pause) : const Icon(Icons.mic),
+        ),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.send))
+      ],
     );
   }
 }

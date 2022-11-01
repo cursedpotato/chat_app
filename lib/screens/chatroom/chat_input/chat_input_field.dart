@@ -48,6 +48,7 @@ class ChatInputField extends HookConsumerWidget {
       if (details.position.dx < screenWidth * 0.5) {
         ref.read(wasAudioDiscarted.notifier).state = true;
       }
+      // If position.dy is greater than 0.25 of screenHeight, we want to toggle the the playable recording widget
     }
 
     void addMessage(bool sendClicked) {
@@ -118,21 +119,23 @@ class ChatInputField extends HookConsumerWidget {
     }
 
     return Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: kDefaultPadding,
-          vertical: kDefaultPadding / 2,
-        ),
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          boxShadow: [
-            BoxShadow(
-              offset: const Offset(0, 4),
-              blurRadius: 32,
-              color: const Color(0xFF087949).withOpacity(0.08),
-            ),
-          ],
-        ),
-        child: Row(children: rowList()));
+      padding: const EdgeInsets.symmetric(
+        horizontal: kDefaultPadding,
+        vertical: kDefaultPadding / 2,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        boxShadow: [
+          BoxShadow(
+            offset: const Offset(0, 4),
+            blurRadius: 32,
+            color: const Color(0xFF087949).withOpacity(0.08),
+          ),
+        ],
+      ),
+      child: const ControlRecordingWidget(),
+      // child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: rowList()),
+    );
   }
 }
 
@@ -159,7 +162,7 @@ class CustomSendButton extends HookConsumerWidget {
 
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 180));
-        
+
     late final Animation<Offset> offsetAnimation = Tween<Offset>(
       begin: Offset.zero,
       end: const Offset(1.5, 0.0),
@@ -180,7 +183,6 @@ class CustomSendButton extends HookConsumerWidget {
         animationController.reverse();
       }
     });
-    
 
     return Listener(
       onPointerUp: fingerOff,
@@ -225,6 +227,7 @@ class ChatRoomTextField extends HookConsumerWidget {
       messageController.addListener(toggle);
       return () => messageController.removeListener(toggle);
     });
+
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding * 0.75),
