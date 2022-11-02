@@ -332,6 +332,7 @@ class RecordingCounter extends HookConsumerWidget {
         useAnimationController(duration: const Duration(milliseconds: 800))
           ..repeat(reverse: true);
     final showOnlyCounter = ref.watch(showControlRec);
+    
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Row(
