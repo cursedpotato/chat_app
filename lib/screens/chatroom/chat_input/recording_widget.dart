@@ -13,6 +13,8 @@ final showAudioWidget = StateProvider.autoDispose((ref) => false);
 
 final wasAudioDiscarted = StateProvider.autoDispose((ref) => false);
 
+final showControlRec = StateProvider.autoDispose((ref) => false); 
+
 final stackSize = StateProvider((ref) => 0.0);
 
 // TODO: Do necessary implementations for iOS for flutter sound
@@ -39,7 +41,9 @@ class RecordingWidget extends HookConsumerWidget {
           onChange: (Size size) =>
               ref.read(stackSize.notifier).state = size.width,
           // showControlRec ? Column : Stack
-          child: Stack(children: stackList()),
+          child: Stack(
+            children: stackList(),
+          ),
         ),
       ),
     );
@@ -288,36 +292,46 @@ class ControlRecordingWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final toggleRec = useState(true);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       children: [
-        IconButton(
-            onPressed: () {}, icon: const Icon(Icons.restore_from_trash)),
-        IconButton(
-          onPressed: () {
-            toggleRec.value = !toggleRec.value;
-          },
-          icon:
-              toggleRec.value ? const Icon(Icons.pause) : const Icon(Icons.mic),
+        Row(
+          children: const [
+            RecordingCounter()
+          ],
         ),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.send))
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+                onPressed: () {}, icon: const Icon(Icons.restore_from_trash)),
+            IconButton(
+              onPressed: () {
+                toggleRec.value = !toggleRec.value;
+              },
+              icon:
+                  toggleRec.value ? const Icon(Icons.pause) : const Icon(Icons.mic),
+            ),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.send))
+          ],
+        ),
       ],
     );
   }
 }
 
-class RecordingCounter extends HookWidget {
+class RecordingCounter extends HookConsumerWidget {
   const RecordingCounter({
     Key? key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // We use focus node instead of autofocus, because the later doesn't work when the textfield is nested
 
     AnimationController opacityController =
         useAnimationController(duration: const Duration(milliseconds: 800))
           ..repeat(reverse: true);
+    final showOnlyCounter = ref.watch(showControlRec);
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Row(
