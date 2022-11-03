@@ -58,7 +58,7 @@ dependencies:
   cached_network_image: ^3.2.2
   intl: ^0.17.0
   # Audio Recorder
-  just_waveform: ^0.0.3
+  audio_waveforms: ^0.1.5+1
 
   
  
