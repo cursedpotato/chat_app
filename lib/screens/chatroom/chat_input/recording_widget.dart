@@ -13,7 +13,7 @@ final showAudioWidget = StateProvider.autoDispose((ref) => false);
 
 final wasAudioDiscarted = StateProvider.autoDispose((ref) => false);
 
-final showControlRec = StateProvider.autoDispose((ref) => false); 
+final showControlRec = StateProvider.autoDispose((ref) => false);
 
 final stackSize = StateProvider((ref) => 0.0);
 
@@ -31,20 +31,18 @@ class RecordingWidget extends HookConsumerWidget {
           AnimatedTrash(),
         ];
       }
-      return const [Slidable(), RecordingCounter(), PreventKeyboardClosing()];
+      if (!ref.watch(wasAudioDiscarted) && !ref.watch(showControlRec)) {
+        return const [Slidable(), RecordingCounter(), PreventKeyboardClosing()];
+      }
+
+      return const [ControlRecordingWidget(), PreventKeyboardClosing()];
     }
 
     return Expanded(
-      child: SizedBox(
-        height: 48,
-        child: MeasurableWidget(
-          onChange: (Size size) =>
-              ref.read(stackSize.notifier).state = size.width,
-          // showControlRec ? Column : Stack
-          child: Stack(
-            children: stackList(),
-          ),
-        ),
+      child: MeasurableWidget(
+        onChange: (Size size) =>
+            ref.read(stackSize.notifier).state = size.width,
+        child: Stack(children: stackList()),
       ),
     );
   }
@@ -57,10 +55,12 @@ class PreventKeyboardClosing extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final focusNode = useFocusNode()..requestFocus();
-    return TextField(
-      focusNode: focusNode,
-      showCursor: false,
-      decoration: const InputDecoration(border: InputBorder.none),
+    return SizedBox.shrink(
+      child: TextField(
+        focusNode: focusNode,
+        showCursor: false,
+        decoration: const InputDecoration(border: InputBorder.none),
+      ),
     );
   }
 }
@@ -292,72 +292,72 @@ class ControlRecordingWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final toggleRec = useState(true);
-    return Column(
-      children: [
-        Row(
-          children: const [
-            RecordingCounter()
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-                onPressed: () {}, icon: const Icon(Icons.restore_from_trash)),
-            IconButton(
-              onPressed: () {
-                toggleRec.value = !toggleRec.value;
-              },
-              icon:
-                  toggleRec.value ? const Icon(Icons.pause) : const Icon(Icons.mic),
-            ),
-            IconButton(onPressed: () {}, icon: const Icon(Icons.send))
-          ],
-        ),
-      ],
+    return Flexible(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [Text('0:00'), PreventKeyboardClosing()],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  onPressed: () {}, icon: const Icon(Icons.restore_from_trash)),
+              IconButton(
+                onPressed: () {
+                  toggleRec.value = !toggleRec.value;
+                },
+                icon: toggleRec.value
+                    ? const Icon(Icons.pause)
+                    : const Icon(Icons.mic),
+              ),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.send))
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
 
-class RecordingCounter extends HookConsumerWidget {
+class RecordingCounter extends HookWidget {
   const RecordingCounter({
     Key? key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     // We use focus node instead of autofocus, because the later doesn't work when the textfield is nested
 
     AnimationController opacityController =
         useAnimationController(duration: const Duration(milliseconds: 800))
           ..repeat(reverse: true);
-    final showOnlyCounter = ref.watch(showControlRec);
-    
+
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          FadeTransition(
-            opacity: CurvedAnimation(
-              parent: opacityController,
-              curve: Curves.easeIn,
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            FadeTransition(
+              opacity: CurvedAnimation(
+                parent: opacityController,
+                curve: Curves.easeIn,
+              ),
+              child: const Icon(
+                Icons.surround_sound_outlined,
+                color: Colors.red,
+              ),
             ),
-            child: const Icon(
-              Icons.surround_sound_outlined,
-              color: Colors.red,
+            // We place this widget to prevent the keyboard from closing, giving the user a bad experience
+            const SizedBox(
+              width: 10,
+              height: 48,
             ),
-          ),
-          // We place this widget to prevent the keyboard from closing, giving the user a bad experience
-          const SizedBox(
-            width: 10,
-            height: 48,
-          ),
-          const Flexible(child: Text('0:00')),
-          const SizedBox(width: 10)
-        ],
-      ),
+            const Flexible(child: Text('0:00')),
+            const SizedBox(width: 10)
+          ]),
     );
   }
 }

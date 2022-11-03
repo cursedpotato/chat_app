@@ -30,6 +30,7 @@ class ChatInputField extends HookConsumerWidget {
     // We put this functions here because the custom send button gets dropped off the widget tree to do an animation,
     // and riverpod doesn't like when you listen to functions that are in a widget that is no longer in the widget tree
     late final double screenWidth = MediaQuery.of(context).size.width;
+    late final double screenHeight = MediaQuery.of(context).size.height;
     void fingerDown(PointerEvent details) {
       if (!showMic) return;
       ref.read(showAudioWidget.notifier).state = true;
@@ -49,6 +50,9 @@ class ChatInputField extends HookConsumerWidget {
         ref.read(wasAudioDiscarted.notifier).state = true;
       }
       // If position.dy is greater than 0.25 of screenHeight, we want to toggle the the playable recording widget
+      if (details.position.dy < screenHeight * 0.5) {
+        ref.read(showControlRec.notifier).state = true;
+      }
     }
 
     void addMessage(bool sendClicked) {
@@ -95,7 +99,10 @@ class ChatInputField extends HookConsumerWidget {
     }
 
     List<Widget> rowList() {
-      if (ref.watch(wasAudioDiscarted)) return [const RecordingWidget()];
+      if (ref.watch(wasAudioDiscarted) || ref.watch(showControlRec)) {
+        return [const RecordingWidget()];
+      }
+
       if (ref.watch(showAudioWidget)) {
         return [
           const RecordingWidget(),
@@ -116,6 +123,7 @@ class ChatInputField extends HookConsumerWidget {
           updateLocation: updateLocation,
         )
       ];
+      // return const [ControlRecordingWidget()];
     }
 
     return Container(
@@ -133,8 +141,10 @@ class ChatInputField extends HookConsumerWidget {
           ),
         ],
       ),
-      child: const ControlRecordingWidget(),
-      // child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: rowList()),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: rowList(),
+      ),
     );
   }
 }
