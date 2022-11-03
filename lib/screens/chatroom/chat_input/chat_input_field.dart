@@ -21,9 +21,7 @@ class ChatInputField extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String messageId = "";
     TextEditingController messageController = useTextEditingController();
-    final showMic = ref.watch(showMicProvider);
     // ---------------------------------------------
     // Custom Send Button Listener related functions
     // ---------------------------------------------
@@ -31,6 +29,7 @@ class ChatInputField extends HookConsumerWidget {
     // and riverpod doesn't like when you listen to functions that are in a widget that is no longer in the widget tree
     late final double screenWidth = MediaQuery.of(context).size.width;
     late final double screenHeight = MediaQuery.of(context).size.height;
+    late final showMic = ref.watch(showMicProvider);
     void fingerDown(PointerEvent details) {
       if (!showMic) return;
       ref.read(showAudioWidget.notifier).state = true;
@@ -50,11 +49,12 @@ class ChatInputField extends HookConsumerWidget {
         ref.read(wasAudioDiscarted.notifier).state = true;
       }
       // If position.dy is greater than 0.25 of screenHeight, we want to toggle the the playable recording widget
-      if (details.position.dy < screenHeight * 0.5) {
+      if (details.position.dy < screenHeight * 0.55) {
         ref.read(showControlRec.notifier).state = true;
       }
     }
 
+    String messageId = "";
     void addMessage(bool sendClicked) {
       if (messageController.text.isEmpty) return;
 
@@ -221,8 +221,9 @@ class ChatRoomTextField extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Everytime the user writes we want to switch between the mic and the send button
     void toggle() {
-      // The animation triggers when the user types,
-      // it looks kind of annoying when the animation triggers everytime
+      // The animation triggers when the user types, but also when the widget gets drawn
+      // it looks kind of annoying when the animation triggers everytime, so we set the canAnimateProvider when the user types to prevent,
+      // this annoying behaviorf
       ref.read(canAnimateProvider.notifier).state = true;
       if (messageController.text.isEmpty) {
         ref.read(showMicProvider.notifier).state = true;

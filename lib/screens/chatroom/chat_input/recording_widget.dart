@@ -65,6 +65,175 @@ class PreventKeyboardClosing extends HookWidget {
   }
 }
 
+class ControlRecordingWidget extends HookConsumerWidget {
+  const ControlRecordingWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final toggleRec = useState(true);
+
+    // SlideTransition related logic
+    final animationController =
+        useAnimationController(duration: const Duration(milliseconds: 500));
+    late final Animation<Offset> offsetAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 80),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: animationController, curve: Curves.ease),
+    );
+    animationController.addStatusListener((AnimationStatus status) {
+      if (status == AnimationStatus.dismissed) {
+        ref.read(showControlRec.notifier).state = false;
+      }
+    });
+
+    useEffect(() {
+      animationController.forward();
+      return;
+    });
+    return AnimatedBuilder(
+      animation: offsetAnimation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: offsetAnimation.value,
+          child: child,
+        );
+      },
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: const [
+              PreventKeyboardClosing(),
+              Text('0:00'),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  onPressed: () {
+                    // When the reverse ends we have a listener that will set the showControlRec provider to false
+                    animationController.reverse();
+                  },
+                  icon: const Icon(Icons.delete)),
+              IconButton(
+                onPressed: () {
+                  toggleRec.value = !toggleRec.value;
+                },
+                icon: toggleRec.value
+                    ? const Icon(Icons.pause)
+                    : const Icon(Icons.mic),
+              ),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.send))
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class RecordingCounter extends HookWidget {
+  const RecordingCounter({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // We use focus node instead of autofocus, because the later doesn't work when the textfield is nested
+
+    AnimationController opacityController =
+        useAnimationController(duration: const Duration(milliseconds: 800))
+          ..repeat(reverse: true);
+
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            FadeTransition(
+              opacity: CurvedAnimation(
+                parent: opacityController,
+                curve: Curves.easeIn,
+              ),
+              child: const Icon(
+                Icons.surround_sound_outlined,
+                color: Colors.red,
+              ),
+            ),
+            // We place this widget to prevent the keyboard from closing, giving the user a bad experience
+            const SizedBox(
+              width: 10,
+              height: 48,
+            ),
+            const Flexible(child: Text('0:00')),
+            const SizedBox(width: 10)
+          ]),
+    );
+  }
+}
+
+class Slidable extends ConsumerWidget {
+  const Slidable({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // References
+    late final double pointerPosition = ref.watch(sliderPosition);
+    late final double screenWidth = MediaQuery.of(context).size.width;
+    late final double centerPosition = screenWidth * 0.333;
+    /* We use a ternary operator because
+     the pointer gives 0 at the beggining and only 
+     the screenWidth remains which makes the widget go offscreen,
+     therefore I chose to give a zero 
+     value first so the offset doesn't get the widget out of screen */
+    late final double offset =
+        (pointerPosition == 0.0 ? 0.0 : pointerPosition - screenWidth).abs() /
+            2;
+    late final double opacity = (pointerPosition == 0.0
+        ? 1.0
+        : (pointerPosition / screenWidth) - offset * 0.005);
+
+    const colorizeColors = [
+      Colors.black,
+      Colors.grey,
+    ];
+
+    return Transform.translate(
+      offset: Offset(centerPosition - offset, 0),
+      child: Opacity(
+        // If opacity is less than zero return zero
+        opacity: opacity < 0 ? 0.0 : opacity,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedTextKit(
+              repeatForever: true,
+              animatedTexts: [
+                ColorizeAnimatedText(
+                  'slide to cancel',
+                  textStyle: Theme.of(context).textTheme.bodyMedium!,
+                  colors: colorizeColors,
+                )
+              ],
+            ),
+            // Text('slide to cancel' ),
+            const SizedBox(
+              height: 48,
+            ),
+
+            const Icon(Icons.arrow_back_ios_new_outlined),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 const Duration animationDuration = Duration(milliseconds: 1800);
 
 class AnimatedMic extends HookConsumerWidget {
@@ -280,141 +449,6 @@ class AnimatedTrash extends HookWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class ControlRecordingWidget extends HookWidget {
-  const ControlRecordingWidget({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final toggleRec = useState(true);
-    return Flexible(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [Text('0:00'), PreventKeyboardClosing()],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                  onPressed: () {}, icon: const Icon(Icons.restore_from_trash)),
-              IconButton(
-                onPressed: () {
-                  toggleRec.value = !toggleRec.value;
-                },
-                icon: toggleRec.value
-                    ? const Icon(Icons.pause)
-                    : const Icon(Icons.mic),
-              ),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.send))
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class RecordingCounter extends HookWidget {
-  const RecordingCounter({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // We use focus node instead of autofocus, because the later doesn't work when the textfield is nested
-
-    AnimationController opacityController =
-        useAnimationController(duration: const Duration(milliseconds: 800))
-          ..repeat(reverse: true);
-
-    return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            FadeTransition(
-              opacity: CurvedAnimation(
-                parent: opacityController,
-                curve: Curves.easeIn,
-              ),
-              child: const Icon(
-                Icons.surround_sound_outlined,
-                color: Colors.red,
-              ),
-            ),
-            // We place this widget to prevent the keyboard from closing, giving the user a bad experience
-            const SizedBox(
-              width: 10,
-              height: 48,
-            ),
-            const Flexible(child: Text('0:00')),
-            const SizedBox(width: 10)
-          ]),
-    );
-  }
-}
-
-class Slidable extends ConsumerWidget {
-  const Slidable({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // References
-    late final double pointerPosition = ref.watch(sliderPosition);
-    late final double screenWidth = MediaQuery.of(context).size.width;
-    late final double centerPosition = screenWidth * 0.333;
-    /* We use a ternary operator because
-     the pointer gives 0 at the beggining and only 
-     the screenWidth remains which makes the widget go offscreen,
-     therefore I chose to give a zero 
-     value first so the offset doesn't get the widget out of screen */
-    late final double offset =
-        (pointerPosition == 0.0 ? 0.0 : pointerPosition - screenWidth).abs() /
-            2;
-    late final double opacity = (pointerPosition == 0.0
-        ? 1.0
-        : (pointerPosition / screenWidth) - offset * 0.005);
-
-    const colorizeColors = [
-      Colors.black,
-      Colors.grey,
-    ];
-
-    return Transform.translate(
-      offset: Offset(centerPosition - offset, 0),
-      child: Opacity(
-        // If opacity is less than zero return zero
-        opacity: opacity < 0 ? 0.0 : opacity,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedTextKit(
-              repeatForever: true,
-              animatedTexts: [
-                ColorizeAnimatedText(
-                  'slide to cancel',
-                  textStyle: Theme.of(context).textTheme.bodyMedium!,
-                  colors: colorizeColors,
-                )
-              ],
-            ),
-            // Text('slide to cancel' ),
-            const SizedBox(
-              height: 48,
-            ),
-
-            const Icon(Icons.arrow_back_ios_new_outlined),
-          ],
         ),
       ),
     );
