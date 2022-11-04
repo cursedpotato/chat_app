@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:agora_uikit/agora_uikit.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -17,12 +19,39 @@ final showControlRec = StateProvider.autoDispose((ref) => false);
 
 final stackSize = StateProvider((ref) => 0.0);
 
-// TODO: Do necessary implementations for iOS for flutter sound
+final disposeRec = StateProvider((ref) => false);
+
 class RecordingWidget extends HookConsumerWidget {
   const RecordingWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    late final RecorderController recorderController = RecorderController();
+     
+
+    ValueNotifier isRecording = useState(false);
+
+    initRecorder() async {
+      isRecording.value = true;
+      
+      final PermissionStatus status = await Permission.microphone.request();
+      if (status == PermissionStatus.denied) {
+        throw "Microphone permission denied";
+      }
+
+      await recorderController.record();
+    }
+
+    if (!isRecording.value) {
+      print("I was executed");
+      initRecorder();
+    }
+
+    if (ref.watch(disposeRec)) {
+      recorderController.dispose();
+    }
+
+    // This function was created because nesting ternary oparators within the Stack list is not very readable
     List<Widget> stackList() {
       if (ref.watch(wasAudioDiscarted)) {
         return const [
@@ -35,7 +64,10 @@ class RecordingWidget extends HookConsumerWidget {
         return const [Slidable(), RecordingCounter(), PreventKeyboardClosing()];
       }
 
-      return const [ControlRecordingWidget(), PreventKeyboardClosing()];
+      return [
+        ControlRecordingWidget(recorderController),
+        const PreventKeyboardClosing()
+      ];
     }
 
     return Expanded(
@@ -66,7 +98,10 @@ class PreventKeyboardClosing extends HookWidget {
 }
 
 class ControlRecordingWidget extends HookConsumerWidget {
-  const ControlRecordingWidget({Key? key}) : super(key: key);
+  const ControlRecordingWidget(this.recorderController, {Key? key})
+      : super(key: key);
+
+  final RecorderController recorderController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -84,6 +119,7 @@ class ControlRecordingWidget extends HookConsumerWidget {
     animationController.addStatusListener((AnimationStatus status) {
       if (status == AnimationStatus.dismissed) {
         ref.read(showControlRec.notifier).state = false;
+        ref.read(disposeRec.notifier).state = false;
       }
     });
 
@@ -103,20 +139,26 @@ class ControlRecordingWidget extends HookConsumerWidget {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
-            children: const [
-              PreventKeyboardClosing(),
-              Text('0:00'),
+            children: [
+              const PreventKeyboardClosing(),
+              const Text('0:00'),
+              AudioWaveforms(
+                  size: const Size(250.0, 48.0),
+                  recorderController: recorderController)
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                  onPressed: () {
-                    // When the reverse ends we have a listener that will set the showControlRec provider to false
-                    animationController.reverse();
-                  },
-                  icon: const Icon(Icons.delete)),
+                onPressed: () {
+                  // When the reverse ends we have a listener that will set the showControlRec provider to false
+                  ref.read(disposeRec.notifier).state = true;
+                  animationController.reverse();
+                  // Was
+                },
+                icon: const Icon(Icons.delete),
+              ),
               IconButton(
                 onPressed: () {
                   toggleRec.value = !toggleRec.value;
@@ -248,6 +290,7 @@ class AnimatedMic extends HookConsumerWidget {
       if (status == AnimationStatus.completed) {
         ref.read(showAudioWidget.notifier).state = false;
         ref.read(wasAudioDiscarted.notifier).state = false;
+        ref.read(disposeRec.notifier).state = false;
       }
     });
 

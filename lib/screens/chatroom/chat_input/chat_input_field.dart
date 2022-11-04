@@ -1,3 +1,4 @@
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,8 @@ import 'media_menu_widget.dart';
 
 final showMicProvider = StateProvider((ref) => true);
 final canAnimateProvider = StateProvider((ref) => false);
+
+
 
 class ChatInputField extends HookConsumerWidget {
   final String chatteeName;
@@ -46,6 +49,7 @@ class ChatInputField extends HookConsumerWidget {
     void updateLocation(PointerEvent details) {
       ref.read(sliderPosition.notifier).state = details.position.dx;
       if (details.position.dx < screenWidth * 0.5) {
+        ref.read(disposeRec.notifier).state = true;
         ref.read(wasAudioDiscarted.notifier).state = true;
       }
       // If position.dy is greater than 0.25 of screenHeight, we want to toggle the the playable recording widget
@@ -98,6 +102,8 @@ class ChatInputField extends HookConsumerWidget {
       );
     }
 
+
+    
     List<Widget> rowList() {
       if (ref.watch(wasAudioDiscarted) || ref.watch(showControlRec)) {
         return [const RecordingWidget()];
