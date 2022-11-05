@@ -17,6 +17,8 @@ class UserModel {
     this.lastSeenDate,
   });
 
+  
+
   UserModel.fromDocument(DocumentSnapshot documentSnapshot) {
     pfpUrl = documentSnapshot['imgUrl'] ?? '';
     name = documentSnapshot['name'] ?? '';
