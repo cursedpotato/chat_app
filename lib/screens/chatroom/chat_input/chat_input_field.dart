@@ -1,4 +1,3 @@
-import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +12,6 @@ import 'media_menu_widget.dart';
 final showMicProvider = StateProvider((ref) => true);
 final canAnimateProvider = StateProvider((ref) => false);
 
-
-
 class ChatInputField extends HookConsumerWidget {
   final String chatteeName;
   const ChatInputField({
@@ -24,7 +21,6 @@ class ChatInputField extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    TextEditingController messageController = useTextEditingController();
     // ---------------------------------------------
     // Custom Send Button Listener related functions
     // ---------------------------------------------
@@ -44,12 +40,20 @@ class ChatInputField extends HookConsumerWidget {
       // If the animation is in progress we don't want to show everything else yet
       if (ref.watch(wasAudioDiscarted)) return;
       ref.read(showAudioWidget.notifier).state = false;
+      // TODO: Implement this to send a message
+      if (!ref.watch(showControlRec)) {
+        ref.read(recController.notifier).state.stop();
+      }
+      
     }
 
     void updateLocation(PointerEvent details) {
       ref.read(sliderPosition.notifier).state = details.position.dx;
+      // This conditional gives functionality to the slidable widget that is found in the recording widget file
       if (details.position.dx < screenWidth * 0.5) {
-        ref.read(disposeRec.notifier).state = true;
+        // This will stop the recorderz
+        ref.read(recController.notifier).state.stop();
+
         ref.read(wasAudioDiscarted.notifier).state = true;
       }
       // If position.dy is greater than 0.25 of screenHeight, we want to toggle the the playable recording widget
@@ -59,6 +63,7 @@ class ChatInputField extends HookConsumerWidget {
     }
 
     String messageId = "";
+    TextEditingController messageController = useTextEditingController();
     void addMessage(bool sendClicked) {
       if (messageController.text.isEmpty) return;
 
@@ -102,8 +107,9 @@ class ChatInputField extends HookConsumerWidget {
       );
     }
 
-
-    
+    // ------------------------------------------------------------
+    // Fuction that displays different widgets as app state changes
+    // ------------------------------------------------------------
     List<Widget> rowList() {
       if (ref.watch(wasAudioDiscarted) || ref.watch(showControlRec)) {
         return [const RecordingWidget()];
@@ -129,7 +135,6 @@ class ChatInputField extends HookConsumerWidget {
           updateLocation: updateLocation,
         )
       ];
-      // return const [ControlRecordingWidget()];
     }
 
     return Container(

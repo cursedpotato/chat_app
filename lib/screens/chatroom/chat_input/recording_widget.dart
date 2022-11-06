@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:agora_uikit/agora_uikit.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/globals.dart';
@@ -19,37 +18,41 @@ final showControlRec = StateProvider.autoDispose((ref) => false);
 
 final stackSize = StateProvider((ref) => 0.0);
 
-final disposeRec = StateProvider((ref) => false);
+final recController = StateProvider(
+  (ref) => RecorderController()
+    ..androidEncoder = AndroidEncoder.aac
+    ..androidOutputFormat = AndroidOutputFormat.mpeg4
+    ..iosEncoder = IosEncoder.kAudioFormatMPEG4AAC
+    ..sampleRate = 16000
+    ..bitRate = 64000,
+);
+
+final recordDuration = StateProvider((ref) => '0:00');
+
+
 
 class RecordingWidget extends HookConsumerWidget {
   const RecordingWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    late final RecorderController recorderController = RecorderController();
-     
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    
+    final isRecording = ref.watch(recController).isRecording;
+    final duration = Duration.zero;
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    final minutes = duration.inMinutes.remainder(60);
 
-    ValueNotifier isRecording = useState(false);
+    startRecording() async =>
+        await ref.read(recController.notifier).state.record();
+    useEffect(() {
+      startRecording().then((value) {
+        ref.watch(recordDuration.notifier).state = '$minutes:$seconds';
+  
+      });
 
-    initRecorder() async {
-      isRecording.value = true;
-      
-      final PermissionStatus status = await Permission.microphone.request();
-      if (status == PermissionStatus.denied) {
-        throw "Microphone permission denied";
-      }
-
-      await recorderController.record();
-    }
-
-    if (!isRecording.value) {
-      print("I was executed");
-      initRecorder();
-    }
-
-    if (ref.watch(disposeRec)) {
-      recorderController.dispose();
-    }
+      return;
+    });
 
     // This function was created because nesting ternary oparators within the Stack list is not very readable
     List<Widget> stackList() {
@@ -64,10 +67,7 @@ class RecordingWidget extends HookConsumerWidget {
         return const [Slidable(), RecordingCounter(), PreventKeyboardClosing()];
       }
 
-      return [
-        ControlRecordingWidget(recorderController),
-        const PreventKeyboardClosing()
-      ];
+      return const [ControlRecordingWidget(), PreventKeyboardClosing()];
     }
 
     return Expanded(
@@ -98,16 +98,16 @@ class PreventKeyboardClosing extends HookWidget {
 }
 
 class ControlRecordingWidget extends HookConsumerWidget {
-  const ControlRecordingWidget(this.recorderController, {Key? key})
-      : super(key: key);
-
-  final RecorderController recorderController;
+  const ControlRecordingWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final toggleRec = useState(true);
+    resumeRecording() async => ref.read(recController.notifier).state.record();
 
-    // SlideTransition related logic
+    // ------------------------------------------
+    // Transform translate animation related logic
+    // ------------------------------------------
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 500));
     late final Animation<Offset> offsetAnimation = Tween<Offset>(
@@ -119,7 +119,6 @@ class ControlRecordingWidget extends HookConsumerWidget {
     animationController.addStatusListener((AnimationStatus status) {
       if (status == AnimationStatus.dismissed) {
         ref.read(showControlRec.notifier).state = false;
-        ref.read(disposeRec.notifier).state = false;
       }
     });
 
@@ -127,6 +126,7 @@ class ControlRecordingWidget extends HookConsumerWidget {
       animationController.forward();
       return;
     });
+
     return AnimatedBuilder(
       animation: offsetAnimation,
       builder: (context, child) {
@@ -140,11 +140,22 @@ class ControlRecordingWidget extends HookConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              Text(ref.watch(recordDuration)),
               const PreventKeyboardClosing(),
-              const Text('0:00'),
-              AudioWaveforms(
-                  size: const Size(250.0, 48.0),
-                  recorderController: recorderController)
+              SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: AudioWaveforms(
+                  waveStyle: const WaveStyle(
+                    waveCap: StrokeCap.round,
+                    spacing: 8.0,
+                    showBottom: true,
+                    extendWaveform: true,
+                    showMiddleLine: false,
+                  ),
+                  size: Size(ref.watch(stackSize) * 0.90, 24),
+                  recorderController: ref.watch(recController),
+                ),
+              ),
             ],
           ),
           Row(
@@ -153,15 +164,18 @@ class ControlRecordingWidget extends HookConsumerWidget {
               IconButton(
                 onPressed: () {
                   // When the reverse ends we have a listener that will set the showControlRec provider to false
-                  ref.read(disposeRec.notifier).state = true;
                   animationController.reverse();
-                  // Was
+                  ref.read(recController.notifier).state.stop();
                 },
                 icon: const Icon(Icons.delete),
               ),
               IconButton(
                 onPressed: () {
                   toggleRec.value = !toggleRec.value;
+                  if (ref.watch(recController).isRecording) {
+                    ref.read(recController.notifier).state.pause();
+                  }
+                  resumeRecording();
                 },
                 icon: toggleRec.value
                     ? const Icon(Icons.pause)
@@ -176,13 +190,13 @@ class ControlRecordingWidget extends HookConsumerWidget {
   }
 }
 
-class RecordingCounter extends HookWidget {
+class RecordingCounter extends HookConsumerWidget {
   const RecordingCounter({
     Key? key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // We use focus node instead of autofocus, because the later doesn't work when the textfield is nested
 
     AnimationController opacityController =
@@ -210,7 +224,7 @@ class RecordingCounter extends HookWidget {
               width: 10,
               height: 48,
             ),
-            const Flexible(child: Text('0:00')),
+            Flexible(child: Text(ref.watch(recordDuration))),
             const SizedBox(width: 10)
           ]),
     );
@@ -290,7 +304,6 @@ class AnimatedMic extends HookConsumerWidget {
       if (status == AnimationStatus.completed) {
         ref.read(showAudioWidget.notifier).state = false;
         ref.read(wasAudioDiscarted.notifier).state = false;
-        ref.read(disposeRec.notifier).state = false;
       }
     });
 
