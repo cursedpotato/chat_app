@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import '../../services/database.dart';
+import '../../services/database_methods.dart';
 import 'message_types/text_message_widget.dart';
 import 'message_types/video_widget.dart';
 import 'message_types/audio_message_widget.dart';

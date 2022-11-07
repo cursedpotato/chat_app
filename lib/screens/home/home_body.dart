@@ -4,7 +4,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/screens/home/chat_card.dart';
 import 'package:chat_app/services/auth.dart';
-import 'package:chat_app/services/database.dart';
+import 'package:chat_app/services/database_methods.dart';
 import 'package:chat_app/screens/home/filledout_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';

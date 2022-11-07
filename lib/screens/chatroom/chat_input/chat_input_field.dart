@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,27 +8,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../globals.dart';
-import '../../../services/database.dart';
+import '../../../services/database_methods.dart';
 import 'media_menu_widget.dart';
 
 final showMicProvider = StateProvider((ref) => true);
 final canAnimateProvider = StateProvider((ref) => false);
-
-ValueNotifier<Duration> useStopWatch(bool isRecording) {
-  print('This is the value of recording in this widget $isRecording');
-  final tickerProvider = useSingleTickerProvider();
-  final duration = useState(Duration.zero);
-  final ticker = useMemoized(() {
-    return tickerProvider.createTicker((elapsed) => duration.value = elapsed);
-  });
-
-  useEffect(() {
-    isRecording ? ticker.start() : ticker.stop();
-    return;
-  }, [isRecording]);
-  useEffect(() => () => ticker.dispose(), []);
-  return duration;
-}
 
 class ChatInputField extends HookConsumerWidget {
   final String chatteeName;
@@ -40,14 +26,19 @@ class ChatInputField extends HookConsumerWidget {
     // ------------------------------
     // Recording Widget related logic
     // ------------------------------
-    print(
-            'This is the value of this is recording ${ref.watch(isRecording)}');
-    final duration = useStopWatch(ref.watch(isRecording));
+
+    final duration = Duration.zero;
     String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String seconds = twoDigits(duration.value.inSeconds.remainder(60));
-    final minutes = duration.value.inMinutes.remainder(60);
+    String seconds = twoDigits(duration.inSeconds.remainder(60));
+    final minutes = duration.inMinutes.remainder(60);
     startRecording() async =>
         await ref.read(recController.notifier).state.record();
+
+    sendVoiceMessage() async {
+      final path = await ref.read(recController.notifier).state.stop();
+      if (path!.isEmpty) return ;
+      File file = File(path);
+    }
 
     // ---------------------------------------------
     // Custom Send Button Listener related functions

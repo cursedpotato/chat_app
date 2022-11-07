@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/screens/chatroom/chatroom_body.dart';
-import 'package:chat_app/services/database.dart';
+import 'package:chat_app/services/database_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
