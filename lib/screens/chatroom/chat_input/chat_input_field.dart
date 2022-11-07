@@ -1,6 +1,6 @@
-import 'dart:io';
 
 import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
+import 'package:chat_app/services/storage_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -23,6 +23,7 @@ class ChatInputField extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    String messageId = "";
     // ------------------------------
     // Recording Widget related logic
     // ------------------------------
@@ -37,7 +38,41 @@ class ChatInputField extends HookConsumerWidget {
     sendVoiceMessage() async {
       final path = await ref.read(recController.notifier).state.stop();
       if (path!.isEmpty) return ;
-      File file = File(path);
+      String audioUrl = await StorageMethods().uploadFileToStorage(path);
+     
+      String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
+      String chatRoomId =
+          getChatRoomIdByUsernames(chatteeName, chatterUsername!);
+      var lastMessageTs = DateTime.now();
+
+      Map<String, dynamic> messageInfoMap = {
+        "message": '',
+        "imgUrl": chatterPfp,
+        "sendBy": chatterUsername,
+        "ts": lastMessageTs,
+        "resUrl": audioUrl,
+        "messageType": "audio",
+      };
+      //messageId
+      if (messageId == "") {
+        messageId = const Uuid().v1();
+      }
+
+      DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap).then(
+        (value) {
+          Map<String, dynamic> lastMessageInfoMap = {
+            "lastMessage": 'Audio Message ',
+            "lastMessageSendTs": lastMessageTs,
+            "lastMessageSendBy": chatterUsername,
+          };
+
+          // We update the user activity
+          DatabaseMethods()
+              .updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+          messageId = "";
+          
+        },
+      );
     }
 
     // ---------------------------------------------
@@ -90,7 +125,7 @@ class ChatInputField extends HookConsumerWidget {
       }
     }
 
-    String messageId = "";
+    
     TextEditingController messageController = useTextEditingController();
     void addMessage(bool sendClicked) {
       if (messageController.text.isEmpty) return;
