@@ -1,8 +1,10 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/models/message_model.dart';
+import 'package:dio/dio.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../globals.dart';
 
@@ -13,8 +15,9 @@ class AudioMessage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     late PlayerController playerController;
-    preparePlayer() {
-      
+    preparePlayer() async {
+      final tempDir = await getTemporaryDirectory();
+      final response = await Dio().download(message.resUrl!, tempDir);
     }
     useEffect(() {
       playerController = PlayerController();

@@ -1,3 +1,4 @@
+import 'package:chat_app/globals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -23,6 +24,7 @@ class ChatMesssageModel {
   ChatMessageType? messageType;
   MessageStatus? messageStatus;
   bool? isSender;
+  String? resUrl;
   String? pfpUrl;
   String? sendBy;
   Timestamp? timestamp;
@@ -32,19 +34,20 @@ class ChatMesssageModel {
     this.messageType,
     this.messageStatus,
     this.isSender,
+    this.resUrl,
     this.pfpUrl,
     this.sendBy,
     this.timestamp,
   });
 
   ChatMesssageModel.fromDocument(DocumentSnapshot document) {
-    String? myUsername =
-        FirebaseAuth.instance.currentUser?.email?.replaceAll("@gmail.com", "");
+   
     message = document['message'] ?? '';
     messageType = whatType(document['messageType']);
     // TODO: Find a way to show a message status
     messageStatus = MessageStatus.viewed;
-    isSender = myUsername == document['sendBy'];
+    isSender = chatterUsername == document['sendBy'];
+    resUrl = document['resUrl'];
     pfpUrl = document['imgUrl'] ?? "";
     sendBy = document['sendBy'] ?? "";
     timestamp = document['ts'] ?? "";
