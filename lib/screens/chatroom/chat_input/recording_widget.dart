@@ -3,9 +3,13 @@ import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/globals.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../../../services/database_methods.dart';
+import '../../../services/storage_methods.dart';
 
 // Recording widget related variables
 final sliderPosition = StateProvider.autoDispose((ref) => 0.0);
@@ -89,6 +93,47 @@ class ControlRecordingWidget extends HookConsumerWidget {
         await ref.read(recController.notifier).state.record();
     pauseRecording() async =>
         await ref.read(recController.notifier).state.pause();
+
+    String messageId = "";
+    // sendVoiceMessage() async {
+    //   final path = await ref.read(recController.notifier).state.stop();
+    //   if (path!.isEmpty) return ;
+    //   String audioUrl = await StorageMethods().uploadFileToStorage(path);
+     
+    //   String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
+    //   String chatRoomId =
+    //       getChatRoomIdByUsernames(chatteeName, chatterUsername!);
+    //   var lastMessageTs = DateTime.now();
+
+    //   Map<String, dynamic> messageInfoMap = {
+    //     "message": '',
+    //     "imgUrl": chatterPfp,
+    //     "sendBy": chatterUsername,
+    //     "ts": lastMessageTs,
+    //     "resUrl": audioUrl,
+    //     "messageType": "audio",
+    //   };
+    //   //messageId
+    //   if (messageId == "") {
+    //     messageId = const Uuid().v1();
+    //   }
+
+    //   DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap).then(
+    //     (value) {
+    //       Map<String, dynamic> lastMessageInfoMap = {
+    //         "lastMessage": 'Audio Message ',
+    //         "lastMessageSendTs": lastMessageTs,
+    //         "lastMessageSendBy": chatterUsername,
+    //       };
+
+    //       // We update the user activity
+    //       DatabaseMethods()
+    //           .updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+    //       messageId = "";
+          
+    //     },
+    //   );
+    // }
 
     // ------------------------------------------
     // Transform translate animation related logic

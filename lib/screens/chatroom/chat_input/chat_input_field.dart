@@ -106,7 +106,7 @@ class ChatInputField extends HookConsumerWidget {
         // TODO: Implement this to send a message
         print('I got executed');
         ref.read(isRecording.notifier).state = false;
-        ref.read(recController.notifier).state.stop();
+        sendVoiceMessage();
       }
     }
 
