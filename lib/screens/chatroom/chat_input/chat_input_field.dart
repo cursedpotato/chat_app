@@ -12,6 +12,22 @@ import 'media_menu_widget.dart';
 final showMicProvider = StateProvider((ref) => true);
 final canAnimateProvider = StateProvider((ref) => false);
 
+ValueNotifier<Duration> useStopWatch(bool isRecording) {
+  print('This is the value of recording in this widget $isRecording');
+  final tickerProvider = useSingleTickerProvider();
+  final duration = useState(Duration.zero);
+  final ticker = useMemoized(() {
+    return tickerProvider.createTicker((elapsed) => duration.value = elapsed);
+  });
+
+  useEffect(() {
+    isRecording ? ticker.start() : ticker.stop();
+    return;
+  }, [isRecording]);
+  useEffect(() => () => ticker.dispose(), []);
+  return duration;
+}
+
 class ChatInputField extends HookConsumerWidget {
   final String chatteeName;
   const ChatInputField({
@@ -21,6 +37,18 @@ class ChatInputField extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ------------------------------
+    // Recording Widget related logic
+    // ------------------------------
+    print(
+            'This is the value of this is recording ${ref.watch(isRecording)}');
+    final duration = useStopWatch(ref.watch(isRecording));
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String seconds = twoDigits(duration.value.inSeconds.remainder(60));
+    final minutes = duration.value.inMinutes.remainder(60);
+    startRecording() async =>
+        await ref.read(recController.notifier).state.record();
+
     // ---------------------------------------------
     // Custom Send Button Listener related functions
     // ---------------------------------------------
@@ -29,10 +57,17 @@ class ChatInputField extends HookConsumerWidget {
     late final double screenWidth = MediaQuery.of(context).size.width;
     late final double screenHeight = MediaQuery.of(context).size.height;
     late final showMic = ref.watch(showMicProvider);
+
     void fingerDown(PointerEvent details) {
       if (!showMic) return;
       ref.read(showAudioWidget.notifier).state = true;
       ref.read(canAnimateProvider.notifier).state = false;
+      startRecording().then((value) {
+        ref.read(isRecording.notifier).state = true;
+        ref.read(recordDuration.notifier).state = '$minutes:$seconds';
+        print(
+            'This is the value of this is recording ${ref.watch(isRecording)}');
+      });
     }
 
     void fingerOff(PointerEvent details) {
@@ -40,11 +75,13 @@ class ChatInputField extends HookConsumerWidget {
       // If the animation is in progress we don't want to show everything else yet
       if (ref.watch(wasAudioDiscarted)) return;
       ref.read(showAudioWidget.notifier).state = false;
-      // TODO: Implement this to send a message
+      if (!ref.watch(isRecording)) return;
       if (!ref.watch(showControlRec)) {
+        // TODO: Implement this to send a message
+        print('I got executed');
+        ref.read(isRecording.notifier).state = false;
         ref.read(recController.notifier).state.stop();
       }
-      
     }
 
     void updateLocation(PointerEvent details) {
@@ -53,7 +90,7 @@ class ChatInputField extends HookConsumerWidget {
       if (details.position.dx < screenWidth * 0.5) {
         // This will stop the recorderz
         ref.read(recController.notifier).state.stop();
-
+        ref.read(isRecording.notifier).state = false;
         ref.read(wasAudioDiscarted.notifier).state = true;
       }
       // If position.dy is greater than 0.25 of screenHeight, we want to toggle the the playable recording widget

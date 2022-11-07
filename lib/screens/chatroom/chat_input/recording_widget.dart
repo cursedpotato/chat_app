@@ -29,32 +29,14 @@ final recController = StateProvider(
 
 final recordDuration = StateProvider((ref) => '0:00');
 
-
+final isRecording = StateProvider((ref) => false);
 
 class RecordingWidget extends HookConsumerWidget {
   const RecordingWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    
-    final isRecording = ref.watch(recController).isRecording;
-    final duration = Duration.zero;
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    final minutes = duration.inMinutes.remainder(60);
-
-    startRecording() async =>
-        await ref.read(recController.notifier).state.record();
-    useEffect(() {
-      startRecording().then((value) {
-        ref.watch(recordDuration.notifier).state = '$minutes:$seconds';
-  
-      });
-
-      return;
-    });
-
-    // This function was created because nesting ternary oparators within the Stack list is not very readable
+    // This function 1was created because nesting ternary oparators within the Stack list is not very readable
     List<Widget> stackList() {
       if (ref.watch(wasAudioDiscarted)) {
         return const [
@@ -103,7 +85,10 @@ class ControlRecordingWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final toggleRec = useState(true);
-    resumeRecording() async => ref.read(recController.notifier).state.record();
+    resumeRecording() async =>
+        await ref.read(recController.notifier).state.record();
+    pauseRecording() async =>
+        await ref.read(recController.notifier).state.pause();
 
     // ------------------------------------------
     // Transform translate animation related logic
@@ -172,10 +157,14 @@ class ControlRecordingWidget extends HookConsumerWidget {
               IconButton(
                 onPressed: () {
                   toggleRec.value = !toggleRec.value;
-                  if (ref.watch(recController).isRecording) {
-                    ref.read(recController.notifier).state.pause();
+                  if (ref.watch(isRecording)) {
+                    pauseRecording().then(
+                      (value) => ref.read(isRecording.notifier).state = false,
+                    );
                   }
-                  resumeRecording();
+                  resumeRecording().then(
+                    (value) => ref.read(isRecording.notifier).state = true,
+                  );
                 },
                 icon: toggleRec.value
                     ? const Icon(Icons.pause)
