@@ -28,7 +28,7 @@ class ChatInputField extends HookConsumerWidget {
     // Recording Widget related logic
     // ------------------------------
 
-    final duration = Duration.zero;
+    const duration = Duration.zero;
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     String seconds = twoDigits(duration.inSeconds.remainder(60));
     final minutes = duration.inMinutes.remainder(60);

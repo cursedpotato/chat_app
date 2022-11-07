@@ -1,15 +1,26 @@
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/models/message_model.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../globals.dart';
 
-class AudioMessage extends StatelessWidget {
+class AudioMessage extends HookWidget {
   final ChatMesssageModel message;
   const AudioMessage({Key? key, required this.message}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    late PlayerController playerController;
+    preparePlayer() {
+      
+    }
+    useEffect(() {
+      playerController = PlayerController();
+      return;
+    });
+
     return Container(
       width: MediaQuery.of(context).size.width * 0.55,
       margin: const EdgeInsets.only(top: kDefaultPadding),
@@ -22,8 +33,10 @@ class AudioMessage extends StatelessWidget {
           color: kPrimaryColor.withOpacity(message.isSender! ? 1 : 0.1)),
       child: Row(
         children: [
-          Icon(Icons.play_arrow,
-              color: message.isSender! ? Colors.white : kPrimaryColor),
+          Icon(
+            Icons.play_arrow,
+            color: message.isSender! ? Colors.white : kPrimaryColor,
+          ),
           Expanded(
             child: Stack(
               clipBehavior: Clip.none,

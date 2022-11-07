@@ -53,12 +53,13 @@ dependencies:
   animate_icons: ^2.0.0
   animated_text_kit: ^4.2.2
   # Files 
-  record: ^4.4.3
   file_picker: ^5.2.1
   cached_network_image: ^3.2.2
+  path_provider: ^2.0.11
+  dio: ^4.0.6
+  audio_waveforms: ^0.1.5+1
   intl: ^0.17.0
   # Audio Recorder
-  audio_waveforms: ^0.1.5+1
 
   
  
