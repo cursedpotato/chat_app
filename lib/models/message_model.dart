@@ -1,12 +1,10 @@
 import 'package:chat_app/globals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 
 enum ChatMessageType { text, audio, image, video }
 
 enum MessageStatus { notSent, notViewed, viewed }
-
-
 
 ChatMessageType whatType(String documentType) {
   const map = {
@@ -15,8 +13,19 @@ ChatMessageType whatType(String documentType) {
     'image': ChatMessageType.image,
     'video': ChatMessageType.video
   };
-
   ChatMessageType type = map[documentType] ?? ChatMessageType.text;
+
+  return type;
+}
+
+MessageStatus messageStatus(String documentType) {
+  const map = {
+    'not-send': MessageStatus.notSent,
+    'not_viewed': MessageStatus.notViewed,
+    'viewed': MessageStatus.viewed,
+  };
+
+  MessageStatus type = map[documentType] ?? MessageStatus.notSent;
 
   return type;
 }

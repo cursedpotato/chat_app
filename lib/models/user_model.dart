@@ -1,3 +1,4 @@
+import 'package:chat_app/globals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
@@ -20,12 +21,12 @@ class UserModel {
   
 
   UserModel.fromDocument(DocumentSnapshot documentSnapshot) {
-    pfpUrl = documentSnapshot['imgUrl'] ?? '';
-    name = documentSnapshot['name'] ?? '';
-    email = documentSnapshot['email'] ?? '';
-    username = documentSnapshot['username'] ?? '';
-    userActivityTs = documentSnapshot['userActivityTs'] ?? '';
-    lastSeenDate = (documentSnapshot['userActivityTs'] as Timestamp).toDate();
+    pfpUrl = documentSnapshot.getString('imgUrl');
+    name = documentSnapshot.getString('name');
+    email = documentSnapshot.getString('email');
+    username = documentSnapshot.getString('username');
+    userActivityTs = documentSnapshot.getTimeStamp('userActivityTs');
+    lastSeenDate = documentSnapshot.getDateFromTs('userActivityTs');
   }
 
 }

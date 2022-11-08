@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chat_app/globals.dart';
 
 class ChatroomModel {
   String? lastMessage;
@@ -15,19 +16,10 @@ class ChatroomModel {
       this.users});
 
   ChatroomModel.fromDocument(DocumentSnapshot document) {
-    lastMessage = document['lastMessage'];
-    lastMessageSendBy = document['lastMessageSendBy'];
-    lastMessageSendTs = document['lastMessageSendTs'];
-    lastMessageSendDate = (document['lastMessageSendTs'] as Timestamp).toDate();
+    lastMessage = document.getString('lastMessage');
+    lastMessageSendBy = document.getString('lastMessageSendBy');
+    lastMessageSendTs = document.getTimeStamp('lastMessageSendTs');
+    lastMessageSendDate = document.getDateFromTs('lastMessageSendTs');
     users = document['users'].cast<String>();
   }
-
-  // Map<String, dynamic> toJson() {
-  //   final Map<String, dynamic> data = new Map<String, dynamic>();
-  //   data['lastMessage'] = this.lastMessage;
-  //   data['lastMessageSendBy'] = this.lastMessageSendBy;
-  //   data['lastMessageSendTs'] = this.lastMessageSendTs;
-  //   data['users'] = this.users;
-  //   return data;
-  // }
 }
