@@ -36,9 +36,12 @@ class ChatInputField extends HookConsumerWidget {
         await ref.read(recController.notifier).state.record();
 
     sendVoiceMessage() async {
+      if (messageId == "") {
+        messageId = const Uuid().v1();
+      }
       final path = await ref.read(recController.notifier).state.stop();
       if (path!.isEmpty) return ;
-      String audioUrl = await StorageMethods().uploadFileToStorage(path);
+      String audioUrl = await StorageMethods().uploadFileToStorage(path, messageId);
      
       String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
       String chatRoomId =
@@ -54,9 +57,7 @@ class ChatInputField extends HookConsumerWidget {
         "messageType": "audio",
       };
       //messageId
-      if (messageId == "") {
-        messageId = const Uuid().v1();
-      }
+      
 
       DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap).then(
         (value) {
@@ -91,8 +92,7 @@ class ChatInputField extends HookConsumerWidget {
       startRecording().then((value) {
         ref.read(isRecording.notifier).state = true;
         ref.read(recordDuration.notifier).state = '$minutes:$seconds';
-        print(
-            'This is the value of this is recording ${ref.watch(isRecording)}');
+        
       });
     }
 
@@ -103,8 +103,6 @@ class ChatInputField extends HookConsumerWidget {
       ref.read(showAudioWidget.notifier).state = false;
       if (!ref.watch(isRecording)) return;
       if (!ref.watch(showControlRec)) {
-        // TODO: Implement this to send a message
-        print('I got executed');
         ref.read(isRecording.notifier).state = false;
         sendVoiceMessage();
       }

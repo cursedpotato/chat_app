@@ -31,6 +31,7 @@ MessageStatus messageStatus(String documentType) {
 }
 
 class ChatMesssageModel {
+  String? id;
   String? message;
   ChatMessageType? messageType;
   MessageStatus? messageStatus;
@@ -41,6 +42,7 @@ class ChatMesssageModel {
   Timestamp? timestamp;
 
   ChatMesssageModel({
+    this.id,
     this.message,
     this.messageType,
     this.messageStatus,
@@ -52,6 +54,7 @@ class ChatMesssageModel {
   });
 
   ChatMesssageModel.fromDocument(DocumentSnapshot document) {
+    id = document.id;
     message = document.getString('message');
     messageType = whatType(document['messageType']);
     // TODO: Find a way to show a message status

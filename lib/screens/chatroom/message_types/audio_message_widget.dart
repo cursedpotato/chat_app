@@ -1,6 +1,7 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/models/message_model.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -14,15 +15,28 @@ class AudioMessage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    late PlayerController playerController;
+    final isPlaying = useState(false);
+    late PlayerController playerController = PlayerController();
+
     preparePlayer() async {
       final tempDir = await getTemporaryDirectory();
-      final response = await Dio().download(message.resUrl!, tempDir);
+      final path = '${tempDir.path}/${message.id}';
+      final url = message.resUrl!;
+      await Dio().download(url, path);
+      await playerController.preparePlayer(path);
     }
+
+    void playOrPausePlayer(PlayerController controller) async {
+      controller.playerState == PlayerState.playing
+          ? await controller.pausePlayer()
+          : await controller.startPlayer(finishMode: FinishMode.pause);
+    }
+
     useEffect(() {
       playerController = PlayerController();
-      return;
-    });
+      preparePlayer();
+      return ;
+    },);
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.55,
@@ -36,34 +50,25 @@ class AudioMessage extends HookWidget {
           color: kPrimaryColor.withOpacity(message.isSender! ? 1 : 0.1)),
       child: Row(
         children: [
-          Icon(
-            Icons.play_arrow,
-            color: message.isSender! ? Colors.white : kPrimaryColor,
+          IconButton(
+            onPressed: () {
+              isPlaying.value = !isPlaying.value;
+              playOrPausePlayer(playerController);
+            },
+            icon: Icon(
+              isPlaying.value ? Icons.pause : Icons.play_arrow,
+              color: message.isSender! ? Colors.white : kPrimaryColor,
+            ),
           ),
-          Expanded(
-            child: Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: 2,
-                  color: message.isSender!
-                      ? Colors.white
-                      : kPrimaryColor.withOpacity(0.4),
-                ),
-                Positioned(
-                  left: 0,
-                  child: Container(
-                    height: 8,
-                    width: 8,
-                    decoration: BoxDecoration(
-                      color: message.isSender! ? Colors.white : kPrimaryColor,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                )
-              ],
+          AudioFileWaveforms(
+            size: Size(MediaQuery.of(context).size.width / 4, 70),
+            playerController: playerController,
+            density: 1.5,
+            playerWaveStyle: const PlayerWaveStyle(
+              scaleFactor: 0.8,
+              fixedWaveColor: Colors.white30,
+              liveWaveColor: Colors.white,
+              waveCap: StrokeCap.butt,
             ),
           ),
           Text(

@@ -26,7 +26,7 @@ class Body extends HookWidget {
     useEffect(
       () {
         // Put this within a function that repeats this code every minute
-        timer = Timer.periodic(const Duration(seconds: 60), (timer) {
+        timer = Timer.periodic(const Duration(seconds: 60), (_) {
           DatabaseMethods().updateUserTs();
         });
         return () => timer?.cancel();
