@@ -6,6 +6,8 @@ enum ChatMessageType { text, audio, image, video }
 
 enum MessageStatus { notSent, notViewed, viewed }
 
+
+
 ChatMessageType whatType(String documentType) {
   const map = {
     'text': ChatMessageType.text,
@@ -41,27 +43,14 @@ class ChatMesssageModel {
   });
 
   ChatMesssageModel.fromDocument(DocumentSnapshot document) {
-   
-    message = document['message'] ?? '';
+    message = document.getString('message');
     messageType = whatType(document['messageType']);
     // TODO: Find a way to show a message status
     messageStatus = MessageStatus.viewed;
     isSender = chatterUsername == document['sendBy'];
-    resUrl = document['resUrl'];
-    pfpUrl = document['imgUrl'] ?? "";
-    sendBy = document['sendBy'] ?? "";
-    timestamp = document['ts'] ?? "";
+    resUrl = document.getString('resUrl');
+    pfpUrl = document.getString('imgUrl');
+    sendBy = document.getString('sendBy');
+    timestamp = document.getTimeStamp('ts');
   }
-
-  // Map<String, dynamic> toJson() {
-  //   final Map<String, dynamic> data = new Map<String, dynamic>();
-  //   data['text'] = this.text;
-  //   data['messageType'] = this.messageType;
-  //   data['messageStatus'] = this.messageStatus;
-  //   data['isSender'] = this.isSender;
-  //   data['pfpUrl'] = this.pfpUrl;
-  //   data['sendBy'] = this.sendBy;
-  //   data['timestamp'] = this.timestamp;
-  //   return data;
-  // }
 }
