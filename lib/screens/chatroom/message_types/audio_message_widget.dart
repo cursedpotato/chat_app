@@ -16,7 +16,9 @@ class AudioMessage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final isPlaying = useState(false);
-    late PlayerController playerController = PlayerController();
+    PlayerController playerController = PlayerController();
+    
+
 
     preparePlayer() async {
       final tempDir = await getTemporaryDirectory();
@@ -33,10 +35,14 @@ class AudioMessage extends HookWidget {
     }
 
     useEffect(() {
+      playerController.stopAllPlayers();
       playerController = PlayerController();
       preparePlayer();
+  
       return ;
     },);
+
+
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.55,

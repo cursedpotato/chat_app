@@ -92,7 +92,6 @@ class ControlRecordingWidget extends HookConsumerWidget {
     pauseRecording() async =>
         await ref.read(recController.notifier).state.pause();
 
-    String messageId = "";
     // sendVoiceMessage() async {
     //   final path = await ref.read(recController.notifier).state.stop();
     //   if (path!.isEmpty) return ;
