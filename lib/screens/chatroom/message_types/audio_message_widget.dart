@@ -1,11 +1,8 @@
-import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/models/message_model.dart';
-import 'package:dio/dio.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../../../globals.dart';
 
@@ -16,33 +13,23 @@ class AudioMessage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final isPlaying = useState(false);
-    PlayerController playerController = PlayerController();
-    
+    final player = AudioPlayer();
 
+    preparePlayer() async => await player.setUrl(message.resUrl!);
 
-    preparePlayer() async {
-      final tempDir = await getTemporaryDirectory();
-      final path = '${tempDir.path}/${message.id}';
-      final url = message.resUrl!;
-      await Dio().download(url, path);
-      await playerController.preparePlayer(path);
+    useEffect(
+      () {
+        preparePlayer();
+        return () {
+          
+        };
+      },
+    );
+
+    playOrPausePlayer() async {
+      await player.pause();
+      if (!player.playing) await player.play();
     }
-
-    void playOrPausePlayer(PlayerController controller) async {
-      controller.playerState == PlayerState.playing
-          ? await controller.pausePlayer()
-          : await controller.startPlayer(finishMode: FinishMode.pause);
-    }
-
-    useEffect(() {
-      playerController.stopAllPlayers();
-      playerController = PlayerController();
-      preparePlayer();
-  
-      return ;
-    },);
-
-
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.55,
@@ -58,23 +45,12 @@ class AudioMessage extends HookWidget {
         children: [
           IconButton(
             onPressed: () {
+              playOrPausePlayer();
               isPlaying.value = !isPlaying.value;
-              playOrPausePlayer(playerController);
             },
             icon: Icon(
               isPlaying.value ? Icons.pause : Icons.play_arrow,
               color: message.isSender! ? Colors.white : kPrimaryColor,
-            ),
-          ),
-          AudioFileWaveforms(
-            size: Size(MediaQuery.of(context).size.width / 4, 70),
-            playerController: playerController,
-            density: 1.5,
-            playerWaveStyle: const PlayerWaveStyle(
-              scaleFactor: 0.8,
-              fixedWaveColor: Colors.white30,
-              liveWaveColor: Colors.white,
-              waveCap: StrokeCap.butt,
             ),
           ),
           Text(
