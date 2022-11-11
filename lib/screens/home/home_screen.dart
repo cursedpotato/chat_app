@@ -9,7 +9,14 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../models/chatroom_model.dart';
+import '../../models/user_model.dart';
+
+
+final chatModelProvider = StateProvider((ref) => ChatroomModel());
+final userModelProvider = StateProvider((ref) => UserModel());
 
 class HomeScreen extends HookWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -24,12 +31,7 @@ class HomeScreen extends HookWidget {
   final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    
-    
     ValueNotifier<int> selectedIndex = useState(0);
-    
-    
-
     return Scaffold(
       body: screenList[selectedIndex.value],
       bottomNavigationBar: CurvedNavigationBar(

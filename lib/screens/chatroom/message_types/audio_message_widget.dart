@@ -20,15 +20,15 @@ class AudioMessage extends HookWidget {
     useEffect(
       () {
         preparePlayer();
-        return () {
-          
-        };
+        return () {};
       },
     );
 
-    playOrPausePlayer() async {
+    playPlayer() async {
+      await player.play();
+    }
+    pausePlayer() async {
       await player.pause();
-      if (!player.playing) await player.play();
     }
 
     return Container(
@@ -45,7 +45,8 @@ class AudioMessage extends HookWidget {
         children: [
           IconButton(
             onPressed: () {
-              playOrPausePlayer();
+              playPlayer();
+              if (isPlaying.value) pausePlayer();
               isPlaying.value = !isPlaying.value;
             },
             icon: Icon(

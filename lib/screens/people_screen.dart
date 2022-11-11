@@ -147,10 +147,7 @@ class PeopleScreen extends HookWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MessagesScreen(
-            chatterName: chatterUsername!,
-            chatteeName: userModel.username!,
-            lastSeen: ""),
+        builder: (context) => const MessagesScreen(),
       ),
     );
   }

@@ -2,14 +2,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/chatroom_model.dart';
 import 'package:chat_app/screens/chatroom/chatroom_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../globals.dart';
 import '../../models/user_model.dart';
 import '../../services/database_methods.dart';
 
-class ChatCard extends StatelessWidget {
+
+
+class ChatCard extends ConsumerWidget {
   final bool showOnlyActive;
   final DocumentSnapshot chatroomDocument;
   const ChatCard({
@@ -19,13 +21,11 @@ class ChatCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     /* This variable is used to exclude the chatter name from a document id 
     (the chat document id is formed as a combination between the chatte and chatter username) 
     to get the chatte name and fetch the chatte info from a method
     */
-    String? chatterUsername =
-        FirebaseAuth.instance.currentUser?.email!.replaceAll("@gmail.com", "");
 
     Future<QuerySnapshot> getThisUserInfo() async {
       final username = chatroomDocument.id
@@ -33,6 +33,10 @@ class ChatCard extends StatelessWidget {
           .replaceAll("_", "");
       return await DatabaseMethods().getUserInfo(username);
     }
+
+    
+
+    
 
     return FutureBuilder(
       future: getThisUserInfo(),
@@ -42,41 +46,48 @@ class ChatCard extends StatelessWidget {
           UserModel userModel = UserModel.fromDocument(snapshot.data!.docs[0]);
           ChatroomModel chatroomModel =
               ChatroomModel.fromDocument(chatroomDocument);
-          return listTile(context, userModel, chatroomModel);
+          return ListTile(
+            userModel: userModel,
+            chatroomModel: chatroomModel,
+            showOnlyActive: showOnlyActive,
+          );
         }
 
         return const LinearProgressIndicator();
       },
     );
   }
+}
 
-  Widget listTile(
-    BuildContext context,
-    UserModel userModel,
-    ChatroomModel chatroomModel,
-  ) {
+class ListTile extends ConsumerWidget {
+  const ListTile({
+    Key? key,
+    required this.userModel,
+    required this.chatroomModel,
+    required this.showOnlyActive,
+  }) : super(key: key);
+  final UserModel userModel;
+  final ChatroomModel chatroomModel;
+  final bool showOnlyActive;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     DateTime fiveMinAgo = DateTime.now().subtract(const Duration(minutes: 5));
     String lastMessage = timeago.format(chatroomModel.lastMessageSendDate!);
-    String lastSeen = timeago.format(userModel.lastSeenDate!);
     bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
-    // We added this var because !showOnlyActive does not work well on isOnlyActive
     bool notActive = !showOnlyActive;
-    bool isOnlyActive = ((showOnlyActive && isActive) || notActive);
+    bool isOnlyActive = ((showOnlyActive && isActive) || notActive);    
 
     if (!isOnlyActive) {
       return const SizedBox();
     }
-  
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MessagesScreen(
-              chatterName: chatterUsername!,
-              chatteeName: userModel.username!,
-              lastSeen: lastSeen,
-            ),
+            builder: (context) => const MessagesScreen(),
           ),
         );
       },
@@ -89,7 +100,8 @@ class ChatCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: CachedNetworkImageProvider(userModel.pfpUrl!),
+                  backgroundImage:
+                      CachedNetworkImageProvider(userModel.pfpUrl!),
                 ),
                 isActive ? activityDot(context) : const SizedBox(),
               ],

@@ -6,34 +6,32 @@ import 'package:chat_app/screens/chatroom/chatroom_body.dart';
 import 'package:chat_app/services/database_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import '../../models/user_model.dart';
+import '../home/home_screen.dart';
 
-class MessagesScreen extends HookWidget {
-  final String chatterName;
-  final String chatteeName;
-  final String lastSeen;
+class MessagesScreen extends HookConsumerWidget {
   const MessagesScreen({
     Key? key,
-    required this.chatterName,
-    required this.chatteeName,
-    required this.lastSeen,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // we will use getChatRoomMessages method to get the messages stream, this stream will user
+    UserModel chatteeModel = ref.watch(userModelProvider);
 
-    final chatroomId = getChatRoomIdByUsernames(chatteeName, chatterName);
+    final chatroomId = getChatRoomIdByUsernames(chatteeModel.name!, chatterUsername!);
 
     final future =
-        useMemoized(() =>DatabaseMethods().getChatRoomMessages(chatroomId));
+        useMemoized(() => DatabaseMethods().getChatRoomMessages(chatroomId));
 
     Stream<QuerySnapshot>? messagesStream = useFuture(future).data;
 
     return Scaffold(
-      appBar: buildAppBar(),
+      appBar: buildAppBar(chatteeModel),
       body: StreamBuilder(
         stream: messagesStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -41,7 +39,7 @@ class MessagesScreen extends HookWidget {
           if (hasData) {
             return Body(
               querySnapshot: snapshot.data!.docs,
-              chatteName: chatteeName,
+              chatteName: chatteeModel.name!,
             );
           }
           return const Center(
@@ -52,13 +50,9 @@ class MessagesScreen extends HookWidget {
     );
   }
 
-  AppBar buildAppBar() {
-    final chatteFuture =
-        useMemoized(() => DatabaseMethods().getUserInfo(chatteeName));
-
-    QuerySnapshot? chatteData = useFuture(chatteFuture).data;
-
-    String? chattePfp = chatteData?.docs[0]["imgUrl"];
+  AppBar buildAppBar(UserModel chatteeModel) {
+    
+    String lastSeen = timeago.format(chatteeModel.lastSeenDate!);
 
     return AppBar(
       title: Row(
@@ -66,7 +60,7 @@ class MessagesScreen extends HookWidget {
         children: [
           ClipOval(
             child: CachedNetworkImage(
-              imageUrl: chattePfp ?? noImage,
+              imageUrl: chatteeModel.pfpUrl ?? noImage,
               width: 40,
               height: 40,
               fit: BoxFit.cover,
@@ -77,8 +71,8 @@ class MessagesScreen extends HookWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                chatteeName,
-                                overflow: TextOverflow.ellipsis,
+                chatteeModel.name!,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 16),
               ),
               Text(
