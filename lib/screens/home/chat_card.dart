@@ -36,16 +36,11 @@ class ChatCard extends HookConsumerWidget {
 
     final userdata = useFuture(getThisUserInfo());
 
-    next(UserModel userModel) {
+    final isConnectionDone = userdata.connectionState == ConnectionState.done;
+    if (userdata.hasData && isConnectionDone) {
+      UserModel userModel = UserModel.fromDocument(userdata.data!.docs[0]);
       userReference.state = userModel;
     }
-    if (userdata.hasData) {
-      
-      UserModel userModel = UserModel.fromDocument(userdata.data!.docs[0]);
-      next(userModel);
-    }
-
-    
 
     return FutureBuilder(
       future: getThisUserInfo(),
@@ -55,7 +50,6 @@ class ChatCard extends HookConsumerWidget {
           UserModel userModel = UserModel.fromDocument(snapshot.data!.docs[0]);
           ChatroomModel chatroomModel =
               ChatroomModel.fromDocument(chatroomDocument);
-          //
           return ListTile(
             userModel: userModel,
             chatroomModel: chatroomModel,

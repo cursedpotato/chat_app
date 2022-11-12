@@ -15,7 +15,7 @@ import '../../models/chatroom_model.dart';
 import '../../models/user_model.dart';
 
 
-final chatModelProvider = StateProvider((ref) => ChatroomModel());
+final chatModelProvider = StateProvider.autoDispose((ref) => ChatroomModel());
 final userModelProvider = StateProvider((ref) => UserModel());
 
 class HomeScreen extends HookWidget {
