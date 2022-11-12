@@ -1,17 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/chatroom_model.dart';
 import 'package:chat_app/screens/chatroom/chatroom_screen.dart';
+import 'package:chat_app/screens/home/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../globals.dart';
 import '../../models/user_model.dart';
 import '../../services/database_methods.dart';
 
-
-
-class ChatCard extends ConsumerWidget {
+class ChatCard extends HookConsumerWidget {
   final bool showOnlyActive;
   final DocumentSnapshot chatroomDocument;
   const ChatCard({
@@ -22,11 +22,11 @@ class ChatCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userReference = ref.read(userModelProvider.notifier);
     /* This variable is used to exclude the chatter name from a document id 
     (the chat document id is formed as a combination between the chatte and chatter username) 
     to get the chatte name and fetch the chatte info from a method
     */
-
     Future<QuerySnapshot> getThisUserInfo() async {
       final username = chatroomDocument.id
           .replaceAll(chatterUsername!, "")
@@ -34,7 +34,16 @@ class ChatCard extends ConsumerWidget {
       return await DatabaseMethods().getUserInfo(username);
     }
 
-    
+    final userdata = useFuture(getThisUserInfo());
+
+    next(UserModel userModel) {
+      userReference.state = userModel;
+    }
+    if (userdata.hasData) {
+      
+      UserModel userModel = UserModel.fromDocument(userdata.data!.docs[0]);
+      next(userModel);
+    }
 
     
 
@@ -46,6 +55,7 @@ class ChatCard extends ConsumerWidget {
           UserModel userModel = UserModel.fromDocument(snapshot.data!.docs[0]);
           ChatroomModel chatroomModel =
               ChatroomModel.fromDocument(chatroomDocument);
+          //
           return ListTile(
             userModel: userModel,
             chatroomModel: chatroomModel,
@@ -76,7 +86,7 @@ class ListTile extends ConsumerWidget {
     String lastMessage = timeago.format(chatroomModel.lastMessageSendDate!);
     bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
     bool notActive = !showOnlyActive;
-    bool isOnlyActive = ((showOnlyActive && isActive) || notActive);    
+    bool isOnlyActive = ((showOnlyActive && isActive) || notActive);
 
     if (!isOnlyActive) {
       return const SizedBox();
