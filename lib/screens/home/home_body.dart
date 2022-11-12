@@ -71,6 +71,7 @@ class Body extends HookWidget {
             stream: chatroomStream,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              // TODO: Make an error screen
               if (!snapshot.hasData) {
                 return const Text('Failed connection');
               }
@@ -81,18 +82,8 @@ class Body extends HookWidget {
                 return const LinearProgressIndicator();
               }
 
-              if (isActive.value) {
-                List<DocumentSnapshot> documentList = snapshot.data!.docs;
-                return animatedChatroomList(myListKey, documentList, true);
-              }
-
-              if (!isActive.value) {
-                List<DocumentSnapshot> documentList = snapshot.data!.docs;
-                return animatedChatroomList(myListKey, documentList, false);
-              }
-
-              // TODO: Make an error screen
-              return const Text("Something went wrong");
+              List<DocumentSnapshot> documentList = snapshot.data!.docs;
+              return animatedChatroomList(myListKey, documentList, isActive.value);
             },
           ),
         ],
