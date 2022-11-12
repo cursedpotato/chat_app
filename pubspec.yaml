@@ -48,6 +48,7 @@ dependencies:
   # To reduce boilerplate
   flutter_hooks: ^0.18.3 
   hooks_riverpod: ^2.0.2
+  freezed_annotation: ^2.2.0
   # Animations 
   curved_navigation_bar: ^1.0.3
   animate_icons: ^2.0.0
@@ -62,18 +63,15 @@ dependencies:
   audio_waveforms: ^0.1.5+1
   # audio waveforms player is kind of unpolished,
   just_audio: ^0.9.30
-  intl: ^0.17.0
- 
-
-  
- 
-  
 
 dev_dependencies:
+  build_runner: ^2.3.2
   flutter_launcher_icons: ^0.10.0
   flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
+  freezed: ^2.2.1
+  json_serializable: ^6.5.4
 flutter_icons:
   android: "launcher_icon"
   ios: true
