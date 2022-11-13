@@ -1,5 +1,6 @@
 import 'package:chat_app/globals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   String? pfpUrl;
   String? name;
@@ -29,3 +30,4 @@ class UserModel {
   }
 
 }
+
