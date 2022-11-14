@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/chatroom_model.dart';
+import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/screens/chatroom/chatroom_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -20,27 +21,31 @@ class ChatCard extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    UserModel userModel = UserModel();
+    late final DateTime fiveMinAgo =
+        DateTime.now().subtract(const Duration(minutes: 5));
+    ChatroomModel chatroomModel = ChatroomModel.fromDocument(chatroomDocument);
+    UserModel userModel = ref.watch(userProvider).userModel;
+    bool isActive = false;
+    bool isOnlyActive = false;
 
-    Future<QuerySnapshot> getThisUserInfo() async {
-      final username = chatroomDocument.id
-          .replaceAll(chatterUsername!, "")
-          .replaceAll("_", "");
-      return await DatabaseMethods().getUserInfo(username);
+    late final username = chatroomDocument.id
+        .replaceAll(chatterUsername!, "")
+        .replaceAll("_", "");
+    late final getThisUserInfo =
+        useMemoized(() => DatabaseMethods().getUserInfo(username));
+    late final userFuture = useFuture(getThisUserInfo);
+
+    bool isComplete = userFuture.hasData &&
+        userFuture.connectionState == ConnectionState.done;
+    if (isComplete) {
+      Future.delayed(Duration.zero, () {
+        ref.read(userProvider.notifier).userFromDocument(userFuture.requireData.docs[0]);
+      }     );
+      isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
+      isOnlyActive = ((showOnlyActive && isActive) || (!showOnlyActive));
     }
 
-    final userFuture = useFuture(getThisUserInfo());
-    final isDone = userFuture.connectionState == ConnectionState.done;
-
-    if (!userFuture.hasData && !isDone) return const SizedBox();
-
-    userModel = UserModel.fromDocument(userFuture.data!.docs[0]);
-   
-    ChatroomModel chatroomModel = ChatroomModel.fromDocument(chatroomDocument);
-    DateTime fiveMinAgo = DateTime.now().subtract(const Duration(minutes: 5));
-    bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
-    bool isOnlyActive = ((showOnlyActive && isActive) || (!showOnlyActive));
-    if (!isOnlyActive) return const SizedBox();
+    if (isOnlyActive == false || isComplete == false) return const SizedBox();
 
     return GestureDetector(
       onTap: () {

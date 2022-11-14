@@ -17,9 +17,13 @@ class Body extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    var future = useMemoized(() => DatabaseMethods().getChatRooms());
+    late final future = useMemoized(() => DatabaseMethods().getChatRooms());
 
-    Stream<QuerySnapshot>? chatroomStream = useFuture(future).data;
+    late final futureSnapshot = useFuture(future);
+
+    
+
+    Stream<QuerySnapshot>? chatroomStream = futureSnapshot.data;
 
     Timer? timer;
 
@@ -72,7 +76,7 @@ class Body extends HookWidget {
             builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
               // TODO: Make an error screen
               if (!snapshot.hasData) return const Text('Failed connection');
-
+             
               bool isWaiting =
                   snapshot.connectionState == ConnectionState.waiting;
               if (isWaiting) return const LinearProgressIndicator();
