@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import '../../globals.dart';
 import '../../models/user_model.dart';
 import '../../services/database_methods.dart';
@@ -36,10 +35,9 @@ class ChatCard extends HookConsumerWidget {
     if (!userFuture.hasData && !isDone) return const SizedBox();
 
     userModel = UserModel.fromDocument(userFuture.data!.docs[0]);
+   
     ChatroomModel chatroomModel = ChatroomModel.fromDocument(chatroomDocument);
     DateTime fiveMinAgo = DateTime.now().subtract(const Duration(minutes: 5));
-    String lastMessage = timeago.format(chatroomModel.lastMessageSendDate!);
-    String lastSeen = timeago.format(userModel.lastSeenDate!);
     bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
     bool isOnlyActive = ((showOnlyActive && isActive) || (!showOnlyActive));
     if (!isOnlyActive) return const SizedBox();
@@ -52,7 +50,7 @@ class ChatCard extends HookConsumerWidget {
             builder: (context) => MessagesScreen(
               chatterName: chatterUsername!,
               chatteeName: userModel.username!,
-              lastSeen: lastSeen,
+              lastSeen: userModel.dateToString(),
             ),
           ),
         );
@@ -99,7 +97,7 @@ class ChatCard extends HookConsumerWidget {
             ),
             Opacity(
               opacity: 0.64,
-              child: Text(lastMessage),
+              child: Text(chatroomModel.dateToString()),
             )
           ],
         ),
@@ -108,20 +106,20 @@ class ChatCard extends HookConsumerWidget {
   }
 
   Positioned activityDot(BuildContext context) {
-      return Positioned(
-        right: 0,
-        bottom: 0,
-        child: Container(
-          height: 16,
-          width: 16,
-          decoration: BoxDecoration(
-            color: kPrimaryColor,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: Theme.of(context).scaffoldBackgroundColor,
-            ),
+    return Positioned(
+      right: 0,
+      bottom: 0,
+      child: Container(
+        height: 16,
+        width: 16,
+        decoration: BoxDecoration(
+          color: kPrimaryColor,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Theme.of(context).scaffoldBackgroundColor,
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
 }

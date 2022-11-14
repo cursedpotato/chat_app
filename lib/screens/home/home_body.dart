@@ -69,21 +69,17 @@ class Body extends HookWidget {
           ),
           StreamBuilder(
             stream: chatroomStream,
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
               // TODO: Make an error screen
-              if (!snapshot.hasData) {
-                return const Text('Failed connection');
-              }
+              if (!snapshot.hasData) return const Text('Failed connection');
 
               bool isWaiting =
                   snapshot.connectionState == ConnectionState.waiting;
-              if (isWaiting) {
-                return const LinearProgressIndicator();
-              }
+              if (isWaiting) return const LinearProgressIndicator();
 
               List<DocumentSnapshot> documentList = snapshot.data!.docs;
-              return animatedChatroomList(myListKey, documentList, isActive.value);
+              return animatedChatroomList(
+                  myListKey, documentList, isActive.value);
             },
           ),
         ],
@@ -128,7 +124,6 @@ class Body extends HookWidget {
           TypewriterAnimatedText("Explore"),
           TypewriterAnimatedText("Talk with people you care about"),
           WavyAnimatedText("Chat!")
-
         ],
         totalRepeatCount: 1,
       ),

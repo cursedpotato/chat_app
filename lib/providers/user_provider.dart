@@ -22,12 +22,15 @@ abstract class UserState with _$UserState {
 
 }
 
-// final userProvider = StateNotifierProvider<UserNotifier, UserState>((ref) => UserNotifier());
+final userProvider = StateNotifierProvider<UserNotifier, UserState>((ref) => UserNotifier());
 
 
-// class UserNotifier extends StateNotifier<UserState> {
-//   UserNotifier(): super(UserState(userModel: UserModel.fromDocument(documentSnapshot)));
+class UserNotifier extends StateNotifier<UserState> {
+  UserNotifier(): super(UserState(userModel: UserModel()));
   
+  void userFromDocument(DocumentSnapshot documentSnapshot) {
+    state = state.copyWith(userModel: UserModel.fromDocument(documentSnapshot));
+  }
   
-// }
+}
 
