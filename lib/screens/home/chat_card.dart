@@ -21,7 +21,7 @@ class ChatCard extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    
+    UserModel userModel = UserModel();
 
     Future<QuerySnapshot> getThisUserInfo() async {
       final username = chatroomDocument.id
@@ -35,7 +35,7 @@ class ChatCard extends HookConsumerWidget {
 
     if (!userFuture.hasData && !isDone) return const SizedBox();
 
-    UserModel userModel = UserModel.fromDocument(userFuture.data!.docs[0]);
+    userModel = UserModel.fromDocument(userFuture.data!.docs[0]);
     ChatroomModel chatroomModel = ChatroomModel.fromDocument(chatroomDocument);
     DateTime fiveMinAgo = DateTime.now().subtract(const Duration(minutes: 5));
     String lastMessage = timeago.format(chatroomModel.lastMessageSendDate!);

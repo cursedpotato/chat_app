@@ -15,7 +15,6 @@ part 'user_provider.freezed.dart';
 abstract class UserState with _$UserState {
   const factory UserState({
     required UserModel userModel,
-  
   }) = _UserState;
 
   // ignore: unused_element
@@ -23,15 +22,12 @@ abstract class UserState with _$UserState {
 
 }
 
-final userProvider = StateNotifierProvider<UserNotifier, UserState>((ref) => UserNotifier());
+// final userProvider = StateNotifierProvider<UserNotifier, UserState>((ref) => UserNotifier());
 
 
-class UserNotifier extends StateNotifier<UserState> {
-  UserNotifier(): super(UserState(userModel: UserModel()));
+// class UserNotifier extends StateNotifier<UserState> {
+//   UserNotifier(): super(UserState(userModel: UserModel.fromDocument(documentSnapshot)));
   
-  loadUser(DocumentSnapshot documentSnapshot) {
-    // ignore: unused_result
-    state.copyWith(userModel: UserModel.fromDocument(documentSnapshot));
-  }
-}
+  
+// }
 
