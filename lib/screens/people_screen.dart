@@ -7,6 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+
+
 class PeopleScreen extends HookWidget {
   const PeopleScreen({Key? key}) : super(key: key);
 
@@ -90,19 +92,19 @@ class PeopleScreen extends HookWidget {
                 if (isLoading) {
                   return const Text('Loading');
                 }
-
+      
                 bool? query1HasData = snapshot.data?[0].docs.isNotEmpty;
                 if (query1HasData!) {
                   List<DocumentSnapshot>? documentList = snapshot.data?[0].docs;
                   return userList(documentList);
                 }
-
+      
                 bool? query2HasData = snapshot.data?[1].docs.isNotEmpty;
                 if (query2HasData!) {
                   List<DocumentSnapshot>? documentList = snapshot.data?[1].docs;
                   return userList(documentList);
                 }
-
+      
                 return const Text("There's no one to chat with");
               },
             )
@@ -146,9 +148,8 @@ class PeopleScreen extends HookWidget {
       context,
       MaterialPageRoute(
         builder: (context) => MessagesScreen(
-          chatteeName: userModel.username!,
-          lastSeen: userModel.dateToString(),
-        ),
+            chatteeName: userModel.username!,
+            lastSeen: "",),
       ),
     );
   }

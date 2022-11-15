@@ -31,6 +31,10 @@ class UserNotifier extends StateNotifier<UserState> {
   void userFromDocument(DocumentSnapshot documentSnapshot) {
        state = state.copyWith(userModel: UserModel.fromDocument(documentSnapshot));
   }
+
+  void copyUserModel(UserModel userModel) {
+    state = state.copyWith(userModel: userModel);
+  }
   
 }
 

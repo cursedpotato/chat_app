@@ -11,23 +11,23 @@ import '../../services/database_methods.dart';
 
 class ChatCard extends HookConsumerWidget {
   final bool showOnlyActive;
-  final DocumentSnapshot chatroomDocument;
+  final ChatroomModel chatroomModel;
   const ChatCard({
     Key? key,
     required this.showOnlyActive,
-    required this.chatroomDocument,
+    required this.chatroomModel,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     late final DateTime fiveMinAgo =
         DateTime.now().subtract(const Duration(minutes: 5));
-    ChatroomModel chatroomModel = ChatroomModel.fromDocument(chatroomDocument);
+    
     UserModel userModel = UserModel();
     bool isActive = false;
     bool isOnlyActive = false;
 
-    late final username = chatroomDocument.id
+    late final username = chatroomModel.id!
         .replaceAll(chatterUsername!, "")
         .replaceAll("_", "");
     late final getThisUserInfo =

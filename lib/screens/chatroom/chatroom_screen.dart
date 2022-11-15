@@ -34,14 +34,18 @@ class MessagesScreen extends HookWidget {
     final future =
         useMemoized(() => DatabaseMethods().getChatRoomMessages(chatroomId));
 
-    Stream<QuerySnapshot>? messagesStream = useFuture(future).data;
+    final messageSnapshot = useStream(useFuture(future).data);
 
-    final messageSnapshot = useStream(messagesStream);
-    bool isWaiting = messageSnapshot.connectionState == ConnectionState.waiting;
-    
-    if (isWaiting) return const CircularProgressIndicator();
+    bool isWaiting =
+        messageSnapshot.connectionState == ConnectionState.waiting ||
+            !messageSnapshot.hasData;
 
-    if (!messageSnapshot.hasData) return const Text('Something went wrong');
+    if (isWaiting) {
+      return Scaffold(
+        appBar: buildAppBar(),
+        body: const Center(child:  CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: buildAppBar(),
@@ -150,7 +154,7 @@ class Message extends HookWidget {
 
     // QuerySnapshot? chatteData = useFuture(chatteFuture).data;
 
-    String? chattePfp = noImage   ;
+    String? chattePfp = noImage;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 4),
@@ -166,8 +170,7 @@ class Message extends HookWidget {
               margin: const EdgeInsets.only(right: kDefaultPadding / 2),
               child: CircleAvatar(
                 radius: 12,
-                backgroundImage:
-                    CachedNetworkImageProvider(chattePfp),
+                backgroundImage: CachedNetworkImageProvider(chattePfp),
               ),
             )
           ],
