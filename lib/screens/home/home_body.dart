@@ -21,8 +21,6 @@ class Body extends HookWidget {
 
     late final futureSnapshot = useFuture(future);
 
-    
-
     Stream<QuerySnapshot>? chatroomStream = futureSnapshot.data;
 
     Timer? timer;
@@ -38,6 +36,8 @@ class Body extends HookWidget {
     );
 
     final myListKey = GlobalKey<AnimatedListState>();
+
+    
 
     // This variable was created to filter chatroom stream data and toggle buttons
     ValueNotifier<bool> isActive = useState(false);
@@ -76,7 +76,7 @@ class Body extends HookWidget {
             builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
               // TODO: Make an error screen
               if (!snapshot.hasData) return const Text('Failed connection');
-             
+
               bool isWaiting =
                   snapshot.connectionState == ConnectionState.waiting;
               if (isWaiting) return const LinearProgressIndicator();

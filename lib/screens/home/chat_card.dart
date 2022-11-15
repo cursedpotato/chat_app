@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/chatroom_model.dart';
-import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/screens/chatroom/chatroom_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,7 @@ class ChatCard extends HookConsumerWidget {
     late final DateTime fiveMinAgo =
         DateTime.now().subtract(const Duration(minutes: 5));
     ChatroomModel chatroomModel = ChatroomModel.fromDocument(chatroomDocument);
-    UserModel userModel = ref.watch(userProvider).userModel;
+    UserModel userModel = UserModel();
     bool isActive = false;
     bool isOnlyActive = false;
 
@@ -38,9 +37,7 @@ class ChatCard extends HookConsumerWidget {
     bool isComplete = userFuture.hasData &&
         userFuture.connectionState == ConnectionState.done;
     if (isComplete) {
-      Future.delayed(Duration.zero, () {
-        ref.read(userProvider.notifier).userFromDocument(userFuture.requireData.docs[0]);
-      }     );
+      userModel = UserModel.fromDocument(userFuture.requireData.docs[0]);
       isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
       isOnlyActive = ((showOnlyActive && isActive) || (!showOnlyActive));
     }
