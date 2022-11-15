@@ -11,7 +11,7 @@ class UserModel {
   DateTime? lastSeenDate;
 
   String dateToString() {
-    final format = timeago.format(lastSeenDate!);
+    String? format = timeago.format(lastSeenDate!);
     return format;
   }
 

@@ -50,7 +50,6 @@ class ChatCard extends HookConsumerWidget {
           context,
           MaterialPageRoute(
             builder: (context) => MessagesScreen(
-              chatterName: chatterUsername!,
               chatteeName: userModel.username!,
               lastSeen: userModel.dateToString(),
             ),

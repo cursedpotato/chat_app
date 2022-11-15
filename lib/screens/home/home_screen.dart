@@ -25,11 +25,8 @@ class HomeScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     
-    
     ValueNotifier<int> selectedIndex = useState(0);
     
-    
-
     return Scaffold(
       body: screenList[selectedIndex.value],
       bottomNavigationBar: CurvedNavigationBar(
