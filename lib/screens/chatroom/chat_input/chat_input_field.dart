@@ -1,30 +1,25 @@
-
 import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
-import 'package:chat_app/services/storage_methods.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chat_app/services/messaging_methods.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:uuid/uuid.dart';
+
 
 import '../../../globals.dart';
-import '../../../services/database_methods.dart';
 import 'media_menu_widget.dart';
 
 final showMicProvider = StateProvider((ref) => true);
 final canAnimateProvider = StateProvider((ref) => false);
 
 class ChatInputField extends HookConsumerWidget {
-
   const ChatInputField({
     Key? key,
-
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String messageId = "";
     String? chatteeUsername = ref.watch(userProvider).userModel.username;
     // ------------------------------
     // Recording Widget related logic
@@ -36,47 +31,6 @@ class ChatInputField extends HookConsumerWidget {
     final minutes = duration.inMinutes.remainder(60);
     startRecording() async =>
         await ref.read(recController.notifier).state.record();
-
-    sendVoiceMessage() async {
-      if (messageId == "") {
-        messageId = const Uuid().v1();
-      }
-      final path = await ref.read(recController.notifier).state.stop();
-      if (path!.isEmpty) return ;
-      String audioUrl = await StorageMethods().uploadFileToStorage(path, messageId);
-     
-      String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
-      String chatRoomId =
-          getChatRoomIdByUsernames(chatteeUsername!, chatterUsername!);
-      var lastMessageTs = DateTime.now();
-
-      Map<String, dynamic> messageInfoMap = {
-        "message": '',
-        "imgUrl": chatterPfp,
-        "sendBy": chatterUsername,
-        "ts": lastMessageTs,
-        "resUrl": audioUrl,
-        "messageType": "audio",
-      };
-      //messageId
-      
-
-      DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap).then(
-        (value) {
-          Map<String, dynamic> lastMessageInfoMap = {
-            "lastMessage": 'Audio Message ',
-            "lastMessageSendTs": lastMessageTs,
-            "lastMessageSendBy": chatterUsername,
-          };
-
-          // We update the user activity
-          DatabaseMethods()
-              .updateLastMessageSend(chatRoomId, lastMessageInfoMap);
-          messageId = "";
-          
-        },
-      );
-    }
 
     // ---------------------------------------------
     // Custom Send Button Listener related functions
@@ -94,7 +48,6 @@ class ChatInputField extends HookConsumerWidget {
       startRecording().then((value) {
         ref.read(isRecording.notifier).state = true;
         ref.read(recordDuration.notifier).state = '$minutes:$seconds';
-        
       });
     }
 
@@ -106,7 +59,7 @@ class ChatInputField extends HookConsumerWidget {
       if (!ref.watch(isRecording)) return;
       if (!ref.watch(showControlRec)) {
         ref.read(isRecording.notifier).state = false;
-        sendVoiceMessage();
+        MessagingMethods().sendVoiceMessage(ref);
       }
     }
 
@@ -125,50 +78,7 @@ class ChatInputField extends HookConsumerWidget {
       }
     }
 
-    
     TextEditingController messageController = useTextEditingController();
-    void addMessage(bool sendClicked) {
-      if (messageController.text.isEmpty) return;
-
-      String message = messageController.text;
-      String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
-      String chatRoomId =
-          getChatRoomIdByUsernames(chatteeUsername!, chatterUsername!);
-      var lastMessageTs = DateTime.now();
-
-      Map<String, dynamic> messageInfoMap = {
-        "message": message,
-        "imgUrl": chatterPfp,
-        "sendBy": chatterUsername,
-        "ts": lastMessageTs,
-        "resUrl": '',
-        "messageType": "text",
-      };
-
-      //messageId
-      if (messageId == "") {
-        messageId = const Uuid().v1();
-      }
-
-      DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap).then(
-        (value) {
-          Map<String, dynamic> lastMessageInfoMap = {
-            "lastMessage": message,
-            "lastMessageSendTs": lastMessageTs,
-            "lastMessageSendBy": chatterUsername,
-          };
-
-          // We update the user activity
-          DatabaseMethods()
-              .updateLastMessageSend(chatRoomId, lastMessageInfoMap);
-
-          if (sendClicked) {
-            messageController.text = "";
-            messageId = "";
-          }
-        },
-      );
-    }
 
     // ------------------------------------------------------------
     // Fuction that displays different widgets as app state changes
@@ -192,7 +102,7 @@ class ChatInputField extends HookConsumerWidget {
         const MediaMenu(),
         ChatRoomTextField(messageController: messageController),
         CustomSendButton(
-          addMessage: addMessage,
+          textEditingController: messageController,
           fingerDown: fingerDown,
           fingerOff: fingerOff,
           updateLocation: updateLocation,
@@ -226,15 +136,14 @@ class ChatInputField extends HookConsumerWidget {
 class CustomSendButton extends HookConsumerWidget {
   const CustomSendButton({
     Key? key,
-    this.addMessage,
+    this.textEditingController,
     this.updateLocation,
     this.fingerDown,
     this.fingerOff,
   }) : super(key: key);
 
   // Parameters are optional because the app is not always in "send-message-state"
-
-  final void Function(bool)? addMessage;
+  final TextEditingController? textEditingController;
   final void Function(PointerEvent)? updateLocation;
   final void Function(PointerEvent)? fingerDown;
   final void Function(PointerEvent)? fingerOff;
@@ -243,6 +152,8 @@ class CustomSendButton extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final icon = useState(Icons.mic);
     final showMic = ref.watch(showMicProvider);
+
+    String? chatteeUsername = ref.watch(userProvider).userModel.username;
 
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 180));
@@ -275,7 +186,12 @@ class CustomSendButton extends HookConsumerWidget {
       child: SlideTransition(
         position: offsetAnimation,
         child: IconButton(
-          onPressed: showMic ? () {} : () => addMessage!(true),
+          onPressed: showMic
+              ? () {}
+              : () => MessagingMethods().addMessage(
+                    textEditingController!,
+                    chatteeUsername!,
+                  ),
           icon: Icon(icon.value),
         ),
       ),
