@@ -1,7 +1,6 @@
 import 'package:chat_app/globals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 enum ChatMessageType { text, audio, image, video }
 
 enum MessageStatus { notSent, notViewed, viewed }
@@ -56,7 +55,7 @@ class ChatMesssageModel {
   ChatMesssageModel.fromDocument(DocumentSnapshot document) {
     id = document.id;
     message = document.getString('message');
-    messageType = whatType(document['messageType']);
+    messageType = whatType(document.getString('messageType'));
     // TODO: Find a way to show a message status
     messageStatus = MessageStatus.viewed;
     isSender = chatterUsername == document['sendBy'];

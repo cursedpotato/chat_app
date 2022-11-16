@@ -15,14 +15,14 @@ class ChatroomModel {
     return format;
   }
 
-  ChatroomModel(
-      {
-        this.id,
-        this.lastMessage,
-      this.lastMessageSendBy,
-      this.lastMessageSendTs,
-      this.lastMessageSendDate,
-      this.users});
+  ChatroomModel({
+    this.id,
+    this.lastMessage,
+    this.lastMessageSendBy,
+    this.lastMessageSendTs,
+    this.lastMessageSendDate,
+    this.users,
+  });
 
   ChatroomModel.fromDocument(DocumentSnapshot document) {
     id = document.id;

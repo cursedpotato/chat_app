@@ -1,14 +1,14 @@
-import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/globals.dart';
+import 'package:chat_app/models/user_model.dart';
+import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/screens/chatroom/chat_input/chat_input_field.dart';
 
 import 'package:chat_app/services/database_methods.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../models/message_model.dart';
 
@@ -16,20 +16,17 @@ import 'message_types/audio_message_widget.dart';
 import 'message_types/text_message_widget.dart';
 import 'message_types/video_widget.dart';
 
-class MessagesScreen extends HookWidget {
-  final String chatteeName;
-  final String lastSeen;
-  const MessagesScreen({
-    Key? key,
-    required this.chatteeName,
-    required this.lastSeen,
-  }) : super(key: key);
+class MessagesScreen extends HookConsumerWidget {
+  const MessagesScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // we will use getChatRoomMessages method to get the messages stream, this stream will user
 
-    final chatroomId = getChatRoomIdByUsernames(chatteeName, chatterUsername!);
+    final usermodel = ref.watch(userProvider).userModel;
+
+    final chatroomId =
+        getChatRoomIdByUsernames(usermodel.username!, chatterUsername!);
 
     final future =
         useMemoized(() => DatabaseMethods().getChatRoomMessages(chatroomId));
@@ -42,13 +39,13 @@ class MessagesScreen extends HookWidget {
 
     if (isWaiting) {
       return Scaffold(
-        appBar: buildAppBar(),
-        body: const Center(child:  CircularProgressIndicator()),
+        appBar: buildAppBar(usermodel),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      appBar: buildAppBar(),
+      appBar: buildAppBar(usermodel),
       body: Column(
         children: [
           Expanded(
@@ -64,34 +61,27 @@ class MessagesScreen extends HookWidget {
                     messageSnapshot.requireData.docs[index],
                   );
                   return Message(
-                    chatteeName: chatteeName,
+                    chattePfp: usermodel.pfpUrl!,
                     message: model,
                   );
                 },
               ),
             ),
           ),
-          ChatInputField(chatteeName: chatteeName),
+          const ChatInputField(),
         ],
       ),
     );
   }
 
-  AppBar buildAppBar() {
-    final chatteFuture =
-        useMemoized(() => DatabaseMethods().getUserInfo(chatteeName));
-
-    QuerySnapshot? chatteData = useFuture(chatteFuture).data;
-
-    String? chattePfp = chatteData?.docs[0]["imgUrl"];
-
+  AppBar buildAppBar(UserModel userModel) {
     return AppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ClipOval(
             child: CachedNetworkImage(
-              imageUrl: chattePfp ?? noImage,
+              imageUrl: userModel.pfpUrl ?? noImage,
               width: 40,
               height: 40,
               fit: BoxFit.cover,
@@ -102,12 +92,12 @@ class MessagesScreen extends HookWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                chatteeName,
+                userModel.name!,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 16),
               ),
               Text(
-                "Active $lastSeen",
+                "Active ${userModel.dateToString()}",
                 overflow: TextOverflow.visible,
                 style: const TextStyle(fontSize: 12),
               ),
@@ -130,11 +120,11 @@ class MessagesScreen extends HookWidget {
 
 class Message extends HookWidget {
   final ChatMesssageModel message;
-  final String chatteeName;
+  final String chattePfp;
   const Message({
     Key? key,
     required this.message,
-    required this.chatteeName,
+    required this.chattePfp,
   }) : super(key: key);
 
   @override
@@ -148,13 +138,6 @@ class Message extends HookWidget {
       Widget type = map[message.messageType] ?? const SizedBox();
       return type;
     }
-
-    // final chatteFuture =
-    //     useMemoized(() => DatabaseMethods().getUserInfo(chatteeName));
-
-    // QuerySnapshot? chatteData = useFuture(chatteFuture).data;
-
-    String? chattePfp = noImage;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 4),
@@ -191,17 +174,16 @@ class MessageStatusDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color? dotColor(MessageStatus status) {
-      switch (status) {
-        case MessageStatus.notSent:
-          return kErrorColor;
-        case MessageStatus.notViewed:
-          return Theme.of(context).textTheme.bodyText1?.color?.withOpacity(0.1);
-        case MessageStatus.viewed:
-          return kPrimaryColor;
-        default:
-          return Colors.transparent;
-      }
+    Color dotColor(MessageStatus status) {
+      final map = {
+        MessageStatus.notSent: kErrorColor,
+        MessageStatus.notViewed:
+            Theme.of(context).textTheme.bodyText1?.color?.withOpacity(0.1),
+        MessageStatus.viewed: kPrimaryColor,
+      };
+
+      final result = map[status] ?? Colors.transparent;
+      return result;
     }
 
     return Container(
