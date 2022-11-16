@@ -10,15 +10,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+import '../../models/chatroom_model.dart';
 import '../signin/signin_screen.dart';
-
 
 class Body extends HookWidget {
   const Body({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var future = useMemoized(() => DatabaseMethods().getChatRooms());
+    late final future = useMemoized(() => DatabaseMethods().getChatRooms());
 
     Stream<QuerySnapshot>? chatroomStream = useFuture(future).data;
 
@@ -26,8 +26,10 @@ class Body extends HookWidget {
 
     useEffect(
       () {
+
+        // TODO: find a better way to update user activity
         // Put this within a function that repeats this code every minute
-        timer = Timer.periodic(const Duration(seconds: 60), (_) {
+        timer = Timer.periodic(const Duration(seconds: 30), (_) {
           DatabaseMethods().updateUserTs();
         });
         return () => timer?.cancel();
@@ -35,6 +37,8 @@ class Body extends HookWidget {
     );
 
     final myListKey = GlobalKey<AnimatedListState>();
+
+    
 
     // This variable was created to filter chatroom stream data and toggle buttons
     ValueNotifier<bool> isActive = useState(false);
@@ -70,31 +74,17 @@ class Body extends HookWidget {
           ),
           StreamBuilder(
             stream: chatroomStream,
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (!snapshot.hasData) {
-                return const Text('Failed connection');
-              }
+            builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
+              // TODO: Make an error screen
+              if (!snapshot.hasData) return const Text('Failed connection');
 
               bool isWaiting =
                   snapshot.connectionState == ConnectionState.waiting;
-              if (isWaiting) {
-                return const LinearProgressIndicator();
-              }
+              if (isWaiting) return const LinearProgressIndicator();
 
-              
-              if (isActive.value) {
-                List<DocumentSnapshot> documentList = snapshot.data!.docs;
-                return animatedChatroomList(myListKey, documentList, true);
-              }
-
-              if (!isActive.value) {
-                List<DocumentSnapshot> documentList = snapshot.data!.docs;
-                return animatedChatroomList(myListKey, documentList, false);
-              }
-
-              // TODO: Make an error screen
-              return const Text("Something went wrong");
+              List<DocumentSnapshot> documentList = snapshot.requireData.docs;
+              return animatedChatroomList(
+                  myListKey, documentList, isActive.value);
             },
           ),
         ],
@@ -115,12 +105,12 @@ class Body extends HookWidget {
         initialItemCount: documentList.length,
         physics: const BouncingScrollPhysics(),
         itemBuilder: (BuildContext context, int index, animation) {
-          DocumentSnapshot documentSnapshot = documentList[index];
+          ChatroomModel chatroomModel = ChatroomModel.fromDocument(documentList[index]);
           return SlideTransition(
             position: animation.drive(offset),
             child: ChatCard(
               showOnlyActive: isActive,
-              chatroomDocument: documentSnapshot,
+              chatroomModel: chatroomModel,
             ),
           );
         },
@@ -139,7 +129,6 @@ class Body extends HookWidget {
           TypewriterAnimatedText("Explore"),
           TypewriterAnimatedText("Talk with people you care about"),
           WavyAnimatedText("Chat!")
-
         ],
         totalRepeatCount: 1,
       ),
@@ -157,7 +146,7 @@ class Body extends HookWidget {
           },
           child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: const Icon(Icons.exit_to_app)),
+              child: const Icon(Icons.exit_to_app),),
         )
       ],
     );

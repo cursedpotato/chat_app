@@ -1,4 +1,5 @@
 
+import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
 import 'package:chat_app/services/storage_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,15 +16,16 @@ final showMicProvider = StateProvider((ref) => true);
 final canAnimateProvider = StateProvider((ref) => false);
 
 class ChatInputField extends HookConsumerWidget {
-  final String chatteeName;
+
   const ChatInputField({
     Key? key,
-    required this.chatteeName,
+
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String messageId = "";
+    String? chatteeUsername = ref.watch(userProvider).userModel.username;
     // ------------------------------
     // Recording Widget related logic
     // ------------------------------
@@ -45,7 +47,7 @@ class ChatInputField extends HookConsumerWidget {
      
       String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
       String chatRoomId =
-          getChatRoomIdByUsernames(chatteeName, chatterUsername!);
+          getChatRoomIdByUsernames(chatteeUsername!, chatterUsername!);
       var lastMessageTs = DateTime.now();
 
       Map<String, dynamic> messageInfoMap = {
@@ -131,7 +133,7 @@ class ChatInputField extends HookConsumerWidget {
       String message = messageController.text;
       String? chatterPfp = FirebaseAuth.instance.currentUser?.photoURL;
       String chatRoomId =
-          getChatRoomIdByUsernames(chatteeName, chatterUsername!);
+          getChatRoomIdByUsernames(chatteeUsername!, chatterUsername!);
       var lastMessageTs = DateTime.now();
 
       Map<String, dynamic> messageInfoMap = {

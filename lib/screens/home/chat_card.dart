@@ -1,103 +1,61 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/chatroom_model.dart';
+import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/screens/chatroom/chatroom_screen.dart';
-import 'package:chat_app/screens/home/home_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import '../../globals.dart';
 import '../../models/user_model.dart';
 import '../../services/database_methods.dart';
 
 class ChatCard extends HookConsumerWidget {
   final bool showOnlyActive;
-  final DocumentSnapshot chatroomDocument;
+  final ChatroomModel chatroomModel;
   const ChatCard({
     Key? key,
     required this.showOnlyActive,
-    required this.chatroomDocument,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userReference = ref.read(userModelProvider.notifier);
-    /* This variable is used to exclude the chatter name from a document id 
-    (the chat document id is formed as a combination between the chatte and chatter username) 
-    to get the chatte name and fetch the chatte info from a method
-    */
-    Future<QuerySnapshot> getThisUserInfo() async {
-      final username = chatroomDocument.id
-          .replaceAll(chatterUsername!, "")
-          .replaceAll("_", "");
-      return await DatabaseMethods().getUserInfo(username);
-    }
-
-    final userdata = useFuture(getThisUserInfo());
-
-    final isConnectionDone = userdata.connectionState == ConnectionState.done;
-    if (userdata.hasData && isConnectionDone) {
-      UserModel userModel = UserModel.fromDocument(userdata.data!.docs[0]);
-      userReference.state = userModel;
-    }
-
-    return FutureBuilder(
-      future: getThisUserInfo(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        bool hasData = snapshot.hasData;
-        if (hasData) {
-          UserModel userModel = UserModel.fromDocument(snapshot.data!.docs[0]);
-          ChatroomModel chatroomModel =
-              ChatroomModel.fromDocument(chatroomDocument);
-          return ListTile(
-            userModel: userModel,
-            chatroomModel: chatroomModel,
-            showOnlyActive: showOnlyActive,
-          );
-        }
-
-        return const LinearProgressIndicator();
-      },
-    );
-  }
-}
-
-class ListTile extends ConsumerWidget {
-  const ListTile({
-    Key? key,
-    required this.userModel,
     required this.chatroomModel,
-    required this.showOnlyActive,
   }) : super(key: key);
-  final UserModel userModel;
-  final ChatroomModel chatroomModel;
-  final bool showOnlyActive;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    DateTime fiveMinAgo = DateTime.now().subtract(const Duration(minutes: 5));
-    String lastMessage = timeago.format(chatroomModel.lastMessageSendDate!);
-    bool isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
-    bool notActive = !showOnlyActive;
-    bool isOnlyActive = ((showOnlyActive && isActive) || notActive);
+    late final DateTime fiveMinAgo =
+        DateTime.now().subtract(const Duration(minutes: 5));
 
-    if (!isOnlyActive) {
-      return const SizedBox();
+    UserModel userModel = UserModel();
+    bool isActive = false;
+    bool isOnlyActive = false;
+
+    late final username =
+        chatroomModel.id!.replaceAll(chatterUsername!, "").replaceAll("_", "");
+    late final getThisUserInfo =
+        useMemoized(() => DatabaseMethods().getUserInfo(username));
+    late final userFuture = useFuture(getThisUserInfo);
+
+    bool isComplete = userFuture.hasData &&
+        userFuture.connectionState == ConnectionState.done;
+    if (isComplete) {
+      userModel = UserModel.fromDocument(userFuture.requireData.docs[0]);
+      isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
+      isOnlyActive = ((showOnlyActive && isActive) || (!showOnlyActive));
     }
+
+    if (isOnlyActive == false || isComplete == false) return const SizedBox();
 
     return GestureDetector(
       onTap: () {
+        ref.read(userProvider.notifier).copyUserModel(userModel);
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const MessagesScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const MessagesScreen()),
         );
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(
-            horizontal: kDefaultPadding, vertical: kDefaultPadding * 0.75),
+          horizontal: kDefaultPadding,
+          vertical: kDefaultPadding * 0.75,
+        ),
         child: Row(
           children: [
             Stack(
@@ -137,7 +95,7 @@ class ListTile extends ConsumerWidget {
             ),
             Opacity(
               opacity: 0.64,
-              child: Text(lastMessage),
+              child: Text(chatroomModel.dateToString()),
             )
           ],
         ),

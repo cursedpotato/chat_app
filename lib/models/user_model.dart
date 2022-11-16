@@ -1,5 +1,6 @@
 import 'package:chat_app/globals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class UserModel {
   String? pfpUrl;
@@ -8,6 +9,11 @@ class UserModel {
   String? username;
   Timestamp? userActivityTs;
   DateTime? lastSeenDate;
+
+  String dateToString() {
+    String? format = timeago.format(lastSeenDate!);
+    return format;
+  }
 
   UserModel({
     this.pfpUrl,
@@ -30,3 +36,4 @@ class UserModel {
   }
 
 }
+
