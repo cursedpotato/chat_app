@@ -26,12 +26,17 @@ class AudioMessage extends HookWidget {
       }
     }
 
-    useEffect(
-      () {
-        preparePlayer();
-        return;
-      },
-    );
+    // Release the player's resources when not in use. We use "stop" so that
+    // if the app resumes later, it will still remember what position to
+    // resume from.
+    final appState = useAppLifecycleState();
+    if (appState == AppLifecycleState.paused) player.stop();
+    if (appState == AppLifecycleState.detached ||
+        appState == AppLifecycleState.inactive) player.dispose();
+    useEffect(() {
+      preparePlayer();
+      return () => player.stop();
+    }, [appState == AppLifecycleState.resumed]);
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.60,
