@@ -12,57 +12,101 @@ class AudioMessage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPlaying = useState(false);
     final player = AudioPlayer();
 
-    preparePlayer() async => await player.setUrl(message.resUrl!);
+    preparePlayer() async {
+      player.playbackEventStream.listen((event) {},
+          onError: (Object e, StackTrace stackTrace) {
+        print('A stream error occurred: $e');
+      });
+      try {
+        await player.setUrl(message.resUrl!);
+      } catch (e) {
+        print("Error loading audio source: $e");
+      }
+    }
 
     useEffect(
       () {
         preparePlayer();
-        return () {};
+        return;
       },
     );
 
-    playPlayer() async {
-      await player.play();
-    }
-    pausePlayer() async {
-      await player.pause();
-    }
-
     return Container(
-      width: MediaQuery.of(context).size.width * 0.55,
-      margin: const EdgeInsets.only(top: kDefaultPadding),
+      width: MediaQuery.of(context).size.width * 0.60,
       padding: const EdgeInsets.symmetric(
         horizontal: kDefaultPadding * 0.75,
-        vertical: kDefaultPadding / 2.5,
+        vertical: kDefaultPadding * 0.4,
       ),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(5),
           color: kPrimaryColor.withOpacity(message.isSender! ? 1 : 0.1)),
       child: Row(
         children: [
-          IconButton(
-            onPressed: () {
-              playPlayer();
-              if (isPlaying.value) pausePlayer();
-              isPlaying.value = !isPlaying.value;
-            },
-            icon: Icon(
-              isPlaying.value ? Icons.pause : Icons.play_arrow,
-              color: message.isSender! ? Colors.white : kPrimaryColor,
-            ),
-          ),
-          Text(
-            "0:37",
-            style: TextStyle(
-              fontSize: 12,
-              color: message.isSender! ? Colors.white : null,
-            ),
-          )
+          PlayButton(audioPlayer: player),
+          Counter(audioPlayer: player),
         ],
       ),
     );
+  }
+}
+
+class PlayButton extends HookWidget {
+  const PlayButton({Key? key, required this.audioPlayer}) : super(key: key);
+
+  final AudioPlayer audioPlayer;
+
+  @override
+  Widget build(BuildContext context) {
+    final playerIcon = useState(Icons.play_arrow);
+
+    final stateSnapshot = useStream(audioPlayer.playerStateStream);
+
+    final processingState = stateSnapshot.data?.processingState;
+
+    final isLoading = processingState == ProcessingState.buffering ||
+        processingState == ProcessingState.loading ||
+        !stateSnapshot.hasData;
+    final isCompleted = processingState == ProcessingState.completed;
+
+    if (isLoading) {
+      return IconButton(onPressed: () {}, icon: Icon(playerIcon.value));
+    }
+    // To listen to the audio again when finished
+    if (isCompleted) {
+      audioPlayer.seek(Duration.zero);
+      audioPlayer.pause();
+    }
+
+    final isPlaying = stateSnapshot.requireData.playing;
+    return IconButton(
+      icon: Icon(
+        isPlaying
+            ? playerIcon.value = Icons.pause
+            : playerIcon.value = Icons.play_arrow,
+      ),
+      onPressed: () => isPlaying ? audioPlayer.pause() : audioPlayer.play(),
+    );
+  }
+}
+
+class Counter extends HookWidget {
+  const Counter({Key? key, required this.audioPlayer}) : super(key: key);
+  final AudioPlayer audioPlayer;
+  @override
+  Widget build(BuildContext context) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+
+    final counterSnapshot = useStream(audioPlayer.durationStream);
+
+    String seconds =
+        twoDigits(counterSnapshot.requireData?.inSeconds.remainder(60) ?? 0);
+    String minutes =
+        counterSnapshot.data?.inMinutes.remainder(60).toString() ?? '0';
+
+    ValueNotifier<String> time = useState('$minutes:$seconds');
+
+    return Text(time.value);
   }
 }

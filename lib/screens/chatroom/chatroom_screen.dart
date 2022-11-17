@@ -60,10 +60,7 @@ class MessagesScreen extends HookConsumerWidget {
                   ChatMesssageModel model = ChatMesssageModel.fromDocument(
                     messageSnapshot.requireData.docs[index],
                   );
-                  return Message(
-                    chattePfp: usermodel.pfpUrl!,
-                    message: model,
-                  );
+                  return Message(message: model);
                 },
               ),
             ),
@@ -120,11 +117,9 @@ class MessagesScreen extends HookConsumerWidget {
 
 class Message extends HookWidget {
   final ChatMesssageModel message;
-  final String chattePfp;
   const Message({
     Key? key,
     required this.message,
-    required this.chattePfp,
   }) : super(key: key);
 
   @override
@@ -153,7 +148,7 @@ class Message extends HookWidget {
               margin: const EdgeInsets.only(right: kDefaultPadding / 2),
               child: CircleAvatar(
                 radius: 12,
-                backgroundImage: CachedNetworkImageProvider(chattePfp),
+                backgroundImage: CachedNetworkImageProvider(message.pfpUrl!),
               ),
             )
           ],

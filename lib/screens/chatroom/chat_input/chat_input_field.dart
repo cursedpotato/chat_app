@@ -20,11 +20,9 @@ class ChatInputField extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String? chatteeUsername = ref.watch(userProvider).userModel.username;
     // ------------------------------
     // Recording Widget related logic
     // ------------------------------
-
     const duration = Duration.zero;
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     String seconds = twoDigits(duration.inSeconds.remainder(60));
