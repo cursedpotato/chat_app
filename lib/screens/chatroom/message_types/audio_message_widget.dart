@@ -11,7 +11,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../../globals.dart';
 
-
+import 'dart:io';
 
 class AudioMessage extends HookWidget {
   final ChatMesssageModel message;
@@ -24,13 +24,17 @@ class AudioMessage extends HookWidget {
     preparePlayer() async {
       try {
         final path = await getTemporaryDirectory();
-        final fullPath = '${path.path}/${message.id}'; 
-        final response = await Dio().download(message.resUrl!, fullPath);
-        if (response.statusMessage == "OK") {
-          await player.setFilePath(fullPath);
+        final fullPath = '${path.path}/${message.id}';
+        bool hasFile = (await File(fullPath).exists());
+        
+        if (!hasFile) {
+          debugPrint("Downloading audio file");
+          final response = await Dio().download(message.resUrl!, fullPath);
+          if (response.statusMessage == "OK") {
+            await player.setFilePath(fullPath);
+          }
         }
-
-        // await player.setUrl(message.resUrl!);
+        await player.setFilePath(fullPath);
       } catch (e) {
         debugPrint("Error loading audio source: $e");
       }
@@ -222,7 +226,7 @@ class Counter extends HookWidget {
 
     final positionSnapshot = useStream(audioPlayer.positionStream);
 
-    if (!durationSnapshot.hasData) return const SizedBox();
+    if (!durationSnapshot.hasData) return const Text('0:00');
 
     timeFormat(Duration duration) {
       String twoDigits(int n) => n.toString().padLeft(2, '0');
