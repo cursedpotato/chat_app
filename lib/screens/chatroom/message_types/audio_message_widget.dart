@@ -21,12 +21,14 @@ class AudioMessage extends HookWidget {
   Widget build(BuildContext context) {
     final player = AudioPlayer();
 
+    Stream<WaveformProgress> progressStream;
+
     preparePlayer() async {
       try {
         final path = await getTemporaryDirectory();
         final fullPath = '${path.path}/${message.id}';
         bool hasFile = (await File(fullPath).exists());
-        
+
         if (!hasFile) {
           debugPrint("Downloading audio file");
           final response = await Dio().download(message.resUrl!, fullPath);
@@ -34,6 +36,10 @@ class AudioMessage extends HookWidget {
             await player.setFilePath(fullPath);
           }
         }
+        progressStream = JustWaveform.extract(
+          audioInFile: File(fullPath),
+          waveOutFile: File(fullPath),
+        );
         await player.setFilePath(fullPath);
       } catch (e) {
         debugPrint("Error loading audio source: $e");
