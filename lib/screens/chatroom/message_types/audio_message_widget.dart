@@ -4,11 +4,11 @@ import 'package:chat_app/models/message_model.dart';
 import 'package:dio/dio.dart';
 
 import 'package:flutter/material.dart';
+
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_waveform/just_waveform.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
 import '../../../globals.dart';
 
@@ -21,8 +21,6 @@ class AudioMessage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final player = AudioPlayer();
-
-    final progressStream = useState(const Stream<WaveformProgress>.empty());
 
     preparePlayer() async {
       try {
@@ -38,13 +36,7 @@ class AudioMessage extends HookWidget {
           }
         }
         await player.setFilePath(fullPath);
-        //
-        final waveFile =
-            File(p.join((await getTemporaryDirectory()).path, 'waveform.wave'));
-        progressStream.value = JustWaveform.extract(
-          audioInFile: File(fullPath),
-          waveOutFile: waveFile,
-        );
+
       } catch (e) {
         debugPrint("Error loading audio source: $e");
       }
@@ -74,12 +66,14 @@ class AudioMessage extends HookWidget {
       child: Row(
         children: [
           PlayButton(audioPlayer: player),
+          
           Counter(audioPlayer: player),
         ],
       ),
     );
   }
 }
+
 
 class PlayButton extends HookWidget {
   const PlayButton({Key? key, required this.audioPlayer}) : super(key: key);
