@@ -8,6 +8,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_waveform/just_waveform.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 import '../../../globals.dart';
 
@@ -21,7 +22,7 @@ class AudioMessage extends HookWidget {
   Widget build(BuildContext context) {
     final player = AudioPlayer();
 
-    Stream<WaveformProgress> progressStream;
+    final progressStream = useState(const Stream<WaveformProgress>.empty());
 
     preparePlayer() async {
       try {
@@ -36,11 +37,14 @@ class AudioMessage extends HookWidget {
             await player.setFilePath(fullPath);
           }
         }
-        progressStream = JustWaveform.extract(
-          audioInFile: File(fullPath),
-          waveOutFile: File(fullPath),
-        );
         await player.setFilePath(fullPath);
+        //
+        final waveFile =
+            File(p.join((await getTemporaryDirectory()).path, 'waveform.wave'));
+        progressStream.value = JustWaveform.extract(
+          audioInFile: File(fullPath),
+          waveOutFile: waveFile,
+        );
       } catch (e) {
         debugPrint("Error loading audio source: $e");
       }
