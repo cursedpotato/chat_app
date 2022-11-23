@@ -114,6 +114,14 @@ class PlayButton extends HookWidget {
   }
 }
 
+class SeekBar extends StatelessWidget {
+  const SeekBar({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
 class AudioWaveformWidget extends StatelessWidget {
   final Color waveColor;
   final double scale;
