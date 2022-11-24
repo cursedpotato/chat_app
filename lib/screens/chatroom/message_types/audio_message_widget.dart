@@ -36,7 +36,6 @@ class AudioMessage extends HookWidget {
           }
         }
         await player.setFilePath(fullPath);
-
       } catch (e) {
         debugPrint("Error loading audio source: $e");
       }
@@ -66,14 +65,13 @@ class AudioMessage extends HookWidget {
       child: Row(
         children: [
           PlayButton(audioPlayer: player),
-          
+          SeekBar(audioPlayer: player),
           Counter(audioPlayer: player),
         ],
       ),
     );
   }
 }
-
 
 class PlayButton extends HookWidget {
   const PlayButton({Key? key, required this.audioPlayer}) : super(key: key);
@@ -114,14 +112,40 @@ class PlayButton extends HookWidget {
   }
 }
 
-class SeekBar extends StatelessWidget {
-  const SeekBar({Key? key}) : super(key: key);
+class SeekBar extends HookWidget {
+  const SeekBar({Key? key, required this.audioPlayer}) : super(key: key);
 
+  final AudioPlayer audioPlayer;
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final width = MediaQuery.of(context).size.width * 0.33;
+
+    final duration = useStream(audioPlayer.durationStream);
+    final position = useStream(audioPlayer.positionStream);
+
+    print(position.data?.inSeconds);
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          height: 1,
+          width: width,
+          color: Colors.black,
+        ),
+        Transform.translate(
+          offset: Offset(-width / 2, 0.0),
+          child: Container(
+            height: 10,
+            width: 10,
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(50)),
+          ),
+        )
+      ],
+    );
   }
 }
+
 class AudioWaveformWidget extends StatelessWidget {
   final Color waveColor;
   final double scale;

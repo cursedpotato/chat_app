@@ -24,10 +24,12 @@ class Body extends HookWidget {
 
     Timer? timer;
 
+    useFocusNode().unfocus();
+
     useEffect(
       () {
-
         // TODO: find a better way to update user activity
+
         // Put this within a function that repeats this code every minute
         timer = Timer.periodic(const Duration(seconds: 30), (_) {
           DatabaseMethods().updateUserTs();
