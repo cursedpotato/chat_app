@@ -1,3 +1,4 @@
+
 import 'dart:math';
 
 import 'package:chat_app/models/message_model.dart';
@@ -120,10 +121,17 @@ class SeekBar extends HookWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width * 0.33;
 
-    final duration = useStream(audioPlayer.durationStream);
-    final position = useStream(audioPlayer.positionStream);
+    final state  = useStream(audioPlayer.playerStateStream);
+    final duration = useStream(audioPlayer.durationStream).data?.inSeconds;
+    final position = useStream(audioPlayer.positionStream).data?.inSeconds;
 
-    print(position.data?.inSeconds);
+    if(!state.hasData) return const SizedBox();
+
+    double progress = position == 0 ? 0 : width/(duration! - position!);
+
+    print('This is the progress $progress');
+
+    
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -133,7 +141,7 @@ class SeekBar extends HookWidget {
           color: Colors.black,
         ),
         Transform.translate(
-          offset: Offset(-width / 2, 0.0),
+          offset: Offset(-width / 2  + progress, 0.0),
           child: Container(
             height: 10,
             width: 10,
