@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:chat_app/models/message_model.dart';
@@ -48,7 +47,9 @@ class AudioMessage extends HookWidget {
     final appState = useAppLifecycleState();
     if (appState == AppLifecycleState.paused) player.stop();
     if (appState == AppLifecycleState.detached ||
-        appState == AppLifecycleState.inactive) player.dispose();
+        appState == AppLifecycleState.inactive) {
+      player.dispose();
+    }
     useEffect(() {
       preparePlayer();
       return () => player.stop();
@@ -121,17 +122,20 @@ class SeekBar extends HookWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width * 0.33;
 
-    final state  = useStream(audioPlayer.playerStateStream);
-    final duration = useStream(audioPlayer.durationStream).data?.inSeconds;
-    final position = useStream(audioPlayer.positionStream).data?.inSeconds;
+    final state = useStream(audioPlayer.playerStateStream);
+    final duration = useStream(audioPlayer.durationStream).data?.inMilliseconds;
+    final position = useStream(audioPlayer.positionStream).data?.inMilliseconds;
 
-    if(!state.hasData) return const SizedBox();
+    if (!state.hasData) return const SizedBox();
 
-    double progress = position == 0 ? 0 : width/(duration! - position!);
+    bool isNull = position == null || duration == null;
+    // We use the ternary operator because the position sometimes can be greater
+    // than the duration and that leads to divisions between zero
+    double percentage = isNull
+        ? 0.0
+        : ((position > duration ? duration : position * 100.0) / duration) /
+            100;
 
-    print('This is the progress $progress');
-
-    
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -141,7 +145,7 @@ class SeekBar extends HookWidget {
           color: Colors.black,
         ),
         Transform.translate(
-          offset: Offset(-width / 2  + progress, 0.0),
+          offset: Offset(-width / 2 + width * percentage, 0.0),
           child: Container(
             height: 10,
             width: 10,
