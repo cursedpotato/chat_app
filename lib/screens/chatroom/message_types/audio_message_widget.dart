@@ -152,7 +152,7 @@ class SeekBar extends HookWidget {
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(50)),
           ),
-        )
+        ),
       ],
     );
   }
