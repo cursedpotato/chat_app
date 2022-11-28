@@ -56,7 +56,7 @@ class AudioMessage extends HookWidget {
     }, [appState == AppLifecycleState.resumed]);
 
     return Container(
-      width: MediaQuery.of(context).size.width * 0.60,
+      width: MediaQuery.of(context).size.width * 0.66,
       padding: const EdgeInsets.symmetric(
         horizontal: kDefaultPadding * 0.75,
         vertical: kDefaultPadding * 0.4,
@@ -68,7 +68,8 @@ class AudioMessage extends HookWidget {
         children: [
           PlayButton(audioPlayer: player),
           SeekBar(audioPlayer: player),
-          Counter(audioPlayer: player),
+          SpeedButton(audioPlayer: player)
+          // Counter(audioPlayer: player),
         ],
       ),
     );
@@ -289,5 +290,31 @@ class Counter extends HookWidget {
     if (isPlaying) time.value = timeFormat(positionSnapshot.data!);
 
     return Text('${time.value["minutes"]}:${time.value["seconds"]}');
+  }
+}
+
+class SpeedButton extends HookWidget {
+  const SpeedButton({
+    Key? key,
+    required this.audioPlayer,
+  }) : super(key: key);
+
+  final AudioPlayer audioPlayer;
+  @override
+  Widget build(BuildContext context) {
+    final speedSnapshot = useStream(audioPlayer.speedStream);
+
+    if (!speedSnapshot.hasData) return const Text("1.0");
+
+    final speedValue = speedSnapshot.data;
+
+    return FloatingActionButton.small(
+      onPressed: () {
+        if (speedValue == 1.0) audioPlayer.setSpeed(1.25);
+        if (speedValue == 1.25) audioPlayer.setSpeed(1.50);
+        if (speedValue == 1.5) audioPlayer.setSpeed(1.0);
+      },
+      child: Text('$speedValue'),
+    );
   }
 }
