@@ -55,7 +55,16 @@ class MediaMenu extends HookWidget {
                   child: SlideTransition(
                     position: offsetAnimation,
                     child: IconButton(
-                        onPressed: () async {},
+                        onPressed: () async {
+                          FilePickerResult? result =
+                              await FilePicker.platform.pickFiles();
+
+                          if (result != null) {
+                            File file = File(result.files.single.path!);
+                          } else {
+                            // User canceled the picker
+                          }
+                        },
                         icon: const Icon(Icons.attach_file)),
                   ),
                 ),
@@ -64,11 +73,13 @@ class MediaMenu extends HookWidget {
                     position: offsetAnimation,
                     child: IconButton(
                         onPressed: () async {
-                          FilePickerResult? result =
-                              await FilePicker.platform.pickFiles();
+                          FilePickerResult? result = await FilePicker.platform
+                              .pickFiles(allowMultiple: true);
 
                           if (result != null) {
-                            File file = File(result.files.single.path!);
+                            List<File> files = result.paths
+                                .map((path) => File(path!))
+                                .toList();
                           } else {
                             // User canceled the picker
                           }
