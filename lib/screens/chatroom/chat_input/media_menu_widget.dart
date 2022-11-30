@@ -57,7 +57,9 @@ class MediaMenu extends HookWidget {
                     child: IconButton(
                         onPressed: () async {
                           FilePickerResult? result =
-                              await FilePicker.platform.pickFiles();
+                              await FilePicker.platform.pickFiles(
+                                type: FileType.image
+                              );
 
                           if (result != null) {
                             File file = File(result.files.single.path!);
