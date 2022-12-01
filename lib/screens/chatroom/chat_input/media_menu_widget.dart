@@ -4,6 +4,8 @@ import 'package:animate_icons/animate_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 
 class MediaMenu extends HookWidget {
   const MediaMenu({Key? key}) : super(key: key);
@@ -25,6 +27,7 @@ class MediaMenu extends HookWidget {
     if (!showMenu.value) animationController.reverse();
 
     final controller = AnimateIconController();
+    final isMounted = useIsMounted()();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -57,10 +60,7 @@ class MediaMenu extends HookWidget {
                     child: IconButton(
                         onPressed: () async {
                           FilePickerResult? result =
-                              await FilePicker.platform.pickFiles(
-                                type: FileType.image
-                              );
-
+                              await FilePicker.platform.pickFiles();
                           if (result != null) {
                             File file = File(result.files.single.path!);
                           } else {
@@ -75,16 +75,17 @@ class MediaMenu extends HookWidget {
                     position: offsetAnimation,
                     child: IconButton(
                         onPressed: () async {
+                          final navigator = Navigator.of(context);
                           FilePickerResult? result = await FilePicker.platform
-                              .pickFiles(allowMultiple: true);
+                              .pickFiles(
+                                  allowMultiple: true, type: FileType.media);
 
-                          if (result != null) {
-                            List<File> files = result.paths
-                                .map((path) => File(path!))
-                                .toList();
-                          } else {
-                            // User canceled the picker
-                          }
+                          if (result == null) return;
+                          List<File> files =
+                              result.paths.map((path) => File(path!)).toList();
+                          navigator.push(MaterialPageRoute(
+                            builder: (_) => ImagePreview(imageFileList: files),
+                          ));
                         },
                         icon: const Icon(Icons.filter_outlined)),
                   ),
@@ -93,6 +94,33 @@ class MediaMenu extends HookWidget {
             ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class ImagePreview extends StatelessWidget {
+  const ImagePreview({Key? key, required this.imageFileList}) : super(key: key);
+
+  final List<File> imageFileList;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        PhotoViewGallery.builder(
+          itemCount: imageFileList.length,
+          builder: (_, index) {
+            return PhotoViewGalleryPageOptions(
+              initialScale: PhotoViewComputedScale.contained * 0.8,
+              minScale: PhotoViewComputedScale.contained * 0.8,
+              maxScale: PhotoViewComputedScale.covered * 1.1,
+              imageProvider: FileImage(imageFileList[index]),
+            );
+          },
+          loadingBuilder: (_, __) => const Center(
+            child: CircularProgressIndicator(),
+          ),
+        )
       ],
     );
   }
