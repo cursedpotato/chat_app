@@ -14,6 +14,7 @@ import '../../../globals.dart';
 
 import 'dart:io';
 
+
 class AudioMessage extends HookWidget {
   final ChatMesssageModel message;
   const AudioMessage({Key? key, required this.message}) : super(key: key);
@@ -68,7 +69,7 @@ class AudioMessage extends HookWidget {
         children: [
           PlayButton(audioPlayer: player),
           SeekBar(audioPlayer: player),
-          SpeedButton(audioPlayer: player)
+          SpeedButton(audioPlayer: player),
           // Counter(audioPlayer: player),
         ],
       ),
@@ -308,13 +309,17 @@ class SpeedButton extends HookWidget {
 
     final speedValue = speedSnapshot.data;
 
-    return FloatingActionButton.small(
-      onPressed: () {
-        if (speedValue == 1.0) audioPlayer.setSpeed(1.25);
-        if (speedValue == 1.25) audioPlayer.setSpeed(1.50);
-        if (speedValue == 1.5) audioPlayer.setSpeed(1.0);
-      },
-      child: Text('$speedValue'),
+    return SizedBox(
+      height: 20,
+      width: 20,
+      child: ElevatedButton(
+        onPressed: () {
+          if (speedValue == 1.0) audioPlayer.setSpeed(1.25);
+          if (speedValue == 1.25) audioPlayer.setSpeed(1.50);
+          if (speedValue == 1.5) audioPlayer.setSpeed(1.0);
+        },
+        child: Text('$speedValue'),
+      ),
     );
   }
 }
