@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/globals.dart';
+import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/services/messaging_methods.dart';
 
 import 'package:flutter/material.dart';
@@ -91,6 +92,7 @@ class ControlRecordingWidget extends HookConsumerWidget {
         await ref.read(recController.notifier).state.record();
     pauseRecording() async =>
         await ref.read(recController.notifier).state.pause();
+    final chatteeName = ref.watch(userProvider).userModel.name;
 
     // ------------------------------------------
     // Transform translate animation related logic
@@ -174,7 +176,12 @@ class ControlRecordingWidget extends HookConsumerWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.send),
-                onPressed: () => MessagingMethods().sendVoiceMessage(ref),
+                onPressed: () => MessagingMethods(
+                  chatRoomId: getChatRoomIdByUsernames(
+                    chatteeName!,
+                    chatterUsername!,
+                  ),
+                ).sendVoiceMessage(ref),
               )
             ],
           ),

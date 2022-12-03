@@ -1,11 +1,11 @@
-import 'package:chat_app/providers/user_provider.dart';
+
 import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
+import 'package:chat_app/screens/home/chat_card.dart';
 import 'package:chat_app/services/messaging_methods.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
 
 import '../../../globals.dart';
 import 'media_menu_widget.dart';
@@ -57,7 +57,7 @@ class ChatInputField extends HookConsumerWidget {
       if (!ref.watch(isRecording)) return;
       if (!ref.watch(showControlRec)) {
         ref.read(isRecording.notifier).state = false;
-        MessagingMethods().sendVoiceMessage(ref);
+        MessagingMethods(chatRoomId: ref.watch(chatroomId)).sendVoiceMessage(ref);
       }
     }
 
@@ -151,8 +151,6 @@ class CustomSendButton extends HookConsumerWidget {
     final icon = useState(Icons.mic);
     final showMic = ref.watch(showMicProvider);
 
-    String? chatteeUsername = ref.watch(userProvider).userModel.username;
-
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 180));
 
@@ -186,9 +184,8 @@ class CustomSendButton extends HookConsumerWidget {
         child: IconButton(
           onPressed: showMic
               ? () {}
-              : () => MessagingMethods().addMessage(
+              : () => MessagingMethods(chatRoomId: ref.watch(chatroomId)).addMessage(
                     textEditingController!,
-                    chatteeUsername!,
                   ),
           icon: Icon(icon.value),
         ),

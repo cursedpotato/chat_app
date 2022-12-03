@@ -9,6 +9,8 @@ import '../../globals.dart';
 import '../../models/user_model.dart';
 import '../../services/database_methods.dart';
 
+final chatroomId = StateProvider((ref) => "");
+
 class ChatCard extends HookConsumerWidget {
   final bool showOnlyActive;
   final ChatroomModel chatroomModel;
@@ -46,6 +48,8 @@ class ChatCard extends HookConsumerWidget {
     return GestureDetector(
       onTap: () {
         ref.read(userProvider.notifier).copyUserModel(userModel);
+        ref.read(chatroomId.notifier).state =
+            getChatRoomIdByUsernames(userModel.username!, chatterUsername!);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const MessagesScreen()),

@@ -3,6 +3,7 @@ import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/screens/chatroom/chat_input/chat_input_field.dart';
+import 'package:chat_app/screens/home/chat_card.dart';
 
 import 'package:chat_app/services/database_methods.dart';
 
@@ -16,6 +17,8 @@ import 'message_types/audio_message_widget.dart';
 import 'message_types/text_message_widget.dart';
 import 'message_types/video_widget.dart';
 
+
+
 class MessagesScreen extends HookConsumerWidget {
   const MessagesScreen({Key? key}) : super(key: key);
 
@@ -25,11 +28,8 @@ class MessagesScreen extends HookConsumerWidget {
 
     final usermodel = ref.watch(userProvider).userModel;
 
-    final chatroomId =
-        getChatRoomIdByUsernames(usermodel.username!, chatterUsername!);
-
     final future =
-        useMemoized(() => DatabaseMethods().getChatRoomMessages(chatroomId));
+        useMemoized(() => DatabaseMethods().getChatRoomMessages(ref.watch(chatroomId)));
 
     final messageSnapshot = useStream(useFuture(future).data);
 

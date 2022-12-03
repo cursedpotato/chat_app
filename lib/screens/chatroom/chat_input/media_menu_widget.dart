@@ -2,16 +2,13 @@ import 'dart:io';
 
 import 'package:animate_icons/animate_icons.dart';
 import 'package:chat_app/globals.dart';
-import 'package:chat_app/providers/user_provider.dart';
-import 'package:chat_app/services/messaging_methods.dart';
-import 'package:chat_app/services/storage_methods.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:uuid/uuid.dart';
+
 
 class MediaMenu extends HookWidget {
   const MediaMenu({Key? key}) : super(key: key);
@@ -153,7 +150,7 @@ class ImgPrevTextField extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chatteeName = ref.watch(userProvider).userModel.name;
+
     final textController = useTextEditingController();
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -197,13 +194,11 @@ class ImgPrevTextField extends HookConsumerWidget {
               ),
             ),
           ),
-          IconButton(onPressed: () async{
-            final id = const Uuid().v1();
-            final imageUrls = await Future.wait(imageFileList.map((file) => StorageMethods().uploadFileToStorage(file.path, id)));
+          IconButton(onPressed: () {
 
-            if (imageUrls.length == 1) {
-              MessagingMethods().addMessage(textController, imageUrls[0]);
-            }
+            
+
+          
             // MessagingMethods().addMessage(messageController, chatteeUsername)
           }, icon: const Icon(Icons.send))
         ],
