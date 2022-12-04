@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:animate_icons/animate_icons.dart';
 import 'package:chat_app/globals.dart';
+import 'package:chat_app/screens/home/chat_card.dart';
+import 'package:chat_app/services/messaging_methods.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-
 
 class MediaMenu extends HookWidget {
   const MediaMenu({Key? key}) : super(key: key);
@@ -120,8 +121,7 @@ class ImagePreview extends StatelessWidget {
             flex: 5,
             child: PhotoViewGallery.builder(
               backgroundDecoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor
-              ),
+                  color: Theme.of(context).scaffoldBackgroundColor),
               itemCount: imageFileList.length,
               builder: (_, index) {
                 return PhotoViewGalleryPageOptions(
@@ -136,7 +136,9 @@ class ImagePreview extends StatelessWidget {
               ),
             ),
           ),
-          ImgPrevTextField(imageFileList: imageFileList,)
+          ImgPrevTextField(
+            imageFileList: imageFileList,
+          )
         ],
       ),
     );
@@ -144,13 +146,13 @@ class ImagePreview extends StatelessWidget {
 }
 
 class ImgPrevTextField extends HookConsumerWidget {
-  const ImgPrevTextField({Key? key, required this.imageFileList}) : super(key: key);
+  const ImgPrevTextField({Key? key, required this.imageFileList})
+      : super(key: key);
 
   final List<File> imageFileList;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     final textController = useTextEditingController();
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -194,13 +196,15 @@ class ImgPrevTextField extends HookConsumerWidget {
               ),
             ),
           ),
-          IconButton(onPressed: () {
-
-            
-
-          
-            // MessagingMethods().addMessage(messageController, chatteeUsername)
-          }, icon: const Icon(Icons.send))
+          IconButton(
+              onPressed: () {
+                MessagingMethods(chatRoomId: ref.watch(chatroomId)).sendMedia(
+                  imageFileList,
+                  textController,
+                );
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(Icons.send))
         ],
       ),
     );
