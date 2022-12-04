@@ -15,33 +15,33 @@ class MessagingMethods {
 
   String chatRoomId;
   final messageId = const Uuid().v1();
-  final lastMessageTs = DateTime.now();
-  final chatterPfp = (FirebaseAuth.instance.currentUser?.photoURL)!;
+
+  Map<String, dynamic> messageInfoMap = {
+    "message": "",
+    "imgUrl": (FirebaseAuth.instance.currentUser?.photoURL)!,
+    "sendBy": chatterUsername,
+    "ts": DateTime.now(),
+    "resUrl": "",
+    "messageType": "",
+  };
+
+  Map<String, dynamic> lastMessageInfoMap = {
+    "lastMessage": "",
+    "lastMessageSendTs": DateTime.now(),
+    "lastMessageSendBy": chatterUsername,
+  };
 
   void addMessage(TextEditingController messageController) {
     String message = messageController.text;
 
-    Map<String, dynamic> messageInfoMap = {
-      "message": message,
-      "imgUrl": chatterPfp,
-      "sendBy": chatterUsername,
-      "ts": lastMessageTs,
-      "resUrl": '',
-      "messageType": "text",
-    };
+    messageInfoMap["message"] = message;
+    messageInfoMap["messageType"] = "text";
+    lastMessageInfoMap["lastMessage"] = message;
 
-    DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap).then(
-      (value) {
-        Map<String, dynamic> lastMessageInfoMap = {
-          "lastMessage": message,
-          "lastMessageSendTs": lastMessageTs,
-          "lastMessageSendBy": chatterUsername,
-        };
-        // We update the user activity
-        DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
-        messageController.text = "";
-      },
-    );
+    DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
+    DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+
+    messageController.text = "";
   }
 
   sendVoiceMessage(WidgetRef ref) async {
@@ -50,31 +50,31 @@ class MessagingMethods {
     String audioUrl =
         await StorageMethods().uploadFileToStorage(path, messageId);
 
-    Map<String, dynamic> messageInfoMap = {
-      "message": '',
-      "imgUrl": chatterPfp,
-      "sendBy": chatterUsername,
-      "ts": lastMessageTs,
-      "resUrl": audioUrl,
-      "messageType": "audio",
-    };
-    //messageId
+    messageInfoMap["messageType"] = "audio";
+    messageInfoMap["resUrl"] = audioUrl;
+    lastMessageInfoMap["lastMessage"] = "Audio Message 🎧";
 
-    DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap).then(
-      (value) {
-        Map<String, dynamic> lastMessageInfoMap = {
-          "lastMessage": 'Audio Message ',
-          "lastMessageSendTs": lastMessageTs,
-          "lastMessageSendBy": chatterUsername,
-        };
-        // We update the user activity
-        DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
-      },
-    );
+    DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
+    DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
   }
 
-  sendMedia(List<File> imageFileList, TextEditingController messageController) async {
-    final imageUrls = await Future.wait(imageFileList.map(
-        (file) => StorageMethods().uploadFileToStorage(file.path, messageId)));
+  sendMedia(
+    List<File> imageFileList,
+    TextEditingController messageController,
+  ) async {
+    // We upload all the files one by one
+    await Future.wait(imageFileList.map(
+      (file) => StorageMethods().uploadFileToStorage(file.path, messageId),
+    )).then((imageUrls) {
+      String message = messageController.text;
+
+      messageInfoMap["message"] = message;
+      messageInfoMap["messageType"] = "gallery";
+      messageInfoMap["resUrl"] = imageUrls;
+      lastMessageInfoMap["lastMessage"] = "Audio Message 🎧";
+
+      DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
+      DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+    });
   }
 }

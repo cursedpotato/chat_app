@@ -1,7 +1,7 @@
 import 'package:chat_app/globals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum ChatMessageType { text, audio, image, video }
+enum ChatMessageType { text, audio, gallery, video }
 
 enum MessageStatus { notSent, notViewed, viewed }
 
@@ -9,7 +9,7 @@ ChatMessageType whatType(String documentType) {
   const map = {
     'text': ChatMessageType.text,
     'audio': ChatMessageType.audio,
-    'image': ChatMessageType.image,
+    'gallery': ChatMessageType.gallery,
     'video': ChatMessageType.video
   };
   ChatMessageType type = map[documentType] ?? ChatMessageType.text;
