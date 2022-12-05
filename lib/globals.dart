@@ -39,6 +39,10 @@ extension CustomGetters on DocumentSnapshot {
     return data().toString().contains(key) ? get(key) : '';
   }
 
+  List getList(key) {
+    return data().toString().contains(key) ? get(key) : [];
+  } 
+
   Timestamp getTimeStamp(key) {
     return data().toString().contains(key) ? get(key) : Timestamp(0, 0);
   }
