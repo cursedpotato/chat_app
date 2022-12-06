@@ -72,7 +72,7 @@ class MessagingMethods {
       messageInfoMap["message"] = message;
       messageInfoMap["messageType"] = "gallery";
       messageInfoMap["resUrls"] = imageUrls;
-      lastMessageInfoMap["lastMessage"] = "Audio Message 🎧";
+      lastMessageInfoMap["lastMessage"] = "Media was shared 🖼️";
 
       DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
       DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
