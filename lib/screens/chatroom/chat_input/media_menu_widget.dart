@@ -1,15 +1,12 @@
 import 'dart:io';
 
 import 'package:animate_icons/animate_icons.dart';
-import 'package:chat_app/globals.dart';
-import 'package:chat_app/screens/home/chat_card.dart';
-import 'package:chat_app/services/messaging_methods.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
+
+
+import 'media_preview_widget.dart';
 
 class MediaMenu extends HookWidget {
   const MediaMenu({Key? key}) : super(key: key);
@@ -108,105 +105,4 @@ class MediaMenu extends HookWidget {
   }
 }
 
-class ImagePreview extends StatelessWidget {
-  const ImagePreview({Key? key, required this.imageFileList}) : super(key: key);
 
-  final List<File> imageFileList;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            flex: 5,
-            child: PhotoViewGallery.builder(
-              backgroundDecoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor),
-              itemCount: imageFileList.length,
-              builder: (_, index) {
-                return PhotoViewGalleryPageOptions(
-                  initialScale: PhotoViewComputedScale.contained * 0.8,
-                  minScale: PhotoViewComputedScale.contained * 0.8,
-                  maxScale: PhotoViewComputedScale.covered * 1.1,
-                  imageProvider: FileImage(imageFileList[index]),
-                );
-              },
-              loadingBuilder: (_, __) => const Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          ),
-          ImgPrevTextField(
-            imageFileList: imageFileList,
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class ImgPrevTextField extends HookConsumerWidget {
-  const ImgPrevTextField({Key? key, required this.imageFileList})
-      : super(key: key);
-
-  final List<File> imageFileList;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final textController = useTextEditingController();
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: kDefaultPadding,
-        vertical: kDefaultPadding / 2,
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, 4),
-            blurRadius: 32,
-            color: const Color(0xFF087949).withOpacity(0.08),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: kDefaultPadding * 0.75),
-              decoration: BoxDecoration(
-                color: kPrimaryColor.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: TextField(
-                controller: textController,
-                autofocus: true,
-                maxLength: 800,
-                minLines: 1,
-                maxLines: 5, // This way the textfield grows
-                keyboardType: TextInputType.multiline,
-                decoration: const InputDecoration(
-                  // This hides the counter that appears when you set a chat limit
-                  counterText: "",
-                  hintText: "Image description...",
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          IconButton(
-              onPressed: () {
-                MessagingMethods(chatRoomId: ref.watch(chatroomId)).sendMedia(
-                  imageFileList,
-                  textController,
-                );
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(Icons.send))
-        ],
-      ),
-    );
-  }
-}

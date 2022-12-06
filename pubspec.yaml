@@ -48,25 +48,29 @@ dependencies:
   # To reduce boilerplate
   flutter_hooks: ^0.18.3 
   hooks_riverpod: ^2.0.2
+  freezed_annotation: ^2.2.0
   # Animations 
   curved_navigation_bar: ^1.0.3
   animate_icons: ^2.0.0
   animated_text_kit: ^4.2.2
   # Files 
   file_picker: ^5.2.1
-  cached_network_image: ^3.2.2
+  path: ^1.8.2
   path_provider: ^2.0.11
+  cached_network_image: ^3.2.2
   # to download files
   dio: ^4.0.6
+  # Media related packages
   # Audio Recorder
   audio_waveforms: ^0.1.5+1
   # audio waveforms player lacks some features
   just_audio: ^0.9.30
   just_waveform: ^0.0.3
-  freezed_annotation: ^2.2.0
-  path: ^1.8.2
-
+  video_player: ^2.4.8
   photo_view: ^0.14.0
+  
+  
+
   
 
 dev_dependencies:

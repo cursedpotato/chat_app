@@ -3,15 +3,22 @@ import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/globals.dart';
+
 import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/services/messaging_methods.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // Recording widget related variables
+
+final recordDuration = StateProvider((ref) => '0:00');
+
 final sliderPosition = StateProvider.autoDispose((ref) => 0.0);
+
+final stackSize = StateProvider((ref) => 0.0);
 
 final showAudioWidget = StateProvider.autoDispose((ref) => false);
 
@@ -19,7 +26,7 @@ final wasAudioDiscarted = StateProvider.autoDispose((ref) => false);
 
 final showControlRec = StateProvider.autoDispose((ref) => false);
 
-final stackSize = StateProvider((ref) => 0.0);
+final isRecording = StateProvider((ref) => false);
 
 final recController = StateProvider(
   (ref) => RecorderController()
@@ -29,10 +36,6 @@ final recController = StateProvider(
     ..sampleRate = 16000
     ..bitRate = 64000,
 );
-
-final recordDuration = StateProvider((ref) => '0:00');
-
-final isRecording = StateProvider((ref) => false);
 
 class RecordingWidget extends HookConsumerWidget {
   const RecordingWidget({Key? key}) : super(key: key);
@@ -511,3 +514,29 @@ class AnimatedTrash extends HookWidget {
     );
   }
 }
+
+class MeasureSizeRenderObject extends RenderProxyBox {
+  MeasureSizeRenderObject(this.onChange);
+  void Function(Size size) onChange;
+
+  Size _prevSize = Size.zero;
+  @override
+  void performLayout() {
+    super.performLayout();
+    Size newSize = child!.size;
+    if (_prevSize == newSize) return;
+    _prevSize = newSize;
+    WidgetsBinding.instance.addPostFrameCallback((_) => onChange(newSize));
+  }
+}
+
+class MeasurableWidget extends SingleChildRenderObjectWidget {
+  const MeasurableWidget(
+      {Key? key, required this.onChange, required Widget child})
+      : super(key: key, child: child);
+  final void Function(Size size) onChange;
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      MeasureSizeRenderObject(onChange);
+}
+
