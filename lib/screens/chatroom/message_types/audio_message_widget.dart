@@ -31,7 +31,7 @@ class AudioMessage extends HookWidget {
 
         if (!hasFile) {
           debugPrint("Downloading audio file");
-          final response = await Dio().download(message.resUrl!, fullPath);
+          final response = await Dio().download(message.resUrls![0], fullPath);
           if (response.statusMessage == "OK") {
             await player.setFilePath(fullPath);
           }

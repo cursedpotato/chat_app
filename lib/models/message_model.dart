@@ -35,7 +35,7 @@ class ChatMesssageModel {
   ChatMessageType? messageType;
   MessageStatus? messageStatus;
   bool? isSender;
-  String? resUrl;
+  List<String>? resUrls;
   String? pfpUrl;
   String? sendBy;
   Timestamp? timestamp;
@@ -46,7 +46,7 @@ class ChatMesssageModel {
     this.messageType,
     this.messageStatus,
     this.isSender,
-    this.resUrl,
+    this.resUrls,
     this.pfpUrl,
     this.sendBy,
     this.timestamp,
@@ -59,7 +59,7 @@ class ChatMesssageModel {
     // TODO: Find a way to show a message status
     messageStatus = MessageStatus.viewed;
     isSender = chatterUsername == document['sendBy'];
-    resUrl = document.getString('resUrl');
+    resUrls = document.getList('resUrls');
     pfpUrl = document.getString('imgUrl');
     sendBy = document.getString('sendBy');
     timestamp = document.getTimeStamp('ts');

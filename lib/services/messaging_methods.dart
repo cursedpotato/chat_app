@@ -21,7 +21,7 @@ class MessagingMethods {
     "imgUrl": (FirebaseAuth.instance.currentUser?.photoURL)!,
     "sendBy": chatterUsername,
     "ts": DateTime.now(),
-    "resUrl": "",
+    "resUrls": "",
     "messageType": "",
   };
 
@@ -51,7 +51,8 @@ class MessagingMethods {
         await StorageMethods().uploadFileToStorage(path, messageId);
 
     messageInfoMap["messageType"] = "audio";
-    messageInfoMap["resUrl"] = audioUrl;
+    // we send a list because that is the type we designed on our model to allow multiple media
+    messageInfoMap["resUrls"] = [audioUrl];
     lastMessageInfoMap["lastMessage"] = "Audio Message 🎧";
 
     DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
@@ -70,7 +71,7 @@ class MessagingMethods {
 
       messageInfoMap["message"] = message;
       messageInfoMap["messageType"] = "gallery";
-      messageInfoMap["resUrl"] = imageUrls;
+      messageInfoMap["resUrls"] = imageUrls;
       lastMessageInfoMap["lastMessage"] = "Audio Message 🎧";
 
       DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);

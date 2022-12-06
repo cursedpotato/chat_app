@@ -18,7 +18,7 @@ String? email = FirebaseAuth.instance.currentUser?.email;
 String? chatterUsername = email!.substring(0, email?.indexOf('@'));
 String? profilePicUrl = FirebaseAuth.instance.currentUser?.photoURL;
 const String noImage =
-        'https://secure.gravatar.com/avatar/ef9463e636b415ee041791a6a3764104?s=250&d=mm&r=g';
+    'https://secure.gravatar.com/avatar/ef9463e636b415ee041791a6a3764104?s=250&d=mm&r=g';
 
 getChatRoomIdByUsernames(String a, String b) {
   if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
@@ -39,9 +39,11 @@ extension CustomGetters on DocumentSnapshot {
     return data().toString().contains(key) ? get(key) : '';
   }
 
-  List getList(key) {
-    return data().toString().contains(key) ? get(key) : [];
-  } 
+  List<String> getList(key) {
+    return data().toString().contains(key)
+        ? (get(key) as List).map((e) => e as String).toList()
+        : [];
+  }
 
   Timestamp getTimeStamp(key) {
     return data().toString().contains(key) ? get(key) : Timestamp(0, 0);
