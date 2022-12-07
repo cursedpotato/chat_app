@@ -1,4 +1,3 @@
-
 import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
 import 'package:chat_app/screens/home/chat_card.dart';
 import 'package:chat_app/services/messaging_methods.dart';
@@ -57,7 +56,8 @@ class ChatInputField extends HookConsumerWidget {
       if (!ref.watch(isRecording)) return;
       if (!ref.watch(showControlRec)) {
         ref.read(isRecording.notifier).state = false;
-        MessagingMethods(chatRoomId: ref.watch(chatroomId)).sendVoiceMessage(ref);
+        MessagingMethods(chatRoomId: ref.watch(chatroomId))
+            .sendVoiceMessage(ref);
       }
     }
 
@@ -184,7 +184,8 @@ class CustomSendButton extends HookConsumerWidget {
         child: IconButton(
           onPressed: showMic
               ? () {}
-              : () => MessagingMethods(chatRoomId: ref.watch(chatroomId)).addMessage(
+              : () => MessagingMethods(chatRoomId: ref.watch(chatroomId))
+                      .addMessage(
                     textEditingController!,
                   ),
           icon: Icon(icon.value),
