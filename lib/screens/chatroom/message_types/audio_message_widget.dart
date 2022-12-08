@@ -16,9 +16,9 @@ import 'dart:io';
 
 
 class AudioMessage extends HookWidget {
-  final ChatMesssageModel message;
-  const AudioMessage({Key? key, required this.message}) : super(key: key);
+  const AudioMessage(this.message, {Key? key, }) : super(key: key);
 
+  final ChatMesssageModel message;
   @override
   Widget build(BuildContext context) {
     final player = AudioPlayer();

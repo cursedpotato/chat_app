@@ -1,4 +1,5 @@
-import 'package:chat_app/globals.dart';
+
+import 'package:chat_app/models/custom_getters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:timeago/timeago.dart' as timeago;
 

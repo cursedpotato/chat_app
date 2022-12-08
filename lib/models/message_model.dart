@@ -1,5 +1,8 @@
-import 'package:chat_app/globals.dart';
+
+import 'package:chat_app/models/custom_getters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../globals.dart';
 
 enum ChatMessageType { text, audio, gallery, video }
 
@@ -24,9 +27,9 @@ MessageStatus messageStatus(String documentType) {
     'viewed': MessageStatus.viewed,
   };
 
-  MessageStatus type = map[documentType] ?? MessageStatus.notSent;
+  MessageStatus status = map[documentType] ?? MessageStatus.notSent;
 
-  return type;
+  return status;
 }
 
 class ChatMesssageModel {

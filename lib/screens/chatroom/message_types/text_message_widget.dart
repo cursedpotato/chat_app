@@ -1,14 +1,10 @@
-
 import 'package:chat_app/models/message_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../../globals.dart';
 
 class TextMessage extends StatelessWidget {
-  const TextMessage({
-    Key? key,
-    required this.message,
-  }) : super(key: key);
+  const TextMessage(this.message, {Key? key}) : super(key: key);
 
   final ChatMesssageModel message;
 
@@ -26,19 +22,6 @@ class TextMessage extends StatelessWidget {
         color: kPrimaryColor.withOpacity(message.isSender! ? 1 : 0.1),
         borderRadius: BorderRadius.circular(30),
       ),
-      // child: AnimatedTextKit(
-      //   animatedTexts: [
-      //     TypewriterAnimatedText(
-      //       message.message!,
-      //       textStyle: TextStyle(
-      //           fontSize: 12,
-      //           color: message.isSender!
-      //               ? Colors.white
-      //               : Theme.of(context).textTheme.bodyText1?.color),
-      //     ),
-      //   ],
-      //   totalRepeatCount: 1,
-      // ),
       child: Text(
         message.message!,
         softWrap: true,

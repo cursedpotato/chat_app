@@ -3,6 +3,7 @@ import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/screens/chatroom/chat_input/chat_input_field.dart';
+import 'package:chat_app/screens/chatroom/message_types/media_message.dart';
 import 'package:chat_app/screens/home/chat_card.dart';
 
 import 'package:chat_app/services/database_methods.dart';
@@ -15,8 +16,6 @@ import '../../models/message_model.dart';
 
 import 'message_types/audio_message_widget.dart';
 import 'message_types/text_message_widget.dart';
-import 'message_types/video_widget.dart';
-
 
 
 class MessagesScreen extends HookConsumerWidget {
@@ -28,8 +27,8 @@ class MessagesScreen extends HookConsumerWidget {
 
     final usermodel = ref.watch(userProvider).userModel;
 
-    final future =
-        useMemoized(() => DatabaseMethods().getChatRoomMessages(ref.watch(chatroomId)));
+    final future = useMemoized(
+        () => DatabaseMethods().getChatRoomMessages(ref.watch(chatroomId)));
 
     final messageSnapshot = useStream(useFuture(future).data);
 
@@ -126,9 +125,9 @@ class Message extends HookWidget {
   Widget build(BuildContext context) {
     Widget messageContent(ChatMesssageModel message) {
       final map = {
-        ChatMessageType.text: TextMessage(message: message),
-        ChatMessageType.audio: AudioMessage(message: message),
-        ChatMessageType.video: const VideoWidget(),
+        ChatMessageType.text: TextMessage(message),
+        ChatMessageType.audio: AudioMessage(message),
+        ChatMessageType.gallery: MediaMessageWidget(message),
       };
       Widget type = map[message.messageType] ?? const SizedBox();
       return type;

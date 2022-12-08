@@ -130,19 +130,19 @@ class VideoPreview extends HookWidget {
   }
 }
 
-Stream<bool> playingState(VideoPlayerController videoController) async* {
-  while (true) {
-    await Future.delayed(const Duration(milliseconds: 100));
-    yield videoController.value.isPlaying;
-  }
-}
-
 class VideoPlayerWidget extends HookWidget {
   const VideoPlayerWidget(this.videoController, {Key? key}) : super(key: key);
 
   final ValueNotifier<VideoPlayerController> videoController;
   @override
   Widget build(BuildContext context) {
+    Stream<bool> playingState(VideoPlayerController videoController) async* {
+      while (true) {
+        await Future.delayed(const Duration(milliseconds: 100));
+        yield videoController.value.isPlaying;
+      }
+    }
+
     final playingSnapshot = useStream(playingState(videoController.value));
     return GestureDetector(
       onTap: () {
