@@ -69,9 +69,11 @@ class MessagingMethods {
     TextEditingController messageController,
   ) async {
     // We upload all the files one by one
-    await Future.wait(imageFileList.map(
-      (file) => StorageMethods().uploadFileToStorage(file.path, messageId),
-    )).then((imageUrls) {
+    await Future.wait(imageFileList.map((file) {
+      final isVideo = file.path.contains("mp4");
+      
+      return StorageMethods().uploadFileToStorage(file.path, messageId, isVideo);
+    })).then((imageUrls) {
       String message = messageController.text;
 
       messageInfoMap["message"] = message;
@@ -82,19 +84,5 @@ class MessagingMethods {
       DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
       DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
     });
-  }
-
-  sendMedia2(
-    List<File> imageFileList,
-    TextEditingController messageController,
-  ) async {
-    // We upload all the files one by one
-    await Future.wait(imageFileList.map((file) {
-      final isVideo = file.path.contains("mp4");
-      if (isVideo) {
-        return StorageMethods().uploadFileToStorage(file.path, messageId, true);
-      }
-      return StorageMethods().uploadFileToStorage(file.path, messageId);
-    }));
   }
 }
