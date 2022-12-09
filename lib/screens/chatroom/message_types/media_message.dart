@@ -1,13 +1,13 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/message_model.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-
-isVideo() {
-    
-}
 
 class MediaMessageWidget extends HookWidget {
   const MediaMessageWidget(this.chatMessagelModel, {Key? key})
@@ -17,6 +17,13 @@ class MediaMessageWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fileStream =
+        useStream(useMemoized(() => downloadFiles(chatMessagelModel)));
+
+    if (fileStream.hasData) {
+      print("TAG: ${fileStream.connectionState}");
+      print("${fileStream.data}");
+    }
 
     return GestureDetector(
       onTap: () => Navigator.of(context).push(MaterialPageRoute(
@@ -38,16 +45,45 @@ class MediaMessageWidget extends HookWidget {
       ),
     );
   }
-  mediaType() {
 
+  mediaType(ChatMesssageModel chatMesssageModel) {
+    if (chatMessagelModel.resUrls!.length >= 2) {
+      return MultimediaWidget(chatMesssageModel: chatMesssageModel);
+    }
   }
 
-  
+  Future<File> downloadMedia(id, url, index) async {
+    final path = await getTemporaryDirectory();
+    final fullPath = '${path.path}/${id as String}/$index';
+    bool hasFile = (await File(fullPath).exists());
+
+    if (!hasFile) {
+      debugPrint("Downloading media file");
+      await Dio().download((url as String), fullPath);
+      return File(fullPath);
+    }
+
+    return File(fullPath);
+  }
+
+  Stream<List<File>> downloadFiles(ChatMesssageModel model) async* {
+    final id = model.id;
+    List<File> fileList = [];
+
+    if (model.resUrls == null) throw "Your list is null";
+
+    for (var i = 0; i < model.resUrls!.length; i++) {
+      final file = await downloadMedia(id, model.resUrls![i], i);
+      fileList.add(file);
+      yield fileList;
+    }
+  }
 }
 
 class SingleImageWidget extends StatelessWidget {
-  const SingleImageWidget({Key? key}) : super(key: key);
-
+  final ChatMesssageModel chatMesssageModel;
+  const SingleImageWidget({Key? key, required this.chatMesssageModel})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container();
@@ -55,7 +91,9 @@ class SingleImageWidget extends StatelessWidget {
 }
 
 class SingleVideoWidget extends StatelessWidget {
-  const SingleVideoWidget({Key? key}) : super(key: key);
+  final ChatMesssageModel chatMesssageModel;
+  const SingleVideoWidget({Key? key, required this.chatMesssageModel})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +102,9 @@ class SingleVideoWidget extends StatelessWidget {
 }
 
 class MultimediaWidget extends StatelessWidget {
-  const MultimediaWidget({Key? key}) : super(key: key);
+  final ChatMesssageModel chatMesssageModel;
+  const MultimediaWidget({Key? key, required this.chatMesssageModel})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
