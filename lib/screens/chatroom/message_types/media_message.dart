@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/message_model.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:path_provider/path_provider.dart';
@@ -20,10 +21,14 @@ class MediaMessageWidget extends HookWidget {
     final fileStream =
         useStream(useMemoized(() => downloadFiles(chatMessagelModel)));
 
-    if (fileStream.hasData) {
-      print("TAG: ${fileStream.connectionState}");
-      print("${fileStream.data}");
-    }
+     final storageRef = FirebaseStorage.instance;
+
+     getMetaData(url) async {
+      final metadata = await storageRef.refFromURL(url).getMetadata();
+      metadata.contentType;
+     }
+
+
 
     return GestureDetector(
       onTap: () => Navigator.of(context).push(MaterialPageRoute(
@@ -34,12 +39,8 @@ class MediaMessageWidget extends HookWidget {
         width: MediaQuery.of(context).size.width * 0.45,
         child: Stack(
           alignment: Alignment.center,
-          children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: CachedNetworkImage(
-                  imageUrl: chatMessagelModel.resUrls![0],
-                )),
+          children: const [
+           Text("Hello"),
           ],
         ),
       ),
@@ -52,19 +53,7 @@ class MediaMessageWidget extends HookWidget {
     }
   }
 
-  Future<File> downloadMedia(id, url, index) async {
-    final path = await getTemporaryDirectory();
-    final fullPath = '${path.path}/${id as String}/$index';
-    bool hasFile = (await File(fullPath).exists());
-
-    if (!hasFile) {
-      debugPrint("Downloading media file");
-      await Dio().download((url as String), fullPath);
-      return File(fullPath);
-    }
-
-    return File(fullPath);
-  }
+    
 
   Stream<List<File>> downloadFiles(ChatMesssageModel model) async* {
     final id = model.id;
@@ -73,8 +62,7 @@ class MediaMessageWidget extends HookWidget {
     if (model.resUrls == null) throw "Your list is null";
 
     for (var i = 0; i < model.resUrls!.length; i++) {
-      final file = await downloadMedia(id, model.resUrls![i], i);
-      fileList.add(file);
+      
       yield fileList;
     }
   }

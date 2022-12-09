@@ -13,14 +13,16 @@ class StorageMethods {
     Reference reference = _storage.ref().child('multimedia').child(id);
     UploadTask uploadFile = reference.putFile(file);
 
-    if (isVideo) {
-      reference.updateMetadata(SettableMetadata(contentType: "video/mp4"));
-    }
-
-    reference.updateMetadata(SettableMetadata(contentType: "image"));
-
     TaskSnapshot snapshot = await uploadFile;
-    String downloadUrl = await snapshot.ref.getDownloadURL();
+    String downloadUrl = await snapshot.ref.getDownloadURL().then((value) {
+      if (isVideo) {
+        reference.updateMetadata(SettableMetadata(contentType: "video/mp4"));
+      }
+      reference.updateMetadata(SettableMetadata(contentType: "image"));
+
+      return value;
+    });
+
     return downloadUrl;
   }
 }
