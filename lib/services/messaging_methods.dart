@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
 import 'package:chat_app/services/storage_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
@@ -15,6 +16,7 @@ class MessagingMethods {
 
   String chatRoomId;
   final messageId = const Uuid().v1();
+  final storageRef = FirebaseStorage.instance;
 
   Map<String, dynamic> messageInfoMap = {
     "message": "",
@@ -54,6 +56,9 @@ class MessagingMethods {
     // we send a list because that is the type we designed on our model to allow multiple media
     messageInfoMap["resUrls"] = [audioUrl];
     lastMessageInfoMap["lastMessage"] = "Audio Message 🎧";
+    storageRef.refFromURL(audioUrl).updateMetadata(SettableMetadata(
+          contentType: "audio/m4a",
+        ));
 
     DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
     DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
@@ -77,5 +82,19 @@ class MessagingMethods {
       DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
       DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
     });
+  }
+
+  sendMedia2(
+    List<File> imageFileList,
+    TextEditingController messageController,
+  ) async {
+    // We upload all the files one by one
+    await Future.wait(imageFileList.map((file) {
+      final isVideo = file.path.contains("mp4");
+      if (isVideo) {
+        return StorageMethods().uploadFileToStorage(file.path, messageId, true);
+      }
+      return StorageMethods().uploadFileToStorage(file.path, messageId);
+    }));
   }
 }
