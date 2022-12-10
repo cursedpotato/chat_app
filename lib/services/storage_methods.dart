@@ -7,7 +7,7 @@ class StorageMethods {
 
   // adding image to firebase storage
   Future<String> uploadFileToStorage(String filePath, String id,
-      [isVideo = false]) async {
+      [bool isVideo = false]) async {
     // creating location to our firebase storage
     File file = File(filePath);
     Reference reference = _storage.ref().child('multimedia').child(id);
@@ -15,10 +15,13 @@ class StorageMethods {
 
     TaskSnapshot snapshot = await uploadFile;
     String downloadUrl = await snapshot.ref.getDownloadURL().then((value) {
+
+      
+      reference.updateMetadata(SettableMetadata(contentType: "image"));
+      
       if (isVideo) {
         reference.updateMetadata(SettableMetadata(contentType: "video/mp4"));
       }
-      reference.updateMetadata(SettableMetadata(contentType: "image"));
 
       return value;
     });

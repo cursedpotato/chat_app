@@ -1,14 +1,17 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/message_model.dart';
-import 'package:dio/dio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+
+class MediaType {
+  final String mediaUrl;
+  final bool isVideo;
+
+  MediaType(this.mediaUrl, this.isVideo);
+}
 
 class MediaMessageWidget extends HookWidget {
   const MediaMessageWidget(this.chatMessagelModel, {Key? key})
@@ -18,17 +21,12 @@ class MediaMessageWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fileStream =
-        useStream(useMemoized(() => downloadFiles(chatMessagelModel)));
+    final urlList =
+        useStream(useMemoized(() => contentType(chatMessagelModel.resUrls)));
 
-     final storageRef = FirebaseStorage.instance;
-
-     getMetaData(url) async {
-      final metadata = await storageRef.refFromURL(url).getMetadata();
-      metadata.contentType;
-     }
-
-
+    if (urlList.hasData) {
+      print("TAG: ${urlList.data}");
+    }
 
     return GestureDetector(
       onTap: () => Navigator.of(context).push(MaterialPageRoute(
@@ -36,45 +34,61 @@ class MediaMessageWidget extends HookWidget {
             GalleryWidget(imageFileList: chatMessagelModel.resUrls!),
       )),
       child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.45,
-        child: Stack(
-          alignment: Alignment.center,
-          children: const [
-           Text("Hello"),
-          ],
-        ),
-      ),
+          width: MediaQuery.of(context).size.width * 0.45,
+          child: urlList.hasData
+              ? mediaType(urlList.data!)
+              : const CircularProgressIndicator()),
     );
   }
 
-  mediaType(ChatMesssageModel chatMesssageModel) {
-    if (chatMessagelModel.resUrls!.length >= 2) {
-      return MultimediaWidget(chatMesssageModel: chatMesssageModel);
+  Widget mediaType(List<MediaType> contentList) {
+    final listLenght = contentList.length;
+
+    if (listLenght >= 2) {
+      return const CircularProgressIndicator();
     }
+
+    if (listLenght == 1 && contentList[0].isVideo) {
+      return const CircularProgressIndicator();
+    }
+
+    return SingleImageWidget(mediaUrl: contentList[0].mediaUrl);
   }
 
-    
+  urlContainsVideo(url) async {
+    final storageRef = FirebaseStorage.instance;
+    final metadata = await storageRef.refFromURL(url).getMetadata();
+    final contentType = metadata.contentType;
+    if (contentType!.isEmpty) {
+      throw "There is no available metadata";
+    }
+    final isVideo = contentType.contains("video");
 
-  Stream<List<File>> downloadFiles(ChatMesssageModel model) async* {
-    final id = model.id;
-    List<File> fileList = [];
+    return isVideo;
+  }
 
-    if (model.resUrls == null) throw "Your list is null";
+  Stream<List<MediaType>> contentType(List<String>? urlList) async* {
+    List<MediaType> contentList = [];
 
-    for (var i = 0; i < model.resUrls!.length; i++) {
-      
-      yield fileList;
+    if (urlList == null) throw "Your list is null";
+
+    for (var i = 0; i < urlList.length; i++) {
+      final mediaUrl = urlList[i];
+      final isVideo = await urlContainsVideo(mediaUrl);
+
+      contentList.add(MediaType(mediaUrl, isVideo));
+
+      yield contentList;
     }
   }
 }
 
 class SingleImageWidget extends StatelessWidget {
-  final ChatMesssageModel chatMesssageModel;
-  const SingleImageWidget({Key? key, required this.chatMesssageModel})
-      : super(key: key);
+  final String mediaUrl;
+  const SingleImageWidget({Key? key, required this.mediaUrl}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return CachedNetworkImage(imageUrl: mediaUrl);
   }
 }
 
