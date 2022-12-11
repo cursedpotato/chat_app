@@ -96,4 +96,17 @@ class DatabaseMethods {
         .where("username", isEqualTo: username)
         .get();
   }
+
+  Future updateMessageWithThumbnails(
+    String chatRoomId,
+    String messageId,
+    Map<String, dynamic> messageInfoMap,
+  ) async {
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatRoomId)
+        .collection("chats")
+        .doc(messageId)
+        .update(messageInfoMap);
+  }
 }

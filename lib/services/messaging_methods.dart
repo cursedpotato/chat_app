@@ -24,6 +24,7 @@ class MessagingMethods {
     "sendBy": chatterUsername,
     "ts": DateTime.now(),
     "resUrls": "",
+    "thumbnailUrls": [],
     "messageType": "",
   };
 
@@ -68,21 +69,30 @@ class MessagingMethods {
     List<File> imageFileList,
     TextEditingController messageController,
   ) async {
+    // I may make an stream that updates the resUrls array,
+    // instead of uploading a whole array at once
     // We upload all the files one by one
-    await Future.wait(imageFileList.map((file) {
+    final thumbnailList = [];
+    final imageUrls = await Future.wait(imageFileList.map((file) {
       final isVideo = file.path.contains("mp4");
-      
-      return StorageMethods().uploadFileToStorage(file.path, messageId, isVideo);
-    })).then((imageUrls) {
-      String message = messageController.text;
+      // Make video thumbnail
+      if (isVideo) {
+        StorageMethods().uploadThumbnail(file, messageId).then(
+              (value) => thumbnailList.add(value),
+            );
+      }
+      return StorageMethods()
+          .uploadFileToStorage(file.path, messageId, isVideo);
+    }));
 
-      messageInfoMap["message"] = message;
-      messageInfoMap["messageType"] = "gallery";
-      messageInfoMap["resUrls"] = imageUrls;
-      lastMessageInfoMap["lastMessage"] = "Media was shared 🖼️";
+    messageInfoMap["message"] = messageController.text;
+    messageInfoMap["messageType"] = "gallery";
+    messageInfoMap["resUrls"] = imageUrls;
+    messageInfoMap["thumbnailUrls"] = thumbnailList;
+    lastMessageInfoMap["lastMessage"] = "Media was shared 🖼️";
 
-      DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
-      DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
-    });
+    DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
+    DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+    // We upload video thumbnails if there's any
   }
 }
