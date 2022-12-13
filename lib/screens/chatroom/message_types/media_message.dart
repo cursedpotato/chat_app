@@ -2,14 +2,13 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/message_model.dart';
-import 'package:dio/dio.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:video_compress/video_compress.dart';
 
 class MediaType {
   final String mediaUrl;
@@ -26,18 +25,17 @@ class MediaMessageWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final urlList =
-        useStream(useMemoized(() => contentType(chatMessagelModel.resUrls)));
-
-    if (!urlList.hasData) {
-      return const CircularProgressIndicator();
-    }
+    final urlList = useStream(useMemoized(
+      () => contentType(chatMessagelModel.resUrls),
+    ));
 
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) =>
-            GalleryWidget(imageFileList: chatMessagelModel.resUrls!),
-      )),
+      // onTap: () => Navigator.of(context).push(MaterialPageRoute(
+      //   builder: (context) =>
+      //       GalleryWidget(
+      //         contentType: urlList.requireData,
+      //       ),
+      // )),
       child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.45,
           child: urlList.hasData
@@ -49,17 +47,16 @@ class MediaMessageWidget extends HookWidget {
   Widget mediaType(List<MediaType> contentList) {
     final listLenght = contentList.length;
 
-    if (listLenght >= 2) {
-      return const CircularProgressIndicator();
+    bool isASingleVideo = listLenght == 1 && contentList.first.isVideo;
+    if (isASingleVideo) {
+      return SingleImageWidget(chatMessagelModel.thumnailUrls!.first, true);
     }
 
-    if (listLenght == 1 && contentList[0].isVideo) {
-      return SingleVideoWidget(
-        mediaType: contentList[0],
-      );
+    bool isASingleImage = listLenght == 1 && !contentList.first.isVideo;
+    if (isASingleImage) {
+      return SingleImageWidget(contentList.first.mediaUrl, false);
     }
-
-    return SingleImageWidget(mediaUrl: contentList[0].mediaUrl);
+    return const CircularProgressIndicator();
   }
 
   urlContainsVideo(url) async {
@@ -74,6 +71,8 @@ class MediaMessageWidget extends HookWidget {
     return isVideo;
   }
 
+  // This stream checks if the content of url is either a video or simple image, the purpose of this
+  // is not sending a video file to an image widget which makes the app crash.
   Stream<List<MediaType>> contentType(List<String>? urlList) async* {
     List<MediaType> contentList = [];
 
@@ -92,60 +91,17 @@ class MediaMessageWidget extends HookWidget {
 
 class SingleImageWidget extends StatelessWidget {
   final String mediaUrl;
-  const SingleImageWidget({Key? key, required this.mediaUrl}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return CachedNetworkImage(imageUrl: mediaUrl);
-  }
-}
-
-class SingleVideoWidget extends HookWidget {
-  final MediaType mediaType;
-  const SingleVideoWidget({Key? key, required this.mediaType})
+  final bool isVideoThumnail;
+  const SingleImageWidget(this.mediaUrl, this.isVideoThumnail, {Key? key})
       : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    downloadVideo() async {
-      final path = await getTemporaryDirectory();
-      final fullPath = '${path.path}/videos}';
-      bool hasFile = (await File(fullPath).exists());
-
-      if (!hasFile) {
-        debugPrint("Downloading audio file");
-        final response = await Dio().download(mediaType.mediaUrl, fullPath);
-        if (response.statusCode == 200) {
-          return File(fullPath);
-        }
-      }
-      return File(fullPath);
-    }
-
-    getThumbnail(File videoFile) async {
-      final thumbnailFile = await VideoCompress.getFileThumbnail(
-        videoFile.path,
-        quality: 50, // default(100)
-        position: -1, // default(-1)
-      );
-      return thumbnailFile;
-    }
-
-    final videoFile = useFuture(useMemoized(
-      () => downloadVideo(),
-    ));
-
-    if (!videoFile.hasData) {
-      return const CircularProgressIndicator();
-    }
-
-    final videoThumbnail =
-        useFuture(useMemoized(() => getThumbnail(videoFile.data!)));
-
-    if (!videoThumbnail.hasData) {
-      return const CircularProgressIndicator();
-    }
-
-    return Image(image: FileImage(videoThumbnail.requireData));
+    return Stack(
+      children: [
+        CachedNetworkImage(imageUrl: mediaUrl),
+        isVideoThumnail ? const Icon(Icons.play_arrow) : const SizedBox()
+      ],
+    );
   }
 }
 
@@ -161,10 +117,11 @@ class MultimediaWidget extends StatelessWidget {
 }
 
 class GalleryWidget extends StatelessWidget {
-  const GalleryWidget({Key? key, required this.imageFileList})
+  const GalleryWidget({Key? key, required this.messageModel, required this.contentType})
       : super(key: key);
 
-  final List<String> imageFileList;
+  final List<ContentType> contentType;
+  final List<ChatMesssageModel> messageModel;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -175,13 +132,13 @@ class GalleryWidget extends StatelessWidget {
             child: PhotoViewGallery.builder(
               backgroundDecoration: BoxDecoration(
                   color: Theme.of(context).scaffoldBackgroundColor),
-              itemCount: imageFileList.length,
+              itemCount: contentType.length,
               builder: (_, index) {
-                return PhotoViewGalleryPageOptions(
+                return PhotoViewGalleryPageOptions.customChild(
                   initialScale: PhotoViewComputedScale.contained * 0.8,
                   minScale: PhotoViewComputedScale.contained * 0.8,
                   maxScale: PhotoViewComputedScale.covered * 1.1,
-                  imageProvider: NetworkImage(imageFileList[index]),
+                  child: SizedBox(),
                 );
               },
               loadingBuilder: (_, __) => const Center(

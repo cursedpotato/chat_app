@@ -39,6 +39,7 @@ class ChatMesssageModel {
   MessageStatus? messageStatus;
   bool? isSender;
   List<String>? resUrls;
+  List<String>? thumnailUrls;
   String? pfpUrl;
   String? sendBy;
   Timestamp? timestamp;
@@ -63,6 +64,7 @@ class ChatMesssageModel {
     messageStatus = MessageStatus.viewed;
     isSender = chatterUsername == document['sendBy'];
     resUrls = document.getList('resUrls');
+    thumnailUrls = document.getList("thumbnailUrls");
     pfpUrl = document.getString('imgUrl');
     sendBy = document.getString('sendBy');
     timestamp = document.getTimeStamp('ts');
