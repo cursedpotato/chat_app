@@ -109,4 +109,13 @@ class DatabaseMethods {
         .doc(messageId)
         .update(messageInfoMap);
   }
+
+  Future getMessageInfo(String messageId, String chatRoomId) async {
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatRoomId)
+        .collection("chats")
+        .doc(messageId)
+        .snapshots();
+  }
 }

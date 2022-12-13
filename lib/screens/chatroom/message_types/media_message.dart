@@ -18,19 +18,17 @@ class MediaType {
 }
 
 class MediaMessageWidget extends HookWidget {
-  const MediaMessageWidget(this.chatMessagelModel, {Key? key})
-      : super(key: key);
+  const MediaMessageWidget(this.messageModel, {Key? key}) : super(key: key);
 
-  final ChatMesssageModel chatMessagelModel;
+  final ChatMesssageModel messageModel;
 
   @override
   Widget build(BuildContext context) {
     final urlList = useStream(useMemoized(
-      () => contentType(chatMessagelModel.resUrls),
+      () => contentType(messageModel.resUrls),
     ));
 
     return GestureDetector(
-      // onTap: () => Navigator.of(context).push(MaterialPageRoute(
       //   builder: (context) =>
       //       GalleryWidget(
       //         contentType: urlList.requireData,
@@ -49,12 +47,12 @@ class MediaMessageWidget extends HookWidget {
 
     bool isASingleVideo = listLenght == 1 && contentList.first.isVideo;
     if (isASingleVideo) {
-      return SingleImageWidget(chatMessagelModel.thumnailUrls!.first, true);
+      return SingleImageWidget(messageModel.thumnailUrls!.first, true);
     }
 
     bool isASingleImage = listLenght == 1 && !contentList.first.isVideo;
     if (isASingleImage) {
-      return SingleImageWidget(contentList.first.mediaUrl, false);
+      return SingleImageWidget(messageModel.resUrls!.first, false);
     }
     return const CircularProgressIndicator();
   }
@@ -73,6 +71,8 @@ class MediaMessageWidget extends HookWidget {
 
   // This stream checks if the content of url is either a video or simple image, the purpose of this
   // is not sending a video file to an image widget which makes the app crash.
+
+  // TODO: Change this stream so it returns a list of images or thumnails instead of just images and videos
   Stream<List<MediaType>> contentType(List<String>? urlList) async* {
     List<MediaType> contentList = [];
 
@@ -99,25 +99,58 @@ class SingleImageWidget extends StatelessWidget {
     return Stack(
       children: [
         CachedNetworkImage(imageUrl: mediaUrl),
-        isVideoThumnail ? const Icon(Icons.play_arrow) : const SizedBox()
+        isVideoThumnail
+            ? const Align(
+                alignment: Alignment.center,
+                child: Icon(
+                  Icons.play_arrow,
+                  size: 80,
+                  color: Colors.white,
+                ),
+              )
+            : const SizedBox()
       ],
     );
   }
 }
 
-class MultimediaWidget extends StatelessWidget {
-  final ChatMesssageModel chatMesssageModel;
-  const MultimediaWidget({Key? key, required this.chatMesssageModel})
+class MultimediaWidget extends HookWidget {
+  final List<MediaType> contentList;
+  final ChatMesssageModel messsageModell;
+  const MultimediaWidget(
+      {Key? key, required this.contentList, required this.messsageModell})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    late final String galleryCover;
+
+    useEffect(
+      () {
+        if (contentList.first.isVideo) {
+          galleryCover = messsageModell.thumnailUrls!.first;
+        }
+        galleryCover = messsageModell.resUrls!.first;
+
+        return;
+      },
+    );
+
+    if (contentList.length < 5) {
+      return Stack(
+        children: [
+          CachedNetworkImage(imageUrl: galleryCover),
+          Text("${contentList.length}"),
+        ],
+      );
+    }
     return Container();
   }
 }
 
 class GalleryWidget extends StatelessWidget {
-  const GalleryWidget({Key? key, required this.messageModel, required this.contentType})
+  const GalleryWidget(
+      {Key? key, required this.messageModel, required this.contentType})
       : super(key: key);
 
   final List<ContentType> contentType;
