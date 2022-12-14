@@ -95,4 +95,36 @@ class MessagingMethods {
     DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
     // We upload video thumbnails if there's any
   }
+
+  sendMedia2(
+    List<File> imageFileList,
+    TextEditingController messageController,
+  ) async {
+    messageInfoMap["message"] = messageController.text;
+    messageInfoMap["messageType"] = "gallery";
+    messageInfoMap["resUrls"] = [];
+    messageInfoMap["thumbnailUrls"] = [];
+    lastMessageInfoMap["lastMessage"] = "Media was shared 🖼️";
+
+    DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
+    DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+    // We upload video thumbnails if there's any
+
+    for (var i = 0; i < imageFileList.length; i++) {
+      final file = imageFileList[i];
+      final isVideo = file.path.contains("mp4");
+
+      if (isVideo) {
+        StorageMethods().uploadThumbnail(file, "${messageId}resindex=$i").then((thumbnailUrl) {
+          messageInfoMap["thumbnailUrls"] = thumbnailUrl;
+          DatabaseMethods().updateMessage(chatRoomId, messageId, messageInfoMap);
+        });
+      }
+
+      
+
+
+    }
+    
+  }
 }
