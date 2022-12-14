@@ -36,7 +36,13 @@ class StorageMethods {
     );
     Reference reference = _storage.ref().child('thumbnails').child(id);
     UploadTask uploadFile = reference.putFile(thumbnailFile);
+
     TaskSnapshot snapshot = await uploadFile;
+
+    final progressStream = uploadFile.asStream();
+    progressStream.listen((event) {
+      event.bytesTransferred.toDouble() / event.totalBytes.toDouble();
+    });
 
     String downloadUrl = await snapshot.ref.getDownloadURL().then((value) {
       reference.updateMetadata(SettableMetadata(contentType: "image"));

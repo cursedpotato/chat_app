@@ -97,7 +97,7 @@ class DatabaseMethods {
         .get();
   }
 
-  Future updateMessageWithThumbnails(
+  Future updateMessage(
     String chatRoomId,
     String messageId,
     Map<String, dynamic> messageInfoMap,
