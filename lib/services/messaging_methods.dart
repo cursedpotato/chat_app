@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
 import 'package:chat_app/services/storage_methods.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -115,16 +116,22 @@ class MessagingMethods {
       final isVideo = file.path.contains("mp4");
 
       if (isVideo) {
-        StorageMethods().uploadThumbnail(file, "${messageId}resindex=$i").then((thumbnailUrl) {
-          messageInfoMap["thumbnailUrls"] = thumbnailUrl;
-          DatabaseMethods().updateMessage(chatRoomId, messageId, messageInfoMap);
+        StorageMethods()
+            .uploadThumbnail(file, "${messageId}resindex=$i")
+            .then((thumbnailUrl) {
+          messageInfoMap["thumbnailUrls"] =
+              FieldValue.arrayUnion([thumbnailUrl]);
+          DatabaseMethods()
+              .updateMessage(chatRoomId, messageId, messageInfoMap);
         });
       }
 
-      
-
-
+      StorageMethods()
+          .uploadFileToStorage(file.path, messageId, isVideo)
+          .then((resUrl) {
+        messageInfoMap["resUrls"] = FieldValue.arrayUnion([resUrl]);
+        DatabaseMethods().updateMessage(chatRoomId, messageId, messageInfoMap);
+      });
     }
-    
   }
 }
