@@ -130,7 +130,7 @@ class MessagingMethods {
           .uploadFileToStorage(file.path, messageId, isVideo)
           .then((resUrl) {
         messageInfoMap["resUrls"] = FieldValue.arrayUnion([resUrl]);
-        DatabaseMethods().updateMessage(chatRoomId, messageId, messageInfoMap);
+        DatabaseMethods().updateMessage(chatRoomId, messageId, messageInfoMap);  
       });
     }
   }
