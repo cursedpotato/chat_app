@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:animate_icons/animate_icons.dart';
+import 'package:chat_app/screens/chatroom/chat_input/camera_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-
 
 import 'media_preview_widget.dart';
 
@@ -14,37 +14,64 @@ class MediaMenu extends HookWidget {
   @override
   Widget build(BuildContext context) {
     const duration = Duration(milliseconds: 500);
+    // Show row icons related variables
     ValueNotifier<bool> showMenu = useState(false);
-    late final animationController = useAnimationController(duration: duration);
+    late final menuIconAnimationController =
+        useAnimationController(duration: duration);
     late final Animation<Offset> offsetAnimation = Tween<Offset>(
       begin: const Offset(-2.75, 1),
       end: Offset.zero,
     ).animate(CurvedAnimation(
-      parent: animationController,
+      parent: menuIconAnimationController,
       curve: Curves.decelerate,
     ));
 
-    if (showMenu.value) animationController.forward();
-    if (!showMenu.value) animationController.reverse();
+    if (showMenu.value) menuIconAnimationController.forward();
+    if (!showMenu.value) menuIconAnimationController.reverse();
 
-    final controller = AnimateIconController();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnimateIcons(
-          duration: duration,
-          startIcon: Icons.arrow_forward_ios_rounded,
-          endIcon: Icons.apps_rounded,
-          onStartIconPress: () {
-            showMenu.value = !showMenu.value;
-            return true;
-          },
-          onEndIconPress: () {
-            showMenu.value = !showMenu.value;
-            return true;
-          },
-          controller: controller,
+        Stack(
+          children: [
+            AnimateIcons(
+              duration: duration,
+              startIcon: Icons.arrow_forward_ios_rounded,
+              endIcon: Icons.apps_rounded,
+              onStartIconPress: () {
+                showMenu.value = !showMenu.value;
+                return true;
+              },
+              onEndIconPress: () {
+                showMenu.value = !showMenu.value;
+                return true;
+              },
+              controller: AnimateIconController(),
+            ),
+            Transform.translate(
+              offset: const Offset(0.0, -50.0),
+              child: const Icon(
+                Icons.abc,
+                color: Colors.red,
+              ),
+            ),
+            Transform.translate(
+              offset: const Offset(0.0, -75.0),
+              child: const Icon(
+                Icons.abc,
+                color: Colors.red,
+              ),
+            ),
+            Transform.translate(
+              offset: const Offset(0.0, -100.0),
+              child: const Icon(
+                Icons.abc,
+                color: Colors.red,
+              ),
+            ),
+          ],
         ),
+
         // This prevents the animated container from overflowing
         AnimatedContainer(
           height: 48,
@@ -54,22 +81,6 @@ class MediaMenu extends HookWidget {
           child: ClipRect(
             child: Row(
               children: [
-                Flexible(
-                  child: SlideTransition(
-                    position: offsetAnimation,
-                    child: IconButton(
-                        onPressed: () async {
-                          FilePickerResult? result =
-                              await FilePicker.platform.pickFiles();
-                          if (result != null) {
-                            File file = File(result.files.single.path!);
-                          } else {
-                            // User canceled the picker
-                          }
-                        },
-                        icon: const Icon(Icons.attach_file)),
-                  ),
-                ),
                 Flexible(
                   child: SlideTransition(
                     position: offsetAnimation,
@@ -96,6 +107,18 @@ class MediaMenu extends HookWidget {
                     ),
                   ),
                 ),
+                Flexible(
+                  child: SlideTransition(
+                    position: offsetAnimation,
+                    child: IconButton(
+                        onPressed: () async {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const CameraExampleHome(),
+                          ));
+                        },
+                        icon: const Icon(Icons.camera_alt_outlined)),
+                  ),
+                ),
               ],
             ),
           ),
@@ -104,5 +127,3 @@ class MediaMenu extends HookWidget {
     );
   }
 }
-
-

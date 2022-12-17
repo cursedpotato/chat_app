@@ -61,6 +61,7 @@ dependencies:
   # to download files
   dio: ^4.0.6
   # Media related packages
+  camera: ^0.10.0+5
   # Audio Recorder
   audio_waveforms: ^0.1.5+1
   # audio waveforms player lacks some features
