@@ -14,7 +14,9 @@ class MediaMenu extends HookWidget {
   @override
   Widget build(BuildContext context) {
     const duration = Duration(milliseconds: 500);
+    //---------------------------------
     // Show row icons related variables
+    //---------------------------------
     ValueNotifier<bool> showMenu = useState(false);
     late final menuIconAnimationController =
         useAnimationController(duration: duration);
@@ -29,47 +31,44 @@ class MediaMenu extends HookWidget {
     if (showMenu.value) menuIconAnimationController.forward();
     if (!showMenu.value) menuIconAnimationController.reverse();
 
+    //--------------------------
+    // Overlay related variables
+    //--------------------------
+    OverlayEntry? overlayEntry;
+
+    useEffect(() {
+      overlayEntry = OverlayEntry(
+        builder: (context) {
+          return Card(
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.attach_file),
+              color: Colors.red,
+              iconSize: 50.0,
+            ),
+          );
+        },
+      );
+      return () => overlayEntry!.dispose();
+    }, []);
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Stack(
-          children: [
-            AnimateIcons(
-              duration: duration,
-              startIcon: Icons.arrow_forward_ios_rounded,
-              endIcon: Icons.apps_rounded,
-              onStartIconPress: () {
-                showMenu.value = !showMenu.value;
-                return true;
-              },
-              onEndIconPress: () {
-                showMenu.value = !showMenu.value;
-                return true;
-              },
-              controller: AnimateIconController(),
-            ),
-            Transform.translate(
-              offset: const Offset(0.0, -50.0),
-              child: const Icon(
-                Icons.abc,
-                color: Colors.red,
-              ),
-            ),
-            Transform.translate(
-              offset: const Offset(0.0, -75.0),
-              child: const Icon(
-                Icons.abc,
-                color: Colors.red,
-              ),
-            ),
-            Transform.translate(
-              offset: const Offset(0.0, -100.0),
-              child: const Icon(
-                Icons.abc,
-                color: Colors.red,
-              ),
-            ),
-          ],
+        AnimateIcons(
+          duration: duration,
+          startIcon: Icons.arrow_forward_ios_rounded,
+          endIcon: Icons.apps_rounded,
+          onStartIconPress: () {
+            Overlay.of(context)!.insert(overlayEntry!);
+            showMenu.value = !showMenu.value;
+            return true;
+          },
+          onEndIconPress: () {
+            showMenu.value = !showMenu.value;
+            return true;
+          },
+          controller: AnimateIconController(),
         ),
 
         // This prevents the animated container from overflowing
