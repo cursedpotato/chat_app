@@ -34,41 +34,63 @@ class MediaMenu extends HookWidget {
     //--------------------------
     // Overlay related variables
     //--------------------------
-    OverlayEntry? overlayEntry;
 
-    useEffect(() {
-      overlayEntry = OverlayEntry(
+    GlobalKey globalKey = GlobalKey();
+
+    void showOverlayItems() {
+      final overlayState = Overlay.of(context);
+
+      print("Closing overlay");
+
+      RenderBox? renderBox =
+          globalKey.currentContext!.findRenderObject() as RenderBox?;
+      Offset offset = renderBox!.localToGlobal(Offset.zero);
+
+      final overlayEntry = OverlayEntry(
         builder: (context) {
-          return Card(
-            child: IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.attach_file),
-              color: Colors.red,
-              iconSize: 50.0,
-            ),
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.attach_file,
+                  color: Colors.red,
+                  size: 50,
+                ),
+              ),
+            ],
           );
         },
       );
-      return () => overlayEntry!.dispose();
-    }, []);
+
+      if (showMenu.value == false) {
+        print("Opening overlay");
+        overlayState!.insert(overlayEntry);
+      }
+    }
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnimateIcons(
-          duration: duration,
-          startIcon: Icons.arrow_forward_ios_rounded,
-          endIcon: Icons.apps_rounded,
-          onStartIconPress: () {
-            Overlay.of(context)!.insert(overlayEntry!);
-            showMenu.value = !showMenu.value;
-            return true;
-          },
-          onEndIconPress: () {
-            showMenu.value = !showMenu.value;
-            return true;
-          },
-          controller: AnimateIconController(),
+        SizedBox(
+          key: globalKey,
+          child: AnimateIcons(
+            duration: duration,
+            startIcon: Icons.arrow_forward_ios_rounded,
+            endIcon: Icons.apps_rounded,
+            onStartIconPress: () {
+              showOverlayItems();
+              showMenu.value = !showMenu.value;
+              return true;
+            },
+            onEndIconPress: () {
+              showOverlayItems();
+              showMenu.value = !showMenu.value;
+              return true;
+            },
+            controller: AnimateIconController(),
+          ),
         ),
 
         // This prevents the animated container from overflowing
