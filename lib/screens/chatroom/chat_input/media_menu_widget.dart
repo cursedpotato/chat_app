@@ -40,110 +40,122 @@ class MediaMenu extends HookWidget {
     void showOverlayItems() {
       final overlayState = Overlay.of(context);
 
-      print("Closing overlay");
+      
 
       RenderBox? renderBox =
           globalKey.currentContext!.findRenderObject() as RenderBox?;
-      Offset offset = renderBox!.localToGlobal(Offset.zero);
+      Offset position = renderBox!.localToGlobal(Offset.zero);
+      Size size = renderBox.size;
+
 
       final overlayEntry = OverlayEntry(
         builder: (context) {
-          return Material(
-            child: IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.attach_file,
-                color: Colors.red,
-                size: 50,
+          return Positioned(
+            left: position.dx,
+            top: position.dy - size.height,
+            width: size.width,
+            child: Card(
+              borderOnForeground: false,
+              child: IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.attach_file,
+                  color: Colors.red,
+                  size: 24,
+                ),
               ),
             ),
           );
         },
       );
 
-      if (showMenu.value == false) {
+      if (showMenu.value == true) {
         print("Opening overlay");
         overlayState!.insert(overlayEntry);
       }
+
+      if (showMenu.value == false) {
+        print("Closing overlay");
+        overlayState!.deactivate();
+      }
     }
 
-    return Material(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            key: globalKey,
-            child: AnimateIcons(
-              duration: duration,
-              startIcon: Icons.arrow_forward_ios_rounded,
-              endIcon: Icons.apps_rounded,
-              onStartIconPress: () {
-                showOverlayItems();
-                showMenu.value = !showMenu.value;
-                return true;
-              },
-              onEndIconPress: () {
-                showOverlayItems();
-                showMenu.value = !showMenu.value;
-                return true;
-              },
-              controller: AnimateIconController(),
-            ),
-          ),
-    
-          // This prevents the animated container from overflowing
-          AnimatedContainer(
-            height: 48,
-            width: showMenu.value ? 104 : 0.0,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          key: globalKey,
+          child: AnimateIcons(
             duration: duration,
-            curve: showMenu.value ? Curves.elasticOut : Curves.ease,
-            child: ClipRect(
-              child: Row(
-                children: [
-                  Flexible(
-                    child: SlideTransition(
-                      position: offsetAnimation,
-                      child: IconButton(
+            startIcon: Icons.arrow_forward_ios_rounded,
+            endIcon: Icons.apps_rounded,
+            onStartIconPress: () {
+              
+              showMenu.value = !showMenu.value;
+              showOverlayItems();
+              return true;
+            },
+            onEndIconPress: () {
+              showMenu.value = !showMenu.value;
+              showOverlayItems();
+              return true;
+            },
+            controller: AnimateIconController(),
+          ),
+        ),
+
+        // This prevents the animated container from overflowing
+        AnimatedContainer(
+          height: 48,
+          width: showMenu.value ? 104 : 0.0,
+          duration: duration,
+          curve: showMenu.value ? Curves.elasticOut : Curves.ease,
+          child: ClipRect(
+            child: Row(
+              children: [
+                Flexible(
+                  child: SlideTransition(
+                    position: offsetAnimation,
+                    child: IconButton(
+                      onPressed: () async {
+                        // We initialize a navigator here because this way,
+                        // we handle that flutter doesn't run any code
+                        // in an async gap where we don't know if the user has picked any files
+                        final navigator = Navigator.of(context);
+                        FilePickerResult? result =
+                            await FilePicker.platform.pickFiles(
+                          allowMultiple: true,
+                          type: FileType.media,
+                        );
+
+                        if (result == null) return;
+                        List<File> files =
+                            result.paths.map((path) => File(path!)).toList();
+                        navigator.push(MaterialPageRoute(
+                          builder: (_) => ImagePreview(imageFileList: files),
+                        ));
+                      },
+                      icon: const Icon(Icons.filter_outlined),
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: SlideTransition(
+                    position: offsetAnimation,
+                    child: IconButton(
                         onPressed: () async {
-                          // We initialize a navigator here because this way,
-                          // we handle that flutter doesn't run any code
-                          // in an async gap where we don't know if the user has picked any files
-                          final navigator = Navigator.of(context);
-                          FilePickerResult? result =
-                              await FilePicker.platform.pickFiles(
-                            allowMultiple: true,
-                            type: FileType.media,
-                          );
-    
-                          if (result == null) return;
-                          List<File> files =
-                              result.paths.map((path) => File(path!)).toList();
-                          navigator.push(MaterialPageRoute(
-                            builder: (_) => ImagePreview(imageFileList: files),
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const CameraExampleHome(),
                           ));
                         },
-                        icon: const Icon(Icons.filter_outlined),
-                      ),
-                    ),
+                        icon: const Icon(Icons.camera_alt_outlined)),
                   ),
-                  Flexible(
-                    child: SlideTransition(
-                      position: offsetAnimation,
-                      child: IconButton(
-                          onPressed: () async {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const CameraExampleHome(),
-                            ));
-                          },
-                          icon: const Icon(Icons.camera_alt_outlined)),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
