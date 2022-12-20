@@ -14,70 +14,87 @@ class MediaMenu extends HookWidget {
   @override
   Widget build(BuildContext context) {
     const duration = Duration(milliseconds: 500);
+
+    ValueNotifier<bool> showMenu = useState(false);
+    late final menuAnimationController =
+        useAnimationController(duration: duration);
     //---------------------------------
     // Show row icons related variables
     //---------------------------------
-    ValueNotifier<bool> showMenu = useState(false);
-    late final menuIconAnimationController =
-        useAnimationController(duration: duration);
-    late final Animation<Offset> offsetAnimation = Tween<Offset>(
+    late final Animation<Offset> rowAnimation = Tween<Offset>(
       begin: const Offset(-2.75, 1),
       end: Offset.zero,
     ).animate(CurvedAnimation(
-      parent: menuIconAnimationController,
+      parent: menuAnimationController,
       curve: Curves.decelerate,
     ));
 
-    if (showMenu.value) menuIconAnimationController.forward();
-    if (!showMenu.value) menuIconAnimationController.reverse();
+    if (showMenu.value) menuAnimationController.forward();
+    if (!showMenu.value) menuAnimationController.reverse();
 
     //--------------------------
     // Overlay related variables
     //--------------------------
-
+    List animation = [];
     GlobalKey globalKey = GlobalKey();
 
-    void showOverlayItems() {
-      final overlayState = Overlay.of(context);
+    final overlayState = useState(Overlay.of(context));
 
-      
+    List<Widget> columnButtons = [
+      IconButton(
+        onPressed: () {},
+        icon: const Icon(Icons.attach_file),
+      ),
+    ];
 
+    useEffect(() {
+      for (int i = columnButtons.length; i > 0; i--) {
+        animation.add(Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+            parent: menuAnimationController,
+            curve: Interval(0.2 * i, 1.0, curve: Curves.ease))));
+      }
+      return;
+    }, []);
+
+    Future<void> showOverlayItems() async {
       RenderBox? renderBox =
           globalKey.currentContext!.findRenderObject() as RenderBox?;
       Offset position = renderBox!.localToGlobal(Offset.zero);
       Size size = renderBox.size;
 
-
       final overlayEntry = OverlayEntry(
         builder: (context) {
           return Positioned(
             left: position.dx,
-            top: position.dy - size.height,
+            top: position.dy - size.height * 1.25,
             width: size.width,
             child: Card(
               borderOnForeground: false,
-              child: IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.attach_file,
-                  color: Colors.red,
-                  size: 24,
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (int i = 0; i < columnButtons.length; i++)
+                    ScaleTransition(
+                      scale: animation[i],
+                      child: columnButtons[i],
+                    )
+                ],
               ),
             ),
           );
         },
       );
 
-      if (showMenu.value == true) {
-        print("Opening overlay");
-        overlayState!.insert(overlayEntry);
-      }
+      menuAnimationController.addListener(() {
+        overlayState.value;
+      });
+      menuAnimationController.forward();
+      overlayState.value!.insert(overlayEntry);
 
-      if (showMenu.value == false) {
-        print("Closing overlay");
-        overlayState!.deactivate();
-      }
+      await Future.delayed(const Duration(seconds: 5))
+          .whenComplete(() => menuAnimationController.reverse())
+          .whenComplete(() => overlayEntry.remove());
     }
 
     return Row(
@@ -90,7 +107,6 @@ class MediaMenu extends HookWidget {
             startIcon: Icons.arrow_forward_ios_rounded,
             endIcon: Icons.apps_rounded,
             onStartIconPress: () {
-              
               showMenu.value = !showMenu.value;
               showOverlayItems();
               return true;
@@ -115,7 +131,7 @@ class MediaMenu extends HookWidget {
               children: [
                 Flexible(
                   child: SlideTransition(
-                    position: offsetAnimation,
+                    position: rowAnimation,
                     child: IconButton(
                       onPressed: () async {
                         // We initialize a navigator here because this way,
@@ -141,7 +157,7 @@ class MediaMenu extends HookWidget {
                 ),
                 Flexible(
                   child: SlideTransition(
-                    position: offsetAnimation,
+                    position: rowAnimation,
                     child: IconButton(
                         onPressed: () async {
                           Navigator.of(context).push(MaterialPageRoute(
