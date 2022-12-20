@@ -45,16 +45,15 @@ class MediaMenu extends HookWidget {
         onPressed: () {},
         icon: const Icon(Icons.attach_file),
       ),
+      IconButton(
+        onPressed: () {},
+        icon: const Icon(Icons.attach_file),
+      ),
+      IconButton(
+        onPressed: () {},
+        icon: const Icon(Icons.attach_file),
+      ),
     ];
-
-    useEffect(() {
-      for (int i = columnButtons.length; i > 0; i--) {
-        animation.add(Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: menuAnimationController,
-            curve: Interval(0.2 * i, 1.0, curve: Curves.ease))));
-      }
-      return;
-    }, []);
 
     Future<void> showOverlayItems() async {
       RenderBox? renderBox =
@@ -62,39 +61,47 @@ class MediaMenu extends HookWidget {
       Offset position = renderBox!.localToGlobal(Offset.zero);
       Size size = renderBox.size;
 
-      final overlayEntry = OverlayEntry(
+      for (int i = columnButtons.length; i > 0; i--) {
+        animation.add(Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+            parent: menuAnimationController,
+            curve: Interval(0.2 * i, 1.0, curve: Curves.ease))));
+      }
+
+      OverlayEntry? overlayEntry = OverlayEntry(
         builder: (context) {
           return Positioned(
             left: position.dx,
-            top: position.dy - size.height * 1.25,
+            top: position.dy - size.height * 4.25,
             width: size.width,
-            child: Card(
-              borderOnForeground: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (int i = 0; i < columnButtons.length; i++)
-                    ScaleTransition(
-                      scale: animation[i],
-                      child: columnButtons[i],
-                    )
-                ],
-              ),
-            ),
+            child: Material(
+                color: Colors.transparent,
+                shadowColor: Colors.transparent,
+                borderOnForeground: false,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: columnButtons.length,
+                  itemBuilder: (context, index) {
+                    return ScaleTransition(
+                      scale: animation[index],
+                      child: columnButtons[index],
+                    );
+                  },
+                )),
           );
         },
       );
 
-      menuAnimationController.addListener(() {
-        overlayState.value;
-      });
-      menuAnimationController.forward();
       overlayState.value!.insert(overlayEntry);
 
-      await Future.delayed(const Duration(seconds: 5))
-          .whenComplete(() => menuAnimationController.reverse())
-          .whenComplete(() => overlayEntry.remove());
+      menuAnimationController.addStatusListener((status) {
+        if (status == AnimationStatus.dismissed) {
+          overlayEntry?.remove();
+          // We set it to null to avoid an assertion error,
+          // that's why the overlayEntry variable is not final as well and is nullable as well
+          overlayEntry = null;
+        }
+      });
     }
 
     return Row(
@@ -107,13 +114,12 @@ class MediaMenu extends HookWidget {
             startIcon: Icons.arrow_forward_ios_rounded,
             endIcon: Icons.apps_rounded,
             onStartIconPress: () {
-              showMenu.value = !showMenu.value;
               showOverlayItems();
+              showMenu.value = !showMenu.value;
               return true;
             },
             onEndIconPress: () {
               showMenu.value = !showMenu.value;
-              showOverlayItems();
               return true;
             },
             controller: AnimateIconController(),
