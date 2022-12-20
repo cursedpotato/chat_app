@@ -61,6 +61,7 @@ class MediaMenu extends HookWidget {
       Offset position = renderBox!.localToGlobal(Offset.zero);
       Size size = renderBox.size;
 
+
       for (int i = columnButtons.length; i > 0; i--) {
         animation.add(Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: menuAnimationController,
@@ -71,6 +72,7 @@ class MediaMenu extends HookWidget {
         builder: (context) {
           return Positioned(
             left: position.dx,
+            // TODO: May have to listen to the height of the key
             top: position.dy - size.height * 4.25,
             width: size.width,
             child: Material(
