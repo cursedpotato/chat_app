@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:animate_icons/animate_icons.dart';
+import 'dart:math' as math;
 import 'package:chat_app/screens/chatroom/chat_input/camera_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +16,9 @@ class MediaMenu extends HookWidget {
     const duration = Duration(milliseconds: 500);
 
     ValueNotifier<bool> showMenu = useState(false);
-    late final menuAnimationController =
-        useAnimationController(duration: duration);
+    late final menuAnimationController = useAnimationController(
+      duration: duration,
+    );
     //---------------------------------
     // Show row icons related variables
     //---------------------------------
@@ -47,20 +48,30 @@ class MediaMenu extends HookWidget {
       ),
       IconButton(
         onPressed: () {},
-        icon: const Icon(Icons.attach_file),
+        icon: const Icon(Icons.headphones),
       ),
       IconButton(
         onPressed: () {},
-        icon: const Icon(Icons.attach_file),
+        icon: const Icon(Icons.data_array),
       ),
     ];
 
-    Future<void> showOverlayItems() async {
+    OverlayEntry? overlayEntry;
+
+    useEffect(
+      () => () => overlayEntry == null ? () {} : overlayEntry!.remove(),
+      [],
+    );
+
+    showOverlayItems() {
       RenderBox? renderBox =
           globalKey.currentContext!.findRenderObject() as RenderBox?;
-      Offset position = renderBox!.localToGlobal(Offset.zero);
-      Size size = renderBox.size;
 
+      menuAnimationController.addListener(() {
+        globalKey.currentContext?.findRenderObject() as RenderBox?;
+      });
+      Offset position = renderBox!.localToGlobal(Offset(-8.0, 0.0));
+      Size size = renderBox.size;
 
       for (int i = columnButtons.length; i > 0; i--) {
         animation.add(Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
@@ -68,7 +79,7 @@ class MediaMenu extends HookWidget {
             curve: Interval(0.2 * i, 1.0, curve: Curves.ease))));
       }
 
-      OverlayEntry? overlayEntry = OverlayEntry(
+      overlayEntry = OverlayEntry(
         builder: (context) {
           return Positioned(
             left: position.dx,
@@ -78,7 +89,6 @@ class MediaMenu extends HookWidget {
             child: Material(
                 color: Colors.transparent,
                 shadowColor: Colors.transparent,
-                borderOnForeground: false,
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -94,7 +104,7 @@ class MediaMenu extends HookWidget {
         },
       );
 
-      overlayState.value!.insert(overlayEntry);
+      overlayState.value!.insert(overlayEntry!);
 
       menuAnimationController.addStatusListener((status) {
         if (status == AnimationStatus.dismissed) {
@@ -109,24 +119,15 @@ class MediaMenu extends HookWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          key: globalKey,
-          child: AnimateIcons(
-            duration: duration,
+        AnimatedIconButton(
+            key: globalKey,
             startIcon: Icons.arrow_forward_ios_rounded,
             endIcon: Icons.apps_rounded,
-            onStartIconPress: () {
+            onTap: () {
               showOverlayItems();
               showMenu.value = !showMenu.value;
-              return true;
             },
-            onEndIconPress: () {
-              showMenu.value = !showMenu.value;
-              return true;
-            },
-            controller: AnimateIconController(),
-          ),
-        ),
+            animationController: menuAnimationController),
 
         // This prevents the animated container from overflowing
         AnimatedContainer(
@@ -180,6 +181,70 @@ class MediaMenu extends HookWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class AnimatedIconButton extends HookWidget {
+  const AnimatedIconButton(
+      {Key? key,
+      required this.startIcon,
+      required this.endIcon,
+      required this.onTap,
+      required this.animationController})
+      : super(key: key);
+
+  final IconData startIcon;
+  final IconData endIcon;
+  final VoidCallback onTap;
+  final AnimationController animationController;
+
+  @override
+  Widget build(BuildContext context) {
+    double x = 0;
+    double y = 1.0;
+    animationController.addListener(() {
+      x = animationController.value;
+      y = 1.0 - animationController.value;
+    });
+
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        height: 48,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: animationController,
+              builder: (context, child) {
+                return Transform.rotate(
+                    angle: -(math.pi / 180 * (180 * x)),
+                    child: Opacity(opacity: y, child: child));
+              },
+              child: Icon(
+                startIcon,
+                size: 24.0,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            AnimatedBuilder(
+              animation: animationController,
+              builder: (context, child) {
+                return Transform.rotate(
+                  angle: math.pi / 180 * (180 * y),
+                  child: Opacity(opacity: x, child: child),
+                );
+              },
+              child: Icon(
+                endIcon,
+                size: 24.0,
+                color: Theme.of(context).primaryColor,
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
