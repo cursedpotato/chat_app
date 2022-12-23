@@ -44,24 +44,20 @@ class MediaMenu extends HookWidget {
     List<Widget> columnButtons = [
       IconButton(
         onPressed: () {},
-        icon: const Icon(Icons.attach_file),
+        icon: const Icon(Icons.insert_drive_file_outlined),
       ),
       IconButton(
         onPressed: () {},
-        icon: const Icon(Icons.headphones),
+        icon: const Icon(Icons.headphones_outlined),
       ),
       IconButton(
         onPressed: () {},
-        icon: const Icon(Icons.data_array),
+        icon: const Icon(Icons.attach_file_outlined),
       ),
     ];
 
     OverlayEntry? overlayEntry;
 
-    useEffect(
-      () => () => overlayEntry == null ? () {} : overlayEntry!.remove(),
-      [],
-    );
 
     showOverlayItems() {
       RenderBox? renderBox =
