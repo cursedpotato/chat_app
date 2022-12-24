@@ -58,7 +58,6 @@ class MediaMenu extends HookWidget {
 
     OverlayEntry? overlayEntry;
 
-
     showOverlayItems() {
       RenderBox? renderBox =
           globalKey.currentContext!.findRenderObject() as RenderBox?;
@@ -110,20 +109,26 @@ class MediaMenu extends HookWidget {
           overlayEntry = null;
         }
       });
-    }
+    }  
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnimatedIconButton(
-            key: globalKey,
-            startIcon: Icons.arrow_forward_ios_rounded,
-            endIcon: Icons.apps_rounded,
-            onTap: () {
-              showOverlayItems();
-              showMenu.value = !showMenu.value;
-            },
-            animationController: menuAnimationController),
+        Stack(
+          key: globalKey,
+          children: [
+            AnimatedIconButton(
+              startIcon: Icons.arrow_forward_ios_rounded,
+              endIcon: Icons.apps_rounded,
+              onTap: () {
+                showOverlayItems();
+                showMenu.value = !showMenu.value;
+              },
+              animationController: menuAnimationController,
+            ),
+            
+          ],
+        ),
 
         // This prevents the animated container from overflowing
         AnimatedContainer(
@@ -134,6 +139,7 @@ class MediaMenu extends HookWidget {
           child: ClipRect(
             child: Row(
               children: [
+                // TODO: May make this methods
                 Flexible(
                   child: SlideTransition(
                     position: rowAnimation,
