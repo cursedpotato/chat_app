@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'dart:math' as math;
+import 'package:chat_app/globals.dart';
 import 'package:chat_app/screens/chatroom/chat_input/camera_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,7 @@ class MediaMenu extends HookWidget {
     //--------------------------
     List animation = [];
     GlobalKey globalKey = GlobalKey();
+    final animatedButtonLocation = useState(Offset.zero);
 
     final overlayState = useState(Overlay.of(context));
 
@@ -77,9 +79,9 @@ class MediaMenu extends HookWidget {
       overlayEntry = OverlayEntry(
         builder: (context) {
           return Positioned(
-            left: position.dx,
+            left: animatedButtonLocation.value.dx,
             // TODO: May have to listen to the height of the key
-            top: position.dy - size.height * 4.25,
+            top: animatedButtonLocation.value.dy - size.height * 4.25,
             width: size.width,
             child: Material(
                 color: Colors.transparent,
@@ -109,25 +111,27 @@ class MediaMenu extends HookWidget {
           overlayEntry = null;
         }
       });
-    }  
+    }
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Stack(
-          key: globalKey,
-          children: [
-            AnimatedIconButton(
-              startIcon: Icons.arrow_forward_ios_rounded,
-              endIcon: Icons.apps_rounded,
-              onTap: () {
-                showOverlayItems();
-                showMenu.value = !showMenu.value;
-              },
-              animationController: menuAnimationController,
-            ),
-            
-          ],
+        LocatableWidget(
+          onChange: (location) => animatedButtonLocation.value = location,
+          child: Stack(
+            key: globalKey,
+            children: [
+              AnimatedIconButton(
+                startIcon: Icons.arrow_forward_ios_rounded,
+                endIcon: Icons.apps_rounded,
+                onTap: () {
+                  showOverlayItems();
+                  showMenu.value = !showMenu.value;
+                },
+                animationController: menuAnimationController,
+              ),
+            ],
+          ),
         ),
 
         // This prevents the animated container from overflowing

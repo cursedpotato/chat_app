@@ -88,7 +88,7 @@ class LocatableWidget extends SingleChildRenderObjectWidget {
   const LocatableWidget(
       {Key? key, required this.onChange, required Widget child})
       : super(key: key, child: child);
-  final void Function(Offset size) onChange;
+  final void Function(Offset location) onChange;
   @override
   RenderObject createRenderObject(BuildContext context) =>
      LocatePositionRenderObject(onChange);
