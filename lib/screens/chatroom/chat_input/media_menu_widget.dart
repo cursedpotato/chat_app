@@ -12,6 +12,7 @@ import 'media_preview_widget.dart';
 class MediaMenu extends HookWidget {
   const MediaMenu({Key? key}) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
     const duration = Duration(milliseconds: 500);
@@ -79,9 +80,9 @@ class MediaMenu extends HookWidget {
       overlayEntry = OverlayEntry(
         builder: (context) {
           return Positioned(
-            left: animatedButtonLocation.value.dx,
+            left:position.dx,
             // TODO: May have to listen to the height of the key
-            top: animatedButtonLocation.value.dy - size.height * 4.25,
+            top:position.dy - size.height * 4.25,
             width: size.width,
             child: Material(
                 color: Colors.transparent,
@@ -116,9 +117,7 @@ class MediaMenu extends HookWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LocatableWidget(
-          onChange: (location) => animatedButtonLocation.value = location,
-          child: Stack(
+        Stack(
             key: globalKey,
             children: [
               AnimatedIconButton(
@@ -132,8 +131,6 @@ class MediaMenu extends HookWidget {
               ),
             ],
           ),
-        ),
-
         // This prevents the animated container from overflowing
         AnimatedContainer(
           height: 48,

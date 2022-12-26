@@ -69,30 +69,7 @@ class MeasurableWidget extends SingleChildRenderObjectWidget {
       MeasureSizeRenderObject(onChange);
 }
 
-class LocatePositionRenderObject extends RenderProxyBox {
-  LocatePositionRenderObject(this.onChange);
-  void Function(Offset size) onChange;
 
-  Offset _previousLocation = Offset.zero;
-  @override
-  void performLayout() {
-    super.performLayout();
-    Offset newLocation = child!.localToGlobal(const Offset(0.0, 0.0));
-    if (_previousLocation == newLocation) return;
-    _previousLocation = newLocation;
-    WidgetsBinding.instance.addPostFrameCallback((_) => onChange(newLocation));
-  }
-}
-
-class LocatableWidget extends SingleChildRenderObjectWidget {
-  const LocatableWidget(
-      {Key? key, required this.onChange, required Widget child})
-      : super(key: key, child: child);
-  final void Function(Offset location) onChange;
-  @override
-  RenderObject createRenderObject(BuildContext context) =>
-     LocatePositionRenderObject(onChange);
-}
 
 
 
