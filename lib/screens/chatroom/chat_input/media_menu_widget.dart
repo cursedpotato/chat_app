@@ -12,7 +12,6 @@ import 'media_preview_widget.dart';
 class MediaMenu extends HookWidget {
   const MediaMenu({Key? key}) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
     const duration = Duration(milliseconds: 500);
@@ -80,9 +79,9 @@ class MediaMenu extends HookWidget {
       overlayEntry = OverlayEntry(
         builder: (context) {
           return Positioned(
-            left:position.dx,
+            left: position.dx,
             // TODO: May have to listen to the height of the key
-            top:position.dy - size.height * 4.25,
+            top: position.dy - size.height * 4.25,
             width: size.width,
             child: Material(
                 color: Colors.transparent,
@@ -117,20 +116,21 @@ class MediaMenu extends HookWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Stack(
+        KeyboardVisibilityBuilder(
+          child: AnimatedIconButton(
             key: globalKey,
-            children: [
-              AnimatedIconButton(
-                startIcon: Icons.arrow_forward_ios_rounded,
-                endIcon: Icons.apps_rounded,
-                onTap: () {
-                  showOverlayItems();
-                  showMenu.value = !showMenu.value;
-                },
-                animationController: menuAnimationController,
-              ),
-            ],
+            startIcon: Icons.arrow_forward_ios_rounded,
+            endIcon: Icons.apps_rounded,
+            onTap: () {
+              showOverlayItems();
+              showMenu.value = !showMenu.value;
+            },
+            animationController: menuAnimationController,
           ),
+          builder: (context, child, isKeyboardVisible) {
+            return child;
+          },
+        ),
         // This prevents the animated container from overflowing
         AnimatedContainer(
           height: 48,
@@ -250,4 +250,61 @@ class AnimatedIconButton extends HookWidget {
       ),
     );
   }
+}
+
+class KeyboardVisibilityBuilder extends StatefulWidget {
+  final Widget child;
+  final Widget Function(
+    BuildContext context,
+    Widget child,
+    bool isKeyboardVisible,
+  ) builder;
+
+  const KeyboardVisibilityBuilder({
+    Key? key,
+    required this.child,
+    required this.builder,
+  }) : super(key: key);
+
+  @override
+  State<KeyboardVisibilityBuilder> createState() =>
+      _KeyboardVisibilityBuilderState();
+}
+
+class _KeyboardVisibilityBuilderState extends State<KeyboardVisibilityBuilder>
+    with WidgetsBindingObserver {
+  var _isKeyboardVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+
+    print('This is the bottomInset: $bottomInset');
+    final newValue = bottomInset > 0.0;
+    if (newValue != _isKeyboardVisible) {
+      setState(() {
+        _isKeyboardVisible = newValue;
+        print(_isKeyboardVisible);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(
+        context,
+        widget.child,
+        _isKeyboardVisible,
+      );
 }
