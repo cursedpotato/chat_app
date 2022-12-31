@@ -36,11 +36,9 @@ class MediaMenu extends HookWidget {
     //----------------------------------------
     // Overlay related functions and variables
     //----------------------------------------
+    final animationList = useState<List>([]);
     GlobalKey globalKey = GlobalKey();
 
-    // We will assign an animation with a for loop to every Icon button that
-    // is in columnButtons
-    final animationList = useState<List>([]);
     final overlayState = useState(Overlay.of(context));
 
     final overlayPosition = useState<Offset>(Offset.zero);
@@ -61,7 +59,7 @@ class MediaMenu extends HookWidget {
       ),
     ];
 
-    OverlayEntry overlayEntryWidget() {
+    overlayEntryWidget() {
       return OverlayEntry(
         builder: (context) {
           return Positioned(
@@ -87,10 +85,18 @@ class MediaMenu extends HookWidget {
       );
     }
 
-    ValueNotifier<OverlayEntry?> overlayEntry =
-        useState<OverlayEntry?>(overlayEntryWidget());
+    final overlayEntry = useState<OverlayEntry?>(null);
 
-    showOverlayItems() {
+    removeOverlay() {
+      if (overlayEntry.value == null) return;
+      overlayEntry.value!.remove();
+      // We set it to null to avoid an assertion error,
+      // that's why the overlayEntry variable is not final as well and is nullable as well
+
+      overlayEntry.value = null;
+    }
+
+    showOverlayWidget() {
       // We get a renderbox to get the overlay the current size of the widget and offset
       RenderBox? renderBox =
           globalKey.currentContext!.findRenderObject() as RenderBox?;
@@ -112,47 +118,36 @@ class MediaMenu extends HookWidget {
 
       // When the animation is completed we no longer have to listen
       menuAnimationController.addStatusListener((status) {
-        if (status == AnimationStatus.dismissed) {
-          overlayEntry.value?.remove();
-          // We set it to null to avoid an assertion error,
-          // that's why the overlayEntry variable is not final as well and is nullable as well
-          overlayEntry.value = null;
-        }
+        if (status == AnimationStatus.dismissed) removeOverlay();
       });
     }
 
-    
+    useEffect(() => () => overlayEntry.value?.remove(), []);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         KeyboardVisibilityBuilder(
-          builder: (context, child, isKeyboardVisible, position) {
-            RenderBox? renderBox =
-                globalKey.currentContext?.findRenderObject() as RenderBox?;
-            final newPosition =
-                renderBox?.localToGlobal(const Offset(-8.0, 0.0));
-
-            if (renderBox != null) {
-              overlayPosition.value = newPosition!;
+            onPositionChange: (position) {
+              RenderBox? renderBox =
+                  globalKey.currentContext!.findRenderObject() as RenderBox?;
+              final newPosition =
+                  renderBox!.localToGlobal(const Offset(-8.0, 0.0));
+              overlayPosition.value = newPosition;
 
               overlayEntry.value?.markNeedsBuild();
-            }
-
-            print("This is the state of the overlay: $overlayEntry");
-            return child;
-          },
-          child: AnimatedIconButton(
-            key: globalKey,
-            startIcon: Icons.arrow_forward_ios_rounded,
-            endIcon: Icons.apps_rounded,
-            onTap: () {
-              showOverlayItems();
-              showMenu.value = !showMenu.value;
             },
-            animationController: menuAnimationController,
-          ),
-        ),
+            child: AnimatedIconButton(
+              key: globalKey,
+              startIcon: Icons.arrow_forward_ios_rounded,
+              endIcon: Icons.apps_rounded,
+              onTap: () {
+                showOverlayWidget();
+                showMenu.value = !showMenu.value;
+              },
+              animationController: menuAnimationController,
+            ),
+            builder: (context, child, isKeyboardVisible) => child),
         // This prevents the animated container from overflowing
         AnimatedContainer(
           height: 48,
@@ -276,14 +271,18 @@ class AnimatedIconButton extends HookWidget {
 
 class KeyboardVisibilityBuilder extends StatefulWidget {
   final Widget child;
-
-  final Widget Function(BuildContext context, Widget child,
-      bool isKeyboardVisible, Offset position) builder;
+  final void Function(Offset position) onPositionChange;
+  final Widget Function(
+    BuildContext context,
+    Widget child,
+    bool isKeyboardVisible,
+  ) builder;
 
   const KeyboardVisibilityBuilder({
     Key? key,
     required this.child,
     required this.builder,
+    required this.onPositionChange,
   }) : super(key: key);
 
   @override
@@ -293,7 +292,7 @@ class KeyboardVisibilityBuilder extends StatefulWidget {
 
 class _KeyboardVisibilityBuilderState extends State<KeyboardVisibilityBuilder>
     with WidgetsBindingObserver {
-  bool isKeyboardVisible = false;
+  bool _isKeyboardVisible = false;
   GlobalKey key = GlobalKey();
   RenderBox? renderBox;
   Offset currentPosition = Offset.zero;
@@ -312,22 +311,21 @@ class _KeyboardVisibilityBuilderState extends State<KeyboardVisibilityBuilder>
 
   @override
   void didChangeMetrics() {
-    renderBox = key.currentContext?.findRenderObject() as RenderBox?;
+    renderBox = key.currentContext!.findRenderObject() as RenderBox?;
 
-    if (renderBox != null) {
-      Offset newPosition = renderBox!.localToGlobal(const Offset(-8.0, 0.0));
-      setState(() {
-        currentPosition = newPosition;
-      });
-    }
+    Offset newPosition = renderBox!.localToGlobal(const Offset(-8.0, 0.0));
 
     final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
 
     final newValue = bottomInset > 0.0;
 
-    if (newValue != isKeyboardVisible) {
+    setState(() {
+      currentPosition = newPosition;
+      widget.onPositionChange(currentPosition);
+    });
+    if (newValue != _isKeyboardVisible) {
       setState(() {
-        isKeyboardVisible = newValue;
+        _isKeyboardVisible = newValue;
       });
     }
   }
@@ -336,6 +334,9 @@ class _KeyboardVisibilityBuilderState extends State<KeyboardVisibilityBuilder>
   Widget build(BuildContext context) => SizedBox(
         key: key,
         child: widget.builder(
-            context, widget.child, isKeyboardVisible, currentPosition),
+          context,
+          widget.child,
+          _isKeyboardVisible,
+        ),
       );
 }
