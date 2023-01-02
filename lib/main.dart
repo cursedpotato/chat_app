@@ -33,12 +33,14 @@ class MyApp extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    
-
     useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(camerasList.notifier).state = _cameras;
+      });
+
       
-      ref.read(camerasList.notifier).state = _cameras;
-      return ;
+
+      return;
     }, []);
     getCurrentUser() async {
       return FirebaseAuth.instance.currentUser;

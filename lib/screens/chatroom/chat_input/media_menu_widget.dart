@@ -190,7 +190,7 @@ class MediaMenu extends HookWidget {
                     child: IconButton(
                         onPressed: () async {
                           Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const CameraApp(),
+                            builder: (context) => const CameraScreen(),
                           ));
                         },
                         icon: const Icon(Icons.camera_alt_outlined)),

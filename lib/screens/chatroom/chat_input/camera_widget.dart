@@ -1,63 +1,35 @@
 import 'package:camera/camera.dart';
+import 'package:chat_app/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-late List<CameraDescription> _cameras;
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  _cameras = await availableCameras();
-  runApp(const CameraApp());
-}
-
-/// CameraApp is the Main Application.
-class CameraApp extends StatefulWidget {
-  /// Default Constructor
-  const CameraApp({Key? key}) : super(key: key);
+class CameraScreen extends HookConsumerWidget {
+  const CameraScreen({Key? key}) : super(key: key);
 
   @override
-  State<CameraApp> createState() => _CameraAppState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    late CameraController controller;
 
-class _CameraAppState extends State<CameraApp> {
-  late CameraController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = CameraController(_cameras[0], ResolutionPreset.max);
-    controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    }).catchError((Object e) {
-      if (e is CameraException) {
-        switch (e.code) {
-          case 'CameraAccessDenied':
-            // Handle access errors here.
-            break;
-          default:
-            // Handle other errors here.
-            break;
+    final _cameras = ref.watch(camerasList);
+    useEffect(() {
+      controller = CameraController(_cameras[0], ResolutionPreset.max);
+      controller.initialize().then((_) {
+        
+      }).catchError((Object e) {
+        if (e is CameraException) {
+          switch (e.code) {
+            case 'CameraAccessDenied':
+              // Handle access errors here.
+              break;
+            default:
+              // Handle other errors here.
+              break;
+          }
         }
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!controller.value.isInitialized) {
-      return Container();
-    }
-    return MaterialApp(
-      home: CameraPreview(controller),
-    );
+      });
+      return;
+    }, []);
+    return Container();
   }
 }
