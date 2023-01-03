@@ -189,6 +189,7 @@ class MediaMenu extends HookWidget {
                     position: rowAnimation,
                     child: IconButton(
                         onPressed: () async {
+                          overlayEntry.value?.remove();
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => const CameraScreen(),
                           ));

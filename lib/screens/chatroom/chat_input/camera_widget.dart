@@ -14,9 +14,7 @@ class CameraScreen extends HookConsumerWidget {
     final _cameras = ref.watch(camerasList);
     useEffect(() {
       controller = CameraController(_cameras[0], ResolutionPreset.max);
-      controller.initialize().then((_) {
-        
-      }).catchError((Object e) {
+      controller.initialize().then((_) {}).catchError((Object e) {
         if (e is CameraException) {
           switch (e.code) {
             case 'CameraAccessDenied':
@@ -30,6 +28,6 @@ class CameraScreen extends HookConsumerWidget {
       });
       return;
     }, []);
-    return Container();
+    return CameraPreview(controller);
   }
 }
