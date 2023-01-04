@@ -1,5 +1,4 @@
 import 'package:camera/camera.dart';
-import 'package:chat_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,8 +10,16 @@ class CameraScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     late CameraController controller;
 
-    final _cameras = ref.watch(camerasList);
+    late final _cameras;
+
+    getCameras() async {
+
+      WidgetsFlutterBinding.ensureInitialized();
+      _cameras = await availableCameras();
+    }
+
     useEffect(() {
+      getCameras();
       controller = CameraController(_cameras[0], ResolutionPreset.max);
       controller.initialize().then((_) {}).catchError((Object e) {
         if (e is CameraException) {

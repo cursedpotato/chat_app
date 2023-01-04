@@ -13,15 +13,12 @@ import 'firebase_options.dart';
 
 import 'screens/signin/signin_screen.dart';
 
-final camerasList = StateProvider(
-  (ref) => [],
-);
 
-late List<CameraDescription> _cameras;
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  _cameras = await availableCameras();
+ 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     const ProviderScope(child: MyApp()),
@@ -33,15 +30,7 @@ class MyApp extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    useEffect(() {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(camerasList.notifier).state = _cameras;
-      });
-
-      
-
-      return;
-    }, []);
+    
     getCurrentUser() async {
       return FirebaseAuth.instance.currentUser;
     }

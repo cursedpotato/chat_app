@@ -82,6 +82,8 @@ class MediaMessageWidget extends HookConsumerWidget {
       final mediaUrl = urlList[i];
       final isVideo = await urlContainsVideo(mediaUrl);
 
+      
+
       contentList.add(MediaType(mediaUrl, isVideo));
 
       yield contentList;
