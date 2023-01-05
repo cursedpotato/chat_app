@@ -102,14 +102,16 @@ class SingleImageWidget extends StatelessWidget {
       children: [
         CachedNetworkImage(imageUrl: mediaUrl),
         isVideoThumnail
-            ? const Align(
-                alignment: Alignment.center,
-                child: Icon(
-                  Icons.play_arrow,
-                  size: 80,
-                  color: Colors.white,
+            ? const Positioned.fill(
+              child: Align(
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.play_arrow,
+                    size: 80,
+                    color: Colors.white,
+                  ),
                 ),
-              )
+            )
             : const SizedBox()
       ],
     );
