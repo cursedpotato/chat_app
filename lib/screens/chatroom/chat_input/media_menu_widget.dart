@@ -163,6 +163,8 @@ class MediaMenu extends HookWidget {
                     position: rowAnimation,
                     child: IconButton(
                       onPressed: () async {
+                        showMenu.value = false;
+                        // We remove the overlay because it
                         // We initialize a navigator here because this way,
                         // we handle that flutter doesn't run any code
                         // in an async gap where we don't know if the user has picked any files

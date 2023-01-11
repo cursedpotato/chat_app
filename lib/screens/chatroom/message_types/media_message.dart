@@ -13,6 +13,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
+import '../../../globals.dart';
+
 class MediaType {
   final String mediaUrl;
   final bool isVideo;
@@ -36,10 +38,24 @@ class MediaMessageWidget extends HookConsumerWidget {
 
     return GestureDetector(
       child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.45,
-          child: urlList.hasData
-              ? mediaType(urlList.data!)
-              : const CircularProgressIndicator()),
+        width: MediaQuery.of(context).size.width * 0.45,
+        child: Card(
+          elevation: 1,
+          color: kPrimaryColor.withOpacity(messageModel.isSender! ? 1 : 0.1),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 5,
+              top: 5,
+              right: 5,
+              bottom: 25,
+            ),
+            child: urlList.hasData
+                ? mediaType(urlList.data!)
+                : const CircularProgressIndicator(),
+          ),
+        ),
+      ),
     );
   }
 
@@ -58,7 +74,7 @@ class MediaMessageWidget extends HookConsumerWidget {
     return const CircularProgressIndicator();
   }
 
-  urlContainsVideo(url) async {
+  Future<bool> urlContainsVideo(url) async {
     final storageRef = FirebaseStorage.instance;
     final metadata = await storageRef.refFromURL(url).getMetadata();
     final contentType = metadata.contentType;
