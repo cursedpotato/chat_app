@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/message_model.dart';
 import 'package:chat_app/screens/home/chat_card.dart';
+import 'package:chat_app/services/database_methods.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,7 @@ class MediaMessageWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final messageId = messageModel.id;
     final roomId = ref.watch(chatroomId);
-      
+
     final urlList = useStream(useMemoized(
       () => contentType(messageModel.resUrls),
     ));
@@ -69,6 +70,18 @@ class MediaMessageWidget extends HookConsumerWidget {
     return isVideo;
   }
 
+  // IMPORTANT!!! the index is not the index of the list lenght of the for loop
+  // but the index that is at the end of the url.
+  // Why? Because lenght of the thumbnail list is not the same as the media urls.
+  Future<String> getThumnail(int index) async {
+    // TODO: add message id and chatroom id
+    final messasgeInfo = await DatabaseMethods().getMessageInfo("", "");
+    final model = ChatMesssageModel.fromDocument(messasgeInfo);
+    final thumbnail = model.thumnailUrls![index];
+
+    return thumbnail;
+  }
+
   // This stream checks if the content of url is either a video or simple image, the purpose of this
   // is not sending a video file to an image widget which makes the app crash.
 
@@ -82,7 +95,13 @@ class MediaMessageWidget extends HookConsumerWidget {
       final mediaUrl = urlList[i];
       final isVideo = await urlContainsVideo(mediaUrl);
 
-      
+      if (isVideo) {
+        // TODO: check the index that at the end of the url to determine it's place on the list
+        final thumbnail = await getThumnail(0);
+        contentList.add(MediaType(thumbnail, isVideo));
+
+        yield contentList;
+      }
 
       contentList.add(MediaType(mediaUrl, isVideo));
 
@@ -103,7 +122,7 @@ class SingleImageWidget extends StatelessWidget {
         CachedNetworkImage(imageUrl: mediaUrl),
         isVideoThumnail
             ? const Positioned.fill(
-              child: Align(
+                child: Align(
                   alignment: Alignment.center,
                   child: Icon(
                     Icons.play_arrow,
@@ -111,7 +130,7 @@ class SingleImageWidget extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-            )
+              )
             : const SizedBox()
       ],
     );
