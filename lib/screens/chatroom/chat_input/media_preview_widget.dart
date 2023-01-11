@@ -158,12 +158,14 @@ class VideoPlayerWidget extends HookWidget {
               alignment: Alignment.center,
               child: VideoPlayer(videoController.value),
             ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Icon(
-                playingSnapshot.data ?? false ? Icons.pause : Icons.play_arrow,
-                color: Colors.white,
-                size: 80,
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Icon(
+                  playingSnapshot.data ?? false ? Icons.pause : Icons.play_arrow,
+                  color: Colors.white,
+                  size: 80,
+                ),
               ),
             ),
           ],
