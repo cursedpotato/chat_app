@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/message_model.dart';
-import 'package:chat_app/screens/home/chat_card.dart';
-import 'package:chat_app/services/database_methods.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -29,11 +27,9 @@ class MediaMessageWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final messageId = messageModel.id;
-    final roomId = ref.watch(chatroomId);
 
     final urlList = useStream(useMemoized(
-      () => contentType(messageModel.resUrls),
+      () => contentType(messageModel),
     ));
 
     return GestureDetector(
@@ -89,10 +85,8 @@ class MediaMessageWidget extends HookConsumerWidget {
   // IMPORTANT!!! the index is not the index of the list lenght of the for loop
   // but the index that is at the end of the url.
   // Why? Because lenght of the thumbnail list is not the same as the media urls.
-  Future<String> getThumnail(int index) async {
-    // TODO: add message id and chatroom id
-    final messasgeInfo = await DatabaseMethods().getMessageInfo("", "");
-    final model = ChatMesssageModel.fromDocument(messasgeInfo);
+  String getThumnail(ChatMesssageModel model, int index)  {
+    
     final thumbnail = model.thumnailUrls![index];
 
     return thumbnail;
@@ -102,8 +96,10 @@ class MediaMessageWidget extends HookConsumerWidget {
   // is not sending a video file to an image widget which makes the app crash.
 
   // TODO: Change this stream so it returns a list of images or thumnails instead of just images and videos
-  Stream<List<MediaType>> contentType(List<String>? urlList) async* {
+  Stream<List<MediaType>> contentType(ChatMesssageModel model) async* {
     List<MediaType> contentList = [];
+
+    final urlList = model.resUrls;
 
     if (urlList == null) throw "Your list is null";
 
@@ -113,7 +109,7 @@ class MediaMessageWidget extends HookConsumerWidget {
 
       if (isVideo) {
         // TODO: check the index that at the end of the url to determine it's place on the list
-        final thumbnail = await getThumnail(0);
+        final thumbnail = getThumnail(model, 0);
         contentList.add(MediaType(thumbnail, isVideo));
 
         yield contentList;
@@ -210,7 +206,7 @@ class GalleryWidget extends StatelessWidget {
                   initialScale: PhotoViewComputedScale.contained * 0.8,
                   minScale: PhotoViewComputedScale.contained * 0.8,
                   maxScale: PhotoViewComputedScale.covered * 1.1,
-                  child: SizedBox(),
+                  child: const SizedBox(),
                 );
               },
               loadingBuilder: (_, __) => const Center(
