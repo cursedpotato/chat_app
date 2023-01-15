@@ -157,53 +157,63 @@ class MediaMenu extends HookWidget {
           child: ClipRect(
             child: Row(
               children: [
-                // TODO: May make this methods
-                Flexible(
-                  child: SlideTransition(
-                    position: rowAnimation,
-                    child: IconButton(
-                      onPressed: () async {
-                        showMenu.value = false;
-                        // We remove the overlay because it
-                        // We initialize a navigator here because this way,
-                        // we handle that flutter doesn't run any code
-                        // in an async gap where we don't know if the user has picked any files
-                        final navigator = Navigator.of(context);
-                        FilePickerResult? result =
-                            await FilePicker.platform.pickFiles(
-                          allowMultiple: true,
-                          type: FileType.media,
-                        );
-
-                        if (result == null) return;
-                        List<File> files =
-                            result.paths.map((path) => File(path!)).toList();
-                        navigator.push(MaterialPageRoute(
-                          builder: (_) => ImagePreview(imageFileList: files),
-                        ));
-                      },
-                      icon: const Icon(Icons.filter_outlined),
-                    ),
-                  ),
-                ),
-                Flexible(
-                  child: SlideTransition(
-                    position: rowAnimation,
-                    child: IconButton(
-                        onPressed: () async {
-                          overlayEntry.value?.remove();
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const CameraScreen(),
-                          ));
-                        },
-                        icon: const Icon(Icons.camera_alt_outlined)),
-                  ),
-                ),
+                mediaPickerIconButton(rowAnimation, showMenu, context),
+                cameraIconButton(rowAnimation, overlayEntry, context),
               ],
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Flexible cameraIconButton(Animation<Offset> rowAnimation,
+      ValueNotifier<OverlayEntry?> overlayEntry, BuildContext context) {
+    return Flexible(
+      child: SlideTransition(
+        position: rowAnimation,
+        child: IconButton(
+            onPressed: () async {
+              overlayEntry.value?.remove();
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const CameraScreen(),
+              ));
+            },
+            icon: const Icon(Icons.camera_alt_outlined)),
+      ),
+    );
+  }
+
+  Widget mediaPickerIconButton(
+    Animation<Offset> rowAnimation,
+    ValueNotifier<bool> showMenu,
+    BuildContext context,
+  ) {
+    return Flexible(
+      child: SlideTransition(
+        position: rowAnimation,
+        child: IconButton(
+          onPressed: () async {
+            showMenu.value = false;
+            // We remove the overlay because it
+            // We initialize a navigator here because this way,
+            // we handle that flutter doesn't run any code
+            // in an async gap where we don't know if the user has picked any files
+            final navigator = Navigator.of(context);
+            FilePickerResult? result = await FilePicker.platform.pickFiles(
+              allowMultiple: true,
+              type: FileType.media,
+            );
+
+            if (result == null) return;
+            List<File> files = result.paths.map((path) => File(path!)).toList();
+            navigator.push(MaterialPageRoute(
+              builder: (_) => ImagePreview(imageFileList: files),
+            ));
+          },
+          icon: const Icon(Icons.filter_outlined),
+        ),
+      ),
     );
   }
 }
