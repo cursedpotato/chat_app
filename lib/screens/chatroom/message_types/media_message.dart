@@ -109,6 +109,8 @@ class MediaMessageWidget extends HookConsumerWidget {
 
       if (isVideo) {
         // TODO: check the index that at the end of the url to determine it's place on the list
+        final thumbnailList = model.thumnailUrls!;
+        // get the index of the every element of the list, if it matches the for loop index return the element that matches 
         final thumbnail = getThumnail(model, 0);
         contentList.add(MediaType(thumbnail, isVideo));
 

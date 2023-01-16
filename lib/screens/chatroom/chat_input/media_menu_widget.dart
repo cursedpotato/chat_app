@@ -158,7 +158,7 @@ class MediaMenu extends HookWidget {
             child: Row(
               children: [
                 mediaPickerIconButton(rowAnimation, showMenu, context),
-                cameraIconButton(rowAnimation, overlayEntry, context),
+                    cameraIconButton(rowAnimation, overlayEntry, context),
               ],
             ),
           ),
