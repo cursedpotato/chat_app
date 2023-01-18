@@ -86,10 +86,18 @@ class MediaMessageWidget extends HookConsumerWidget {
   // but the index that is at the end of the url.
   // Why? Because lenght of the thumbnail list is not the same as the media urls.
   String getThumnail(ChatMesssageModel model, int index)  {
-    
-    final thumbnail = model.thumnailUrls![index];
 
-    return thumbnail;
+    // TODO: Implement better logic
+    for (var element in model.thumnailUrls!) {
+      if (element.contains(index.toString())) {
+        return element;
+      }
+
+    }
+
+    throw "Element not found";
+
+    
   }
 
   // This stream checks if the content of url is either a video or simple image, the purpose of this
@@ -108,7 +116,6 @@ class MediaMessageWidget extends HookConsumerWidget {
       final isVideo = await urlContainsVideo(mediaUrl);
 
       if (isVideo) {
-        // TODO: check the index that at the end of the url to determine it's place on the list
         // get the index of the every element of the list, if it matches the for loop index return the element that matches 
         final thumbnail = getThumnail(model, i);
         if (contentList[i].mediaUrl == thumbnail) return;
