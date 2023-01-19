@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/message_model.dart';
+import 'package:chat_app/services/database_methods.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -27,9 +28,8 @@ class MediaMessageWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     final urlList = useStream(useMemoized(
-      () => contentType(messageModel),
+      () => messageStream(messageModel),
     ));
 
     return GestureDetector(
@@ -73,6 +73,7 @@ class MediaMessageWidget extends HookConsumerWidget {
   Future<bool> urlContainsVideo(url) async {
     final storageRef = FirebaseStorage.instance;
     final metadata = await storageRef.refFromURL(url).getMetadata();
+
     final contentType = metadata.contentType;
     if (contentType!.isEmpty) {
       throw "There is no available metadata";
@@ -85,26 +86,24 @@ class MediaMessageWidget extends HookConsumerWidget {
   // IMPORTANT!!! the index is not the index of the list lenght of the for loop
   // but the index that is at the end of the url.
   // Why? Because lenght of the thumbnail list is not the same as the media urls.
-  String getThumnail(ChatMesssageModel model, int index)  {
-
+  String getThumnail(ChatMesssageModel model, int index) {
     // TODO: Implement better logic
     for (var element in model.thumnailUrls!) {
       if (element.contains(index.toString())) {
         return element;
       }
-
     }
 
     throw "Element not found";
-
-    
   }
 
   // This stream checks if the content of url is either a video or simple image, the purpose of this
   // is not sending a video file to an image widget which makes the app crash.
 
   // TODO: Change this stream so it returns a list of images or thumnails instead of just images and videos
-  Stream<List<MediaType>> contentType(ChatMesssageModel model) async* {
+  Stream<List<MediaType>> messageStream(ChatMesssageModel model) async* {
+
+    // DatabaseMethods().getMessageInfo(messageId, chatRoomId);
     List<MediaType> contentList = [];
 
     final urlList = model.resUrls;
@@ -116,10 +115,10 @@ class MediaMessageWidget extends HookConsumerWidget {
       final isVideo = await urlContainsVideo(mediaUrl);
 
       if (isVideo) {
-        // get the index of the every element of the list, if it matches the for loop index return the element that matches 
+        // get the index of the every element of the list, if it matches the for loop index return the element that matches
         final thumbnail = getThumnail(model, i);
-        if (contentList[i].mediaUrl == thumbnail) return;
-        
+        print("This is the thumbnail you are looking for: $thumbnail");
+        contentList.add(MediaType(thumbnail, isVideo));
 
         yield contentList;
       }
