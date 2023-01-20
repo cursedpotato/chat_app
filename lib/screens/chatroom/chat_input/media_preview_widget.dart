@@ -103,28 +103,31 @@ class VideoPreview extends HookWidget {
                 alignment: Alignment.center,
                 child: Image.file(thumbNail.data!),
               ),
-              isLoading.value
-                  ? const Align(
-                      alignment: Alignment.center,
-                      child: CircularProgressIndicator(),
-                    )
-                  : Align(
-                      alignment: Alignment.center,
-                      child: GestureDetector(
-                        onTap: () {
-                          isLoading.value = true;
-                          videoController.value.initialize().then((value) {
-                            isLoading.value = false;
-                            videoController.value.play();
-                          });
-                        },
-                        child: const Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                          size: 80,
-                        ),
+              if (isLoading.value)
+                const Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                )
+              else
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: GestureDetector(
+                      onTap: () {
+                        isLoading.value = true;
+                        videoController.value.initialize().then((value) {
+                          isLoading.value = false;
+                          videoController.value.play();
+                        });
+                      },
+                      child: const Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                        size: 80,
                       ),
                     ),
+                  ),
+                ),
             ],
           );
   }
@@ -162,7 +165,9 @@ class VideoPlayerWidget extends HookWidget {
               child: Align(
                 alignment: Alignment.bottomLeft,
                 child: Icon(
-                  playingSnapshot.data ?? false ? Icons.pause : Icons.play_arrow,
+                  playingSnapshot.data ?? false
+                      ? Icons.pause
+                      : Icons.play_arrow,
                   color: Colors.white,
                   size: 80,
                 ),
