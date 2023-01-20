@@ -70,37 +70,6 @@ class MessagingMethods {
     List<File> imageFileList,
     TextEditingController messageController,
   ) async {
-    // I may make an stream that updates the resUrls array,
-    // instead of uploading a whole array at once
-    // We upload all the files one by one
-    final thumbnailList = [];
-    final imageUrls = await Future.wait(imageFileList.map((file) {
-      final isVideo = file.path.contains("mp4");
-      // Make video thumbnail
-      if (isVideo) {
-        StorageMethods().uploadThumbnail(file, messageId).then(
-              (value) => thumbnailList.add(value),
-            );
-      }
-      return StorageMethods()
-          .uploadFileToStorage(file.path, messageId, isVideo);
-    }));
-
-    messageInfoMap["message"] = messageController.text;
-    messageInfoMap["messageType"] = "gallery";
-    messageInfoMap["resUrls"] = imageUrls;
-    messageInfoMap["thumbnailUrls"] = thumbnailList;
-    lastMessageInfoMap["lastMessage"] = "Media was shared 🖼️";
-
-    DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
-    DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
-    // We upload video thumbnails if there's any
-  }
-
-  sendMedia2(
-    List<File> imageFileList,
-    TextEditingController messageController,
-  ) async {
     messageInfoMap["message"] = messageController.text;
     messageInfoMap["messageType"] = "gallery";
     messageInfoMap["resUrls"] = [];
