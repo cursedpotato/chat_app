@@ -163,7 +163,7 @@ class VideoPlayerWidget extends HookWidget {
             ),
             Positioned.fill(
               child: Align(
-                alignment: Alignment.bottomLeft,
+                alignment: Alignment.center,
                 child: Icon(
                   playingSnapshot.data ?? false
                       ? Icons.pause
