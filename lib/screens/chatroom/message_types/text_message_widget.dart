@@ -29,7 +29,7 @@ class TextMessage extends StatelessWidget {
           fontSize: 12,
           color: message.isSender!
               ? Colors.white
-              : Theme.of(context).textTheme.bodyText1?.color,
+              : Theme.of(context).textTheme.bodyLarge?.color,
         ),
       ),
     );

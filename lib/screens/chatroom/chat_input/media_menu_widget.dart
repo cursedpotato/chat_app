@@ -114,7 +114,7 @@ class MediaMenu extends HookWidget {
 
       overlayEntry.value = overlayEntryWidget();
 
-      overlayState.value!.insert(overlayEntry.value!);
+      overlayState.value.insert(overlayEntry.value!);
 
       // When the animation is completed we no longer have to listen
       menuAnimationController.addStatusListener((status) {

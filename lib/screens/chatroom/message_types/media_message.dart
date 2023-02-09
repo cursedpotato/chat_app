@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/message_model.dart';
-import 'package:chat_app/services/database_methods.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +28,7 @@ class MediaMessageWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final urlList = useStream(useMemoized(
-      () => messageStream(messageModel),
+      () => imageMediaStream(messageModel),
     ));
 
     return GestureDetector(
@@ -87,12 +86,11 @@ class MediaMessageWidget extends HookConsumerWidget {
   // but the index that is at the end of the url.
   // Why? Because lenght of the thumbnail list is not the same as the media urls.
   String getThumnail(ChatMesssageModel model, int index) {
-    // TODO: Implement better logic
-    for (var element in model.thumnailUrls!) {
-      if (element.contains(index.toString())) {
-        return element;
+    model.thumnailUrls!.map((e) {
+      if (e.contains('resindex=$index')) {
+        return e;
       }
-    }
+    });
 
     throw "Element not found";
   }
@@ -101,8 +99,7 @@ class MediaMessageWidget extends HookConsumerWidget {
   // is not sending a video file to an image widget which makes the app crash.
 
   // TODO: Change this stream so it returns a list of images or thumnails instead of just images and videos
-  Stream<List<MediaType>> messageStream(ChatMesssageModel model) async* {
-
+  Stream<List<MediaType>> imageMediaStream(ChatMesssageModel model) async* {
     // DatabaseMethods().getMessageInfo(messageId, chatRoomId);
     List<MediaType> contentList = [];
 
@@ -137,6 +134,7 @@ class SingleImageWidget extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
+    debugPrint("This is the link you are looking for: ");
     return Stack(
       children: [
         CachedNetworkImage(imageUrl: mediaUrl),

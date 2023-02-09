@@ -44,7 +44,7 @@ dependencies:
   #Timestamp format
   timeago: ^3.2.2
   email_validator: ^2.1.17
-  google_fonts: ^3.0.1
+  google_fonts: ^4.0.3
   # To reduce boilerplate
   flutter_hooks: ^0.18.3 
   hooks_riverpod: ^2.0.2
@@ -66,9 +66,13 @@ dependencies:
   # audio waveforms player lacks some features
   just_audio: ^0.9.30
   just_waveform: ^0.0.3
+  # Media display related 
   video_player: ^2.4.8
   video_compress: ^3.1.2
   photo_view: ^0.14.0
+  # Notifications
+  awesome_notifications: ^0.7.4+1
+  awesome_notifications_fcm: ^0.7.4+1
   
   
 
