@@ -2,9 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/providers/user_provider.dart';
-import 'package:chat_app/screens/chatroom/chat_input/chat_input_field.dart';
-import 'package:chat_app/screens/chatroom/message_types/media_message.dart';
-import 'package:chat_app/screens/home/chat_card.dart';
+import 'package:chat_app/features/chat/presentation/widgets/chat_input/chat_input_field.dart';
+import 'package:chat_app/features/chat/presentation/widgets/message_types/media_message.dart';
+import 'package:chat_app/features/home/presentation/widgets/chat_card.dart';
 
 import 'package:chat_app/services/database_methods.dart';
 
@@ -12,11 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../models/message_model.dart';
+import '../../../../models/message_model.dart';
 
-import 'message_types/audio_message_widget.dart';
-import 'message_types/text_message_widget.dart';
-
+import '../widgets/message_types/audio_message_widget.dart';
+import '../widgets/message_types/text_message_widget.dart';
 
 class MessagesScreen extends HookConsumerWidget {
   const MessagesScreen({Key? key}) : super(key: key);

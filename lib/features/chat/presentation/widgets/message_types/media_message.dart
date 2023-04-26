@@ -11,7 +11,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
-import '../../../globals.dart';
+import '../../../../../globals.dart';
 
 class MediaType {
   final String mediaUrl;

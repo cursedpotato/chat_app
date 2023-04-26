@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/models/chatroom_model.dart';
 import 'package:chat_app/providers/user_provider.dart';
-import 'package:chat_app/screens/chatroom/chatroom_screen.dart';
+import 'package:chat_app/features/chat/presentation/screens/chatroom_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../../globals.dart';
-import '../../models/user_model.dart';
-import '../../services/database_methods.dart';
+import '../../../../globals.dart';
+import '../../../../models/user_model.dart';
+import '../../../../services/database_methods.dart';
 
 final chatroomId = StateProvider((ref) => "");
 

@@ -10,13 +10,15 @@ import 'package:just_audio/just_audio.dart';
 import 'package:just_waveform/just_waveform.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../../globals.dart';
+import '../../../../../globals.dart';
 
 import 'dart:io';
 
-
 class AudioMessage extends HookWidget {
-  const AudioMessage(this.message, {Key? key, }) : super(key: key);
+  const AudioMessage(
+    this.message, {
+    Key? key,
+  }) : super(key: key);
 
   final ChatMesssageModel message;
   @override

@@ -1,25 +1,21 @@
 import 'package:chat_app/services/auth.dart';
-import 'package:chat_app/screens/signin/button_widget.dart';
-import 'package:chat_app/screens/signin/textfield_widget.dart';
+import 'package:chat_app/features/auth/presentation/widgets/button_widget.dart';
+import 'package:chat_app/features/auth/presentation/widgets/textfield_widget.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-
-
-import 'wave_widget.dart';
+import '../widgets/wave_widget.dart';
 
 class SignIn extends HookWidget {
   const SignIn({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
     final bool keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      
       body: Stack(
         children: [
           Container(
@@ -78,12 +74,11 @@ class SignIn extends HookWidget {
             onTap: () {
               if (emailController.text != "" || passwordController.text != '') {
                 AuthMethods().signInWithMail(
-                  emailController.text, passwordController.text, context);
+                    emailController.text, passwordController.text, context);
               }
             },
           ),
           const SizedBox(height: 20.0),
-
           Row(
             children: [
               ButtonWidget(

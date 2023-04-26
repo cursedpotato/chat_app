@@ -2,16 +2,16 @@ import 'dart:async';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:chat_app/globals.dart';
-import 'package:chat_app/screens/home/chat_card.dart';
+import 'package:chat_app/features/home/presentation/widgets/chat_card.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database_methods.dart';
-import 'package:chat_app/screens/home/filledout_button.dart';
+import 'package:chat_app/features/home/presentation/widgets/filledout_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../../models/chatroom_model.dart';
-import '../signin/signin_screen.dart';
+import '../../../../models/chatroom_model.dart';
+import '../../../auth/presentation/screens/signin_screen.dart';
 
 class Body extends HookWidget {
   const Body({Key? key}) : super(key: key);
@@ -39,8 +39,6 @@ class Body extends HookWidget {
     );
 
     final myListKey = GlobalKey<AnimatedListState>();
-
-    
 
     // This variable was created to filter chatroom stream data and toggle buttons
     ValueNotifier<bool> isActive = useState(false);
@@ -107,7 +105,8 @@ class Body extends HookWidget {
         initialItemCount: documentList.length,
         physics: const BouncingScrollPhysics(),
         itemBuilder: (BuildContext context, int index, animation) {
-          ChatroomModel chatroomModel = ChatroomModel.fromDocument(documentList[index]);
+          ChatroomModel chatroomModel =
+              ChatroomModel.fromDocument(documentList[index]);
           return SlideTransition(
             position: animation.drive(offset),
             child: ChatCard(
@@ -147,8 +146,9 @@ class Body extends HookWidget {
                 );
           },
           child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: const Icon(Icons.exit_to_app),),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: const Icon(Icons.exit_to_app),
+          ),
         )
       ],
     );

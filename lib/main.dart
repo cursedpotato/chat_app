@@ -1,4 +1,4 @@
-import 'package:chat_app/screens/home/home_screen.dart';
+import 'package:chat_app/features/home/presentation/screens/home_screen.dart';
 
 import 'package:chat_app/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,14 +9,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'firebase_options.dart';
 
-import 'screens/signin/signin_screen.dart';
-
-
-
+import 'features/auth/presentation/screens/signin_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
- 
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     const ProviderScope(child: MyApp()),
@@ -28,7 +25,6 @@ class MyApp extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    
     getCurrentUser() async {
       return FirebaseAuth.instance.currentUser;
     }

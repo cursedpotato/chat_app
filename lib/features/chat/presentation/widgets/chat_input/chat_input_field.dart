@@ -1,12 +1,12 @@
-import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
-import 'package:chat_app/screens/home/chat_card.dart';
+import 'package:chat_app/features/chat/presentation/widgets/chat_input/recording_widget.dart';
+import 'package:chat_app/features/home/presentation/widgets/chat_card.dart';
 import 'package:chat_app/services/messaging_methods.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../globals.dart';
+import '../../../../../globals.dart';
 import 'media_menu_widget.dart';
 
 final showMicProvider = StateProvider((ref) => true);

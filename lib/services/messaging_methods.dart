@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chat_app/screens/chatroom/chat_input/recording_widget.dart';
+import 'package:chat_app/features/chat/presentation/widgets/chat_input/recording_widget.dart';
 import 'package:chat_app/services/storage_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -99,7 +99,7 @@ class MessagingMethods {
           .uploadFileToStorage(file.path, messageId, isVideo)
           .then((resUrl) {
         messageInfoMap["resUrls"] = FieldValue.arrayUnion([resUrl]);
-        DatabaseMethods().updateMessage(chatRoomId, messageId, messageInfoMap);  
+        DatabaseMethods().updateMessage(chatRoomId, messageId, messageInfoMap);
       });
     }
   }
