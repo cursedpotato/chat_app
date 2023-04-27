@@ -1,6 +1,5 @@
+import 'package:chat_app/core/theme/app_theme.dart';
 import 'package:chat_app/features/home/presentation/screens/home_screen.dart';
-
-import 'package:chat_app/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -32,8 +31,7 @@ class MyApp extends HookConsumerWidget {
     return MaterialApp(
       title: 'Capychat',
       debugShowCheckedModeBanner: false,
-      theme: lightThemeData(context),
-      darkTheme: darkThemeData(context),
+      theme: appTheme,
       home: FutureBuilder(
         future: getCurrentUser(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {

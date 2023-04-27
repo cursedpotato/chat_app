@@ -1,18 +1,7 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-//-------------
-// Theme colors
-//-------------
 
-const khighlightColor = Color(0xFF087949);
-const kPrimaryColor = Color(0xFF00BF6D);
-const kSecondaryColor = Color(0xFFFE9901);
-const kContentColorLightTheme = Color(0xFF1D1D35);
-const kContentColorDarkTheme = Color(0xFFF5FCF9);
-const kWarninngColor = Color(0xFFF3BB1C);
-const kErrorColor = Color(0xFFF03738);
 //----------------
 // Default padding
 //----------------
@@ -41,6 +30,7 @@ getChatRoomIdByUsernames(String a, String b) {
     return "$a\_$b";
   }
 }
+
 //----------------
 // Utility widgets
 //----------------
@@ -68,9 +58,3 @@ class MeasurableWidget extends SingleChildRenderObjectWidget {
   RenderObject createRenderObject(BuildContext context) =>
       MeasureSizeRenderObject(onChange);
 }
-
-
-
-
-
-
