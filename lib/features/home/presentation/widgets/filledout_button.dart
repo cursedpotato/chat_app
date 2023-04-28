@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../globals.dart';
+import '../../../../core/theme/colors.dart';
 
 class FillOutlineButton extends StatelessWidget {
   const FillOutlineButton({

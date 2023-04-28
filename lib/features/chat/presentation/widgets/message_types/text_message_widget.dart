@@ -1,6 +1,7 @@
 import 'package:chat_app/models/message_model.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../core/theme/colors.dart';
 import '../../../../../globals.dart';
 
 class TextMessage extends StatelessWidget {

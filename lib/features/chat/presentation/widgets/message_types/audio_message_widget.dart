@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:chat_app/core/theme/colors.dart';
 import 'package:chat_app/models/message_model.dart';
 import 'package:dio/dio.dart';
 

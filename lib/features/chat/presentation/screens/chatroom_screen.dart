@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_app/core/theme/colors.dart';
 import 'package:chat_app/globals.dart';
 import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/providers/user_provider.dart';
