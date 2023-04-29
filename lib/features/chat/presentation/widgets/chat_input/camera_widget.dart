@@ -10,17 +10,16 @@ class CameraScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     late CameraController controller;
 
-    late final _cameras;
+    late final List<CameraDescription> cameras;
 
     getCameras() async {
-
       WidgetsFlutterBinding.ensureInitialized();
-      _cameras = await availableCameras();
+      cameras = await availableCameras();
     }
 
     useEffect(() {
       getCameras();
-      controller = CameraController(_cameras[0], ResolutionPreset.max);
+      controller = CameraController(cameras[0], ResolutionPreset.max);
       controller.initialize().then((_) {}).catchError((Object e) {
         if (e is CameraException) {
           switch (e.code) {

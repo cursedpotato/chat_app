@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:chat_app/globals.dart';
 import 'package:chat_app/features/home/presentation/widgets/chat_card.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database_methods.dart';
@@ -10,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+import '../../../../core/theme/sizes.dart';
 import '../../../../models/chatroom_model.dart';
 import '../../../auth/presentation/screens/signin_screen.dart';
 

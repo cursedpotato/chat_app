@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
-import '../globals.dart';
+import '../core/routes/strings.dart';
 import 'database_methods.dart';
 
 class MessagingMethods {

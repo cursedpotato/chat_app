@@ -1,8 +1,8 @@
+import 'package:chat_app/core/theme/sizes.dart';
 import 'package:chat_app/models/message_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/colors.dart';
-import '../../../../../globals.dart';
 
 class TextMessage extends StatelessWidget {
   const TextMessage(this.message, {Key? key}) : super(key: key);

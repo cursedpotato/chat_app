@@ -10,7 +10,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 
 import 'package:video_player/video_player.dart';
 
-import '../../../../../globals.dart';
+import '../../../../../core/theme/sizes.dart';
 import '../../../../../services/messaging_methods.dart';
 import '../../../../home/presentation/widgets/chat_card.dart';
 import 'package:video_compress/video_compress.dart';

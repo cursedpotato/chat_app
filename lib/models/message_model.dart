@@ -1,8 +1,7 @@
-
 import 'package:chat_app/models/custom_getters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../globals.dart';
+import '../core/routes/strings.dart';
 
 enum ChatMessageType { text, audio, gallery, video }
 

@@ -7,7 +7,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../../core/theme/colors.dart';
-import '../../../../../globals.dart';
+import '../../../../../core/theme/sizes.dart';
 import 'media_menu_widget.dart';
 
 final showMicProvider = StateProvider((ref) => true);

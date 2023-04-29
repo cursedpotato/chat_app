@@ -114,7 +114,6 @@ class MediaMessageWidget extends HookConsumerWidget {
       if (isVideo) {
         // get the index of the every element of the list, if it matches the for loop index return the element that matches
         final thumbnail = getThumnail(model, i);
-        print("This is the thumbnail you are looking for: $thumbnail");
         contentList.add(MediaType(thumbnail, isVideo));
 
         yield contentList;

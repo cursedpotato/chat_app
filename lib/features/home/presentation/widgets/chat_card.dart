@@ -5,8 +5,10 @@ import 'package:chat_app/features/chat/presentation/screens/chatroom_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../../core/routes/strings.dart';
 import '../../../../core/theme/colors.dart';
-import '../../../../globals.dart';
+import '../../../../core/theme/sizes.dart';
+import '../../../../core/utils/get_chatroom_id_util.dart';
 import '../../../../models/user_model.dart';
 import '../../../../services/database_methods.dart';
 
