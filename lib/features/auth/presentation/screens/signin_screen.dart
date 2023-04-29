@@ -1,4 +1,4 @@
-import 'package:chat_app/services/auth.dart';
+import 'package:chat_app/features/auth/services/auth.dart';
 import 'package:chat_app/features/auth/presentation/widgets/button_widget.dart';
 import 'package:chat_app/features/auth/presentation/widgets/textfield_widget.dart';
 import 'package:email_validator/email_validator.dart';
