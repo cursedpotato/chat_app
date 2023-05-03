@@ -126,7 +126,7 @@ class SignIn extends HookWidget {
 
   void _navigateToHomeScreen(BuildContext context, bool isLogged) {
     if (isLogged) {
-      Navigator.of(context).push(
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => HomeScreen(),
         ),

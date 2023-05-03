@@ -7,6 +7,24 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../../../core/routes/strings.dart';
 import '../../../firebase_options.dart';
 
+Future<bool> registerAuth(User? userDetails) async {
+  if (userDetails == null) return false;
+  final userMap = createUserInfoMap(userDetails);
+  await DatabaseMethods().addUserInfoToDB(userDetails.uid, userMap);
+  return true;
+}
+
+Map<String, dynamic> createUserInfoMap(User userDetails) {
+  String? email = userDetails.email;
+  String? username = email!.substring(0, email.indexOf('@'));
+  return {
+    "email": userDetails.email,
+    "username": username,
+    "name": userDetails.displayName ?? username,
+    "imgUrl": userDetails.photoURL ?? noImage,
+  };
+}
+
 class AuthMethods {
   Future<bool> signInWithMail(String mail, String password) async {
     final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
