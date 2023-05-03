@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:chat_app/features/home/presentation/widgets/chat_card.dart';
-import 'package:chat_app/features/auth/services/auth.dart';
 import 'package:chat_app/services/database_methods.dart';
 import 'package:chat_app/features/home/presentation/widgets/filledout_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -136,7 +136,7 @@ class Body extends HookWidget {
       actions: [
         InkWell(
           onTap: () {
-            AuthMethods().signOut(context).then(
+            FirebaseAuth.instance.signOut().then(
                   (value) => Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(

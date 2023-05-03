@@ -1,4 +1,4 @@
-import 'package:chat_app/features/auth/services/auth.dart';
+import 'package:chat_app/features/auth/services/auth_service.dart';
 import 'package:chat_app/features/auth/presentation/widgets/button_widget.dart';
 import 'package:chat_app/features/auth/presentation/widgets/textfield_widget.dart';
 import 'package:email_validator/email_validator.dart';
@@ -74,7 +74,7 @@ class SignIn extends HookWidget {
             onTap: () {
               if (emailController.text != "" || passwordController.text != '') {
                 AuthMethods().signInWithMail(
-                    emailController.text, passwordController.text, context);
+                    emailController.text, passwordController.text);
               }
             },
           ),
@@ -85,7 +85,7 @@ class SignIn extends HookWidget {
                 color: const Color.fromRGBO(219, 68, 55, 1),
                 title: "Google",
                 onTap: () {
-                  AuthMethods().signInWithGoogle(context);
+                  AuthMethods().signInWithGoogle();
                 },
               ),
               const SizedBox(
@@ -94,8 +94,9 @@ class SignIn extends HookWidget {
               ButtonWidget(
                 color: const Color.fromRGBO(66, 103, 178, 1),
                 title: "Facebook",
-                // TODO: Implement facebook auth
-                onTap: () {},
+                onTap: () {
+                  AuthMethods().signInWithFacebook();
+                },
               )
             ],
           )

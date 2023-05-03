@@ -12,7 +12,7 @@ class DatabaseMethods {
         .update({"userActivityTs": DateTime.now()});
   }
 
-  Future addUserInfoToDB(
+  Future<void> addUserInfoToDB(
       String userId, Map<String, dynamic> userInfoMap) async {
     return FirebaseFirestore.instance
         .collection("users")
