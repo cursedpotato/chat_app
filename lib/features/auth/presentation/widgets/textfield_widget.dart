@@ -20,7 +20,7 @@ class TextFieldWidget extends HookWidget {
     this.onIconTap,
     required this.controller,
     this.suffixIconData,
-    required this.obscureText,
+    this.obscureText = false,
   }) : super(key: key);
 
   @override

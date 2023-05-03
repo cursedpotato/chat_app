@@ -8,9 +8,8 @@ import '../../../core/routes/strings.dart';
 import '../../../firebase_options.dart';
 
 class AuthMethods {
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-
   Future<bool> signInWithMail(String mail, String password) async {
+    final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     // Create a new user with the email and password provided.
     UserCredential userCredential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: mail, password: password);
@@ -25,25 +24,19 @@ class AuthMethods {
   }
 
   Future<bool> signInWithGoogle() async {
-    // Create a new GoogleSignIn object.
+    final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     final GoogleSignIn googleSignIn = GoogleSignIn(
-      clientId: DefaultFirebaseOptions.currentPlatform.iosClientId,
-    );
-
-    // Attempt to sign in the user with their Google account.
+        clientId: DefaultFirebaseOptions.currentPlatform.iosClientId);
     GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
 
-    // Retrieve the authentication details for the user.
     final GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount!.authentication;
 
-    // Create an AuthCredential object using the Google authentication details.
     final AuthCredential credential = GoogleAuthProvider.credential(
       idToken: googleSignInAuthentication.idToken,
       accessToken: googleSignInAuthentication.accessToken,
     );
 
-    // Sign in the user using the AuthCredential object.
     UserCredential result = await firebaseAuth.signInWithCredential(credential);
 
     // Retrieve the user details from the UserCredential object.
@@ -54,6 +47,7 @@ class AuthMethods {
   }
 
   Future<bool> signInWithFacebook() async {
+    final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     // Trigger the sign-in flow
     final LoginResult loginResult = await FacebookAuth.instance.login();
 
