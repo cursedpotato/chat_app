@@ -1,11 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'dart:math' as math;
 
 import 'clipper_widget.dart';
 
-class WaveWidget extends HookWidget {
+class WaveWidget extends StatefulWidget {
   final Size size;
   final double yOffset;
   final Color color;
@@ -18,29 +17,50 @@ class WaveWidget extends HookWidget {
   }) : super(key: key);
 
   @override
+  State<WaveWidget> createState() => _WaveWidgetState();
+}
+
+class _WaveWidgetState extends State<WaveWidget> with TickerProviderStateMixin {
+  late AnimationController animationController;
+  List<Offset> wavePoints = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 5000))
+      ..addListener(() {
+        wavePoints.clear();
+
+        final double waveSpeed = animationController.value * 1080;
+        final double fullSphere = animationController.value * math.pi * 2;
+        final double normalizer = math.cos(fullSphere);
+        const double waveWidth = math.pi / 270;
+        const double waveHeight = 20.0;
+
+        for (int i = 0; i <= widget.size.width.toInt(); ++i) {
+          double calc = math.sin((waveSpeed - i) * waveWidth);
+          wavePoints.add(
+            Offset(
+              i.toDouble(), //X
+              calc * waveHeight * normalizer + widget.yOffset, //Y
+            ),
+          );
+        }
+      });
+
+    animationController.repeat();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    late final animationController = useAnimationController(duration: const Duration(milliseconds: 5000))..repeat();
-    List<Offset> wavePoints = [];
-    animationController.addListener(() {
-      wavePoints.clear();
-
-            final double waveSpeed = animationController.value * 1080;
-            final double fullSphere = animationController.value * math.pi * 2;
-            final double normalizer = math.cos(fullSphere);
-            const double waveWidth = math.pi / 270;
-            const double waveHeight = 20.0;
-
-            for (int i = 0; i <= size.width.toInt(); ++i) {
-              double calc = math.sin((waveSpeed - i) * waveWidth);
-              wavePoints.add(
-                Offset(
-                  i.toDouble(), //X
-                  calc * waveHeight * normalizer + yOffset, //Y
-                ),
-              );
-            }
-    });
-
     return AnimatedBuilder(
       animation: animationController,
       builder: (context, _) {
@@ -49,15 +69,12 @@ class WaveWidget extends HookWidget {
             waveList: wavePoints,
           ),
           child: Container(
-            width: size.width,
-            height: size.height,
-            color: color,
+            width: widget.size.width,
+            height: widget.size.height,
+            color: widget.color,
           ),
         );
       },
     );
   }
-  
 }
-
-
