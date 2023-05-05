@@ -73,34 +73,33 @@ class MessagingMethods {
     messageInfoMap["message"] = messageController.text;
     messageInfoMap["messageType"] = "gallery";
     messageInfoMap["resUrls"] = [];
-    messageInfoMap["thumbnailUrls"] = [];
     lastMessageInfoMap["lastMessage"] = "Media was shared 🖼️";
 
     DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
     DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
     // We upload video thumbnails if there's any
 
-    for (var i = 0; i < imageFileList.length; i++) {
-      final file = imageFileList[i];
+    for (File file in imageFileList) {
+      final mediaUrl = await StorageMethods().uploadFileToStorage(
+        file.path,
+        messageId,
+      );
+
       final isVideo = file.path.contains("mp4");
 
       if (isVideo) {
-        StorageMethods()
-            .uploadThumbnail(file, "${messageId}resindex=$i")
-            .then((thumbnailUrl) {
-          messageInfoMap["thumbnailUrls"] =
-              FieldValue.arrayUnion([thumbnailUrl]);
-          DatabaseMethods()
-              .updateMessage(chatRoomId, messageId, messageInfoMap);
-        });
-      }
+        final thumbnailUrl = await StorageMethods()
+            .uploadThumbnail(file, "${messageId}resindex=0");
 
-      StorageMethods()
-          .uploadFileToStorage(file.path, messageId, isVideo)
-          .then((resUrl) {
-        messageInfoMap["resUrls"] = FieldValue.arrayUnion([resUrl]);
+        messageInfoMap["resUrls"] = FieldValue.arrayUnion([
+          {
+            'mediaUrl': mediaUrl,
+            "thumbnailUrl": thumbnailUrl,
+          }
+        ]);
+
         DatabaseMethods().updateMessage(chatRoomId, messageId, messageInfoMap);
-      });
+      }
     }
   }
 }

@@ -36,8 +36,11 @@ class DatabaseMethods {
         .get();
   }
 
-  Future addMessage(String chatRoomId, String messageId,
-      Map<String, dynamic> messageInfoMap) async {
+  Future addMessage(
+    String chatRoomId,
+    String messageId,
+    Map<String, dynamic> messageInfoMap,
+  ) async {
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .doc(chatRoomId)
