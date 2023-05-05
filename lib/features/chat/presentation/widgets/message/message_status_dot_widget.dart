@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/colors.dart';
 import '../../../../../core/theme/sizes.dart';
-import '../../../../../models/message_model.dart';
+import '../../../models/message_model.dart';
 
 class MessageStatusDot extends StatelessWidget {
   final MessageStatus status;

@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_app/models/message_model.dart';
+import 'package:chat_app/features/chat/models/message_model.dart';
 
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:photo_view/photo_view.dart';
@@ -25,16 +23,16 @@ class MediaMessageWidget extends HookConsumerWidget {
         width: MediaQuery.of(context).size.width * 0.45,
         child: Card(
           elevation: 1,
-          color: kPrimaryColor.withOpacity(messageModel.isSender! ? 1 : 0.1),
+          color: kPrimaryColor.withOpacity(messageModel.isSender ? 1 : 0.1),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          child: Padding(
-            padding: const EdgeInsets.only(
+          child: const Padding(
+            padding: EdgeInsets.only(
               left: 5,
               top: 5,
               right: 5,
               bottom: 25,
             ),
-            child: const CircularProgressIndicator(),
+            child: CircularProgressIndicator(),
           ),
         ),
       ),

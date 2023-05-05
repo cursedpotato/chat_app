@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../../../core/theme/sizes.dart';
-import '../../../../../models/message_model.dart';
+import '../../../models/message_model.dart';
 import '../message_types/export_message_types.dart';
 import 'message_status_dot_widget.dart';
 
@@ -29,25 +29,25 @@ class Message extends HookWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 4),
       child: Row(
-        crossAxisAlignment: message.isSender!
+        crossAxisAlignment: message.isSender
             ? CrossAxisAlignment.end
             : CrossAxisAlignment.center,
         mainAxisAlignment:
-            message.isSender! ? MainAxisAlignment.end : MainAxisAlignment.start,
+            message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          if (!message.isSender!) ...[
+          if (!message.isSender) ...[
             Container(
               margin: const EdgeInsets.only(right: kDefaultPadding / 2),
               child: CircleAvatar(
                 radius: 12,
-                backgroundImage: CachedNetworkImageProvider(message.pfpUrl!),
+                backgroundImage: CachedNetworkImageProvider(message.pfpUrl),
               ),
             )
           ],
           messageContent(message),
-          if (message.isSender!)
+          if (message.isSender)
             MessageStatusDot(
-              status: message.messageStatus!,
+              status: message.messageStatus,
             ),
         ],
       ),

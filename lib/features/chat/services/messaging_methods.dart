@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
-import '../core/routes/strings.dart';
-import 'database_methods.dart';
+import '../../../core/routes/strings.dart';
+import '../../../services/database_methods.dart';
 
 class MessagingMethods {
   MessagingMethods({required this.chatRoomId});
@@ -24,8 +24,7 @@ class MessagingMethods {
     "imgUrl": (FirebaseAuth.instance.currentUser?.photoURL)!,
     "sendBy": chatterUsername,
     "ts": DateTime.now(),
-    "resUrls": "",
-    "thumbnailUrls": [],
+    "mediaList": [],
     "messageType": "",
   };
 
@@ -56,7 +55,12 @@ class MessagingMethods {
 
     messageInfoMap["messageType"] = "audio";
     // we send a list because that is the type we designed on our model to allow multiple media
-    messageInfoMap["resUrls"] = [audioUrl];
+    messageInfoMap["mediaList"] = FieldValue.arrayUnion([
+      {
+        'mediaType': 'image',
+        'mediaUrl': audioUrl,
+      }
+    ]);
     lastMessageInfoMap["lastMessage"] = "Audio Message 🎧";
     storageRef.refFromURL(audioUrl).updateMetadata(SettableMetadata(
           contentType: "audio/m4a",
@@ -72,7 +76,7 @@ class MessagingMethods {
   ) async {
     messageInfoMap["message"] = messageController.text;
     messageInfoMap["messageType"] = "gallery";
-    messageInfoMap["resUrls"] = [];
+    messageInfoMap["mediaList"] = [];
     lastMessageInfoMap["lastMessage"] = "Media was shared 🖼️";
 
     DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
@@ -87,19 +91,29 @@ class MessagingMethods {
 
       final isVideo = file.path.contains("mp4");
 
+      messageInfoMap["mediaList"] = FieldValue.arrayUnion([
+        {
+          'mediaType': 'image',
+          'mediaUrl': mediaUrl,
+        }
+      ]);
+
       if (isVideo) {
         final thumbnailUrl = await StorageMethods()
             .uploadThumbnail(file, "${messageId}resindex=0");
 
-        messageInfoMap["resUrls"] = FieldValue.arrayUnion([
-          {
-            'mediaUrl': mediaUrl,
-            "thumbnailUrl": thumbnailUrl,
-          }
-        ]);
-
-        DatabaseMethods().updateMessage(chatRoomId, messageId, messageInfoMap);
+        messageInfoMap["mediaList"] = FieldValue.arrayUnion(
+          [
+            {
+              'mediaType': 'video',
+              'mediaUrl': mediaUrl,
+              "thumbnailUrl": thumbnailUrl,
+            }
+          ],
+        );
       }
+
+      DatabaseMethods().updateMessage(chatRoomId, messageId, messageInfoMap);
     }
   }
 }

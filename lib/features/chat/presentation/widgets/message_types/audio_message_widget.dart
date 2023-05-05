@@ -2,8 +2,7 @@ import 'dart:math';
 
 import 'package:chat_app/core/theme/colors.dart';
 import 'package:chat_app/core/theme/sizes.dart';
-import 'package:chat_app/models/message_model.dart';
-import 'package:dio/dio.dart';
+import 'package:chat_app/features/chat/models/message_model.dart';
 
 import 'package:flutter/material.dart';
 
@@ -11,8 +10,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_waveform/just_waveform.dart';
 import 'package:path_provider/path_provider.dart';
-
-import 'dart:io';
 
 class AudioMessage extends HookWidget {
   const AudioMessage(
@@ -25,19 +22,20 @@ class AudioMessage extends HookWidget {
   Widget build(BuildContext context) {
     final player = AudioPlayer();
 
+    // TODO: Fix this
+
     preparePlayer() async {
       try {
         final path = await getTemporaryDirectory();
         final fullPath = '${path.path}/${message.id}';
-        bool hasFile = (await File(fullPath).exists());
 
-        if (!hasFile) {
-          debugPrint("Downloading audio file");
-          final response = await Dio().download(message.resUrls![0], fullPath);
-          if (response.statusMessage == "OK") {
-            await player.setFilePath(fullPath);
-          }
-        }
+        // if (!hasFile) {
+        //   debugPrint("Downloading audio file");
+        //   final response = await Dio().download(message.resUrls![0], fullPath);
+        //   if (response.statusMessage == "OK") {
+        //     await player.setFilePath(fullPath);
+        //   }
+        // }
         await player.setFilePath(fullPath);
       } catch (e) {
         debugPrint("Error loading audio source: $e");
@@ -66,7 +64,7 @@ class AudioMessage extends HookWidget {
       ),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          color: kPrimaryColor.withOpacity(message.isSender! ? 1 : 0.1)),
+          color: kPrimaryColor.withOpacity(message.isSender ? 1 : 0.1)),
       child: Row(
         children: [
           PlayButton(audioPlayer: player),

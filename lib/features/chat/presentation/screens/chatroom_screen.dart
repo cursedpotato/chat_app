@@ -9,10 +9,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/theme/sizes.dart';
-import '../../../../models/message_model.dart';
 
 import '../widgets/custom_appbar.dart';
-import '../widgets/message/message_widget.dart';
 
 class MessagesScreen extends HookConsumerWidget {
   const MessagesScreen({Key? key}) : super(key: key);
@@ -52,10 +50,7 @@ class MessagesScreen extends HookConsumerWidget {
                 shrinkWrap: true,
                 itemCount: messageSnapshot.requireData.size,
                 itemBuilder: (context, index) {
-                  ChatMesssageModel model = ChatMesssageModel.fromDocument(
-                    messageSnapshot.requireData.docs[index],
-                  );
-                  return Message(message: model);
+                  return const Text('Hello world');
                 },
               ),
             ),

@@ -1,5 +1,4 @@
-
-import 'package:chat_app/models/custom_getters.dart';
+import 'package:chat_app/core/utils/custom_getters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -25,8 +24,6 @@ class UserModel {
     this.lastSeenDate,
   });
 
-  
-
   UserModel.fromDocument(DocumentSnapshot documentSnapshot) {
     pfpUrl = documentSnapshot.getString('imgUrl');
     name = documentSnapshot.getString('name');
@@ -35,6 +32,4 @@ class UserModel {
     userActivityTs = documentSnapshot.getTimeStamp('userActivityTs');
     lastSeenDate = documentSnapshot.getDateFromTs('userActivityTs');
   }
-
 }
-
