@@ -57,8 +57,6 @@ class ChatInputField extends HookConsumerWidget {
       if (!ref.watch(isRecording)) return;
       if (!ref.watch(showControlRec)) {
         ref.read(isRecording.notifier).state = false;
-        MessagingMethods(chatRoomId: ref.watch(chatroomId))
-            .sendVoiceMessage(ref);
       }
     }
 
@@ -183,12 +181,7 @@ class CustomSendButton extends HookConsumerWidget {
       child: SlideTransition(
         position: offsetAnimation,
         child: IconButton(
-          onPressed: showMic
-              ? () {}
-              : () => MessagingMethods(chatRoomId: ref.watch(chatroomId))
-                      .addMessage(
-                    textEditingController!,
-                  ),
+          onPressed: showMic ? () {} : () {},
           icon: Icon(icon.value),
         ),
       ),
