@@ -1,3 +1,4 @@
+import '../models/media_model.dart';
 import '../models/message_model.dart';
 
 ChatMessageType whatMessageType(String documentType) {
@@ -5,7 +6,7 @@ ChatMessageType whatMessageType(String documentType) {
     'text': ChatMessageType.text,
     'audio': ChatMessageType.audio,
     'gallery': ChatMessageType.gallery,
-    'video': ChatMessageType.video
+    'media': ChatMessageType.media
   };
   ChatMessageType type = map[documentType] ?? ChatMessageType.text;
 

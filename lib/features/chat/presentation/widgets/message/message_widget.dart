@@ -20,7 +20,7 @@ class Message extends HookWidget {
       final map = {
         ChatMessageType.text: TextMessage(message),
         ChatMessageType.audio: AudioMessage(message),
-        ChatMessageType.gallery: MediaMessageWidget(message),
+        ChatMessageType.gallery: GalleryMessageWidget(message),
       };
       Widget type = map[message.messageType] ?? const SizedBox();
       return type;

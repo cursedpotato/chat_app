@@ -1,3 +1,5 @@
+import 'package:chat_app/features/chat/models/message_model.dart';
+import 'package:chat_app/features/chat/presentation/widgets/message/message_widget.dart';
 import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/features/chat/presentation/widgets/chat_input/chat_input_field.dart';
 import 'package:chat_app/features/home/presentation/widgets/chat_card.dart';
@@ -50,7 +52,10 @@ class MessagesScreen extends HookConsumerWidget {
                 shrinkWrap: true,
                 itemCount: messageSnapshot.requireData.size,
                 itemBuilder: (context, index) {
-                  return const Text('Hello world');
+                  final message = messageSnapshot.requireData.docs[index];
+                  final model = ChatMesssageModel.fromDocument(message);
+
+                  return Message(message: model);
                 },
               ),
             ),

@@ -75,7 +75,8 @@ class MessagingMethods {
     TextEditingController messageController,
   ) async {
     messageInfoMap["message"] = messageController.text;
-    messageInfoMap["messageType"] = "gallery";
+    messageInfoMap["messageType"] =
+        imageFileList.length > 1 ? "gallery" : "media";
     messageInfoMap["mediaList"] = [];
     lastMessageInfoMap["lastMessage"] = "Media was shared 🖼️";
 

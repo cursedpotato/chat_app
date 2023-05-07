@@ -6,7 +6,7 @@ import '../utils/media_list_from_document.dart';
 import '../utils/message_models_enum_functions.dart';
 import 'media_model.dart';
 
-enum ChatMessageType { text, audio, gallery, video }
+enum ChatMessageType { text, audio, gallery, media }
 
 enum MessageStatus { notSent, notViewed, viewed }
 
