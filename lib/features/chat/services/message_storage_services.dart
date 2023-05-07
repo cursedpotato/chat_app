@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:video_compress/video_compress.dart';
 
-class StorageMethods {
+class MessageStorageServices {
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   // adding image to firebase storage

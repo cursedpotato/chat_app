@@ -1,3 +1,4 @@
+
 import 'package:chat_app/core/routes/strings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,27 +37,6 @@ class DatabaseMethods {
         .get();
   }
 
-  Future addMessage(
-    String chatRoomId,
-    String messageId,
-    Map<String, dynamic> messageInfoMap,
-  ) async {
-    return FirebaseFirestore.instance
-        .collection("chatrooms")
-        .doc(chatRoomId)
-        .collection("chats")
-        .doc(messageId)
-        .set(messageInfoMap);
-  }
-
-  updateLastMessageSend(
-      String chatRoomId, Map<String, dynamic> lastMessageInfoMap) {
-    return FirebaseFirestore.instance
-        .collection("chatrooms")
-        .doc(chatRoomId)
-        .update(lastMessageInfoMap);
-  }
-
   createChatRoom(
       String chatRoomId, Map<String, dynamic> chatRoomInfoMap) async {
     final snapShot = await FirebaseFirestore.instance
@@ -76,15 +56,6 @@ class DatabaseMethods {
     }
   }
 
-  Future<Stream<QuerySnapshot>> getChatRoomMessages(chatRoomId) async {
-    return FirebaseFirestore.instance
-        .collection("chatrooms")
-        .doc(chatRoomId)
-        .collection("chats")
-        .orderBy("ts", descending: true)
-        .snapshots();
-  }
-
   Future<Stream<QuerySnapshot>> getChatRooms() async {
     return FirebaseFirestore.instance
         .collection("chatrooms")
@@ -98,27 +69,5 @@ class DatabaseMethods {
         .collection("users")
         .where("username", isEqualTo: username)
         .get();
-  }
-
-  Future updateMessage(
-    String chatRoomId,
-    String messageId,
-    Map<String, dynamic> messageInfoMap,
-  ) async {
-    return FirebaseFirestore.instance
-        .collection("chatrooms")
-        .doc(chatRoomId)
-        .collection("chats")
-        .doc(messageId)
-        .update(messageInfoMap);
-  }
-
-  Future getMessageInfo(String messageId, String chatRoomId) async {
-    return FirebaseFirestore.instance
-        .collection("chatrooms")
-        .doc(chatRoomId)
-        .collection("chats")
-        .doc(messageId)
-        .snapshots();
   }
 }

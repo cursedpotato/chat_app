@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/routes/strings.dart';
-import '../../../../models/user_model.dart';
+import '../../../home/models/user_model.dart';
 
 AppBar buildAppBar(UserModel userModel) {
   return AppBar(

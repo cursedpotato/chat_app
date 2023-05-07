@@ -1,4 +1,3 @@
-import 'package:chat_app/services/database_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -6,6 +5,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import '../../../core/routes/strings.dart';
 import '../../../firebase_options.dart';
+import '../../home/services/database_methods.dart';
 
 Future<bool> registerAuth(User? userDetails) async {
   if (userDetails == null) return false;

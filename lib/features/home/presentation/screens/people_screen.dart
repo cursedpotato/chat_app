@@ -1,8 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_app/models/user_model.dart';
-import 'package:chat_app/providers/user_provider.dart';
+import 'package:chat_app/features/home/models/user_model.dart';
 import 'package:chat_app/features/chat/presentation/screens/chatroom_screen.dart';
-import 'package:chat_app/services/database_methods.dart';
+import 'package:chat_app/features/home/services/database_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -12,6 +11,7 @@ import '../../../../core/routes/strings.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/theme/sizes.dart';
 import '../../../../core/utils/get_chatroom_id_util.dart';
+import '../../providers/user_provider.dart';
 
 class PeopleScreen extends HookConsumerWidget {
   const PeopleScreen({Key? key}) : super(key: key);

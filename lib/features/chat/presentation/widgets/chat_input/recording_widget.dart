@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 
-import 'package:chat_app/providers/user_provider.dart';
 import 'package:chat_app/features/chat/services/messaging_methods.dart';
 
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../../core/routes/strings.dart';
 import '../../../../../core/utils/get_chatroom_id_util.dart';
 import '../../../../../core/utils/utility_widgets.dart';
+import '../../../../home/providers/user_provider.dart';
 
 // Recording widget related variables
 

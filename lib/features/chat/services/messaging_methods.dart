@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:chat_app/features/chat/presentation/widgets/chat_input/recording_widget.dart';
-import 'package:chat_app/services/storage_methods.dart';
+import 'package:chat_app/features/chat/services/message_database_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,7 +10,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/routes/strings.dart';
-import '../../../services/database_methods.dart';
+import '../../home/services/database_methods.dart';
+import 'message_storage_services.dart';
 
 class MessagingMethods {
   MessagingMethods({required this.chatRoomId});
@@ -41,8 +42,9 @@ class MessagingMethods {
     messageInfoMap["messageType"] = "text";
     lastMessageInfoMap["lastMessage"] = message;
 
-    DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
-    DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+    MessageDatabaseService().addMessage(chatRoomId, messageId, messageInfoMap);
+    MessageDatabaseService()
+        .updateLastMessageSend(chatRoomId, lastMessageInfoMap);
 
     messageController.text = "";
   }
@@ -51,7 +53,7 @@ class MessagingMethods {
     final path = await ref.read(recController.notifier).state.stop();
     if (path!.isEmpty) return;
     String audioUrl =
-        await StorageMethods().uploadFileToStorage(path, messageId);
+        await MessageStorageServices().uploadFileToStorage(path, messageId);
 
     messageInfoMap["messageType"] = "audio";
     // we send a list because that is the type we designed on our model to allow multiple media
@@ -66,8 +68,9 @@ class MessagingMethods {
           contentType: "audio/m4a",
         ));
 
-    DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
-    DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+    MessageDatabaseService().addMessage(chatRoomId, messageId, messageInfoMap);
+    MessageDatabaseService()
+        .updateLastMessageSend(chatRoomId, lastMessageInfoMap);
   }
 
   sendMedia(
@@ -80,13 +83,14 @@ class MessagingMethods {
     messageInfoMap["mediaList"] = [];
     lastMessageInfoMap["lastMessage"] = "Media was shared 🖼️";
 
-    await DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
-    await DatabaseMethods()
+    await MessageDatabaseService()
+        .addMessage(chatRoomId, messageId, messageInfoMap);
+    await MessageDatabaseService()
         .updateLastMessageSend(chatRoomId, lastMessageInfoMap);
     // We upload video thumbnails if there's any
 
     for (File file in imageFileList) {
-      final mediaUrl = await StorageMethods().uploadFileToStorage(
+      final mediaUrl = await MessageStorageServices().uploadFileToStorage(
         file.path,
         messageId,
       );
@@ -97,7 +101,7 @@ class MessagingMethods {
         "mediaList": FieldValue.arrayUnion([
           {
             'mediaType': 'image',
-            'mediaUrl': await StorageMethods().uploadFileToStorage(
+            'mediaUrl': await MessageStorageServices().uploadFileToStorage(
               file.path,
               messageId,
             ),
@@ -106,7 +110,7 @@ class MessagingMethods {
       };
 
       if (isVideo) {
-        final thumbnailUrl = await StorageMethods()
+        final thumbnailUrl = await MessageStorageServices()
             .uploadThumbnail(file, "${messageId}resindex=0");
 
         updateMap["mediaList"] = FieldValue.arrayUnion(
@@ -120,7 +124,7 @@ class MessagingMethods {
         );
       }
 
-      DatabaseMethods().updateMessage(chatRoomId, messageId, updateMap);
+      MessageDatabaseService().updateMessage(chatRoomId, messageId, updateMap);
     }
   }
 }
