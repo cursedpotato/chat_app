@@ -45,19 +45,21 @@ class MessagesScreen extends HookConsumerWidget {
         children: [
           Expanded(
             flex: 5,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-              child: ListView.builder(
-                reverse: true,
-                shrinkWrap: true,
-                itemCount: messageSnapshot.requireData.size,
-                itemBuilder: (context, index) {
-                  final message = messageSnapshot.requireData.docs[index];
-                  final model = ChatMesssageModel.fromDocument(message);
+            child: ListView.builder(
+              reverse: true,
+              shrinkWrap: true,
+              itemCount: messageSnapshot.requireData.size,
+              itemBuilder: (context, index) {
+                final message = messageSnapshot.requireData.docs[index];
+                final model = ChatMesssageModel.fromDocument(message);
 
-                  return Message(message: model);
-                },
-              ),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: kDefaultPadding,
+                  ),
+                  child: Message(message: model),
+                );
+              },
             ),
           ),
           const ChatInputField(),
