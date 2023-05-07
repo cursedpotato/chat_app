@@ -16,7 +16,7 @@ class CountImagesWidget extends StatelessWidget {
 
   final int imagesCount;
   final double size;
-  final String image;
+  final String? image;
 
   @override
   Widget build(BuildContext context) {
@@ -55,22 +55,31 @@ class _BlurryImage extends StatelessWidget {
     required this.size,
   }) : super(key: key);
 
-  final String image;
+  final String? image;
   final double size;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: ImageFiltered(
-        imageFilter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-        child: Image(
-          fit: BoxFit.cover,
-          width: MediaQuery.of(context).size.width * size,
-          height: MediaQuery.of(context).size.width * size,
-          image: CachedNetworkImageProvider(image),
-        ),
-      ),
+      child: Builder(builder: (context) {
+        if (image == null) {
+          return const CircularProgressIndicator(
+            color: Colors.white,
+          );
+        }
+        return ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+          child: Image(
+            fit: BoxFit.cover,
+            width: MediaQuery.of(context).size.width * size,
+            height: MediaQuery.of(context).size.width * size,
+            image: CachedNetworkImageProvider(
+              image!,
+            ),
+          ),
+        );
+      }),
     );
   }
 }

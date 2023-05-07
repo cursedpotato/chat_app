@@ -80,8 +80,9 @@ class MessagingMethods {
     messageInfoMap["mediaList"] = [];
     lastMessageInfoMap["lastMessage"] = "Media was shared 🖼️";
 
-    DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
-    DatabaseMethods().updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+    await DatabaseMethods().addMessage(chatRoomId, messageId, messageInfoMap);
+    await DatabaseMethods()
+        .updateLastMessageSend(chatRoomId, lastMessageInfoMap);
     // We upload video thumbnails if there's any
 
     for (File file in imageFileList) {
@@ -92,18 +93,23 @@ class MessagingMethods {
 
       final isVideo = file.path.contains("mp4");
 
-      messageInfoMap["mediaList"] = FieldValue.arrayUnion([
-        {
-          'mediaType': 'image',
-          'mediaUrl': mediaUrl,
-        }
-      ]);
+      final updateMap = {
+        "mediaList": FieldValue.arrayUnion([
+          {
+            'mediaType': 'image',
+            'mediaUrl': await StorageMethods().uploadFileToStorage(
+              file.path,
+              messageId,
+            ),
+          }
+        ])
+      };
 
       if (isVideo) {
         final thumbnailUrl = await StorageMethods()
             .uploadThumbnail(file, "${messageId}resindex=0");
 
-        messageInfoMap["mediaList"] = FieldValue.arrayUnion(
+        updateMap["mediaList"] = FieldValue.arrayUnion(
           [
             {
               'mediaType': 'video',
@@ -114,7 +120,7 @@ class MessagingMethods {
         );
       }
 
-      DatabaseMethods().updateMessage(chatRoomId, messageId, messageInfoMap);
+      DatabaseMethods().updateMessage(chatRoomId, messageId, updateMap);
     }
   }
 }

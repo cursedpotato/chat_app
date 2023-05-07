@@ -13,7 +13,8 @@ class GalleryMessageWidget extends HookConsumerWidget {
 
   final ChatMesssageModel messageModel;
 
-  String _thumnailOrImage(int index) {
+  String? _thumnailOrImage(int index) {
+    if (messageModel.mediaList.isEmpty) return null;
     return messageModel.mediaList[index].mediaType == MediaType.image
         ? messageModel.mediaList[index].mediaUrl
         : (messageModel.mediaList[index] as VideoMedia).thumbnailUrl;
@@ -36,20 +37,24 @@ class GalleryMessageWidget extends HookConsumerWidget {
           ),
           child: GestureDetector(
             onTap: () {},
-            child: messageModel.mediaList.length < 4
-                ? CountImagesWidget(
-                    imagesCount: messageModel.mediaList.length,
-                    size: 0.66,
-                    image: _thumnailOrImage(0),
-                  )
-                : _grid(context),
+            child: _displayGrid(context),
           ),
         ),
       ),
     );
   }
 
-  SizedBox _grid(BuildContext context) {
+  Widget _displayGrid(BuildContext context) {
+    return messageModel.mediaList.length < 4
+        ? CountImagesWidget(
+            imagesCount: messageModel.mediaList.length,
+            size: 0.66,
+            image: _thumnailOrImage(0),
+          )
+        : _grid(context);
+  }
+
+  Widget _grid(BuildContext context) {
     return SizedBox(
       height: MediaQuery.of(context).size.width * 0.66,
       child: GridView.count(
@@ -65,7 +70,7 @@ class GalleryMessageWidget extends HookConsumerWidget {
     );
   }
 
-  Padding _gridCountImage() {
+  Widget _gridCountImage() {
     return Padding(
       padding: const EdgeInsets.all(1.0),
       child: CountImagesWidget(

@@ -7,7 +7,7 @@ class RoundedCornerWidget extends StatelessWidget {
     required this.image,
   });
 
-  final String image;
+  final String? image;
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +15,18 @@ class RoundedCornerWidget extends StatelessWidget {
       padding: const EdgeInsets.all(1.0),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Image(
-          fit: BoxFit.cover,
-          image: CachedNetworkImageProvider(image),
-        ),
+        child: Builder(builder: (context) {
+          if (image == null) {
+            return const CircularProgressIndicator(
+              color: Colors.white,
+            );
+          }
+
+          return Image(
+            fit: BoxFit.cover,
+            image: CachedNetworkImageProvider(image!),
+          );
+        }),
       ),
     );
   }
