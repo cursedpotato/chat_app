@@ -1,16 +1,10 @@
-import 'dart:async';
-
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:chat_app/features/home/presentation/widgets/chat_card.dart';
-import 'package:chat_app/features/home/services/database_methods.dart';
 import 'package:chat_app/features/home/presentation/widgets/filledout_button.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../../core/theme/sizes.dart';
-import '../../models/chatroom_model.dart';
 import '../../../auth/presentation/screens/signin_screen.dart';
 
 class ChatroomScreen extends HookWidget {
@@ -18,27 +12,8 @@ class ChatroomScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    late final future = useMemoized(() => DatabaseMethods().getChatRooms());
-
-    Stream<QuerySnapshot>? chatroomStream = useFuture(future).data;
-
-    Timer? timer;
-
     useFocusNode().unfocus();
-
-    useEffect(
-      () {
-        // TODO: find a better way to update user activity
-
-        // Put this within a function that repeats this code every minute
-        timer = Timer.periodic(const Duration(seconds: 30), (_) {
-          DatabaseMethods().updateUserTs();
-        });
-        return () => timer?.cancel();
-      },
-    );
-
-    final myListKey = GlobalKey<AnimatedListState>();
+    // TODO: find a better way to update user activity
 
     // This variable was created to filter chatroom stream data and toggle buttons
     ValueNotifier<bool> isActive = useState(false);
@@ -72,49 +47,7 @@ class ChatroomScreen extends HookWidget {
               ),
             ),
           ),
-          StreamBuilder(
-            stream: chatroomStream,
-            builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
-              // const kDefaultPadding = 20.0;
-              if (!snapshot.hasData) return const Text('Failed connection');
-
-              bool isWaiting =
-                  snapshot.connectionState == ConnectionState.waiting;
-              if (isWaiting) return const LinearProgressIndicator();
-
-              List<DocumentSnapshot> documentList = snapshot.requireData.docs;
-              return animatedChatroomList(
-                  myListKey, documentList, isActive.value);
-            },
-          ),
         ],
-      ),
-    );
-  }
-
-  Widget animatedChatroomList(
-    GlobalKey<AnimatedListState> myListKey,
-    List<DocumentSnapshot<Object?>> documentList,
-    bool isActive,
-  ) {
-    Tween<Offset> offset =
-        Tween(begin: const Offset(1, 0), end: const Offset(0, 0));
-    return Expanded(
-      child: AnimatedList(
-        key: myListKey,
-        initialItemCount: documentList.length,
-        physics: const BouncingScrollPhysics(),
-        itemBuilder: (BuildContext context, int index, animation) {
-          ChatroomModel chatroomModel =
-              ChatroomModel.fromDocument(documentList[index]);
-          return SlideTransition(
-            position: animation.drive(offset),
-            child: ChatCard(
-              showOnlyActive: isActive,
-              chatroomModel: chatroomModel,
-            ),
-          );
-        },
       ),
     );
   }
