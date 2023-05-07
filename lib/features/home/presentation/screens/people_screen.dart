@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_app/features/home/models/user_model.dart';
-import 'package:chat_app/features/chat/presentation/screens/chatroom_screen.dart';
-import 'package:chat_app/features/home/services/database_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import 'package:chat_app/features/chat/presentation/screens/chatroom_screen.dart';
+import 'package:chat_app/features/home/services/database_methods.dart';
 
 import '../../../../core/routes/strings.dart';
 import '../../../../core/theme/colors.dart';
@@ -97,17 +97,17 @@ class PeopleScreen extends HookConsumerWidget {
                   return const Text('Loading');
                 }
 
-                bool? query1HasData = snapshot.data?[0].docs.isNotEmpty;
-                if (query1HasData!) {
-                  List<DocumentSnapshot>? documentList = snapshot.data?[0].docs;
-                  return userList(documentList, ref);
-                }
+                // bool? query1HasData = snapshot.data?[0].docs.isNotEmpty;
+                // if (query1HasData!) {
+                //   List<DocumentSnapshot>? documentList = snapshot.data?[0].docs;
+                //   return userList(documentList, ref);
+                // }
 
-                bool? query2HasData = snapshot.data?[1].docs.isNotEmpty;
-                if (query2HasData!) {
-                  List<DocumentSnapshot>? documentList = snapshot.data?[1].docs;
-                  return userList(documentList, ref);
-                }
+                // bool? query2HasData = snapshot.data?[1].docs.isNotEmpty;
+                // if (query2HasData!) {
+                //   List<DocumentSnapshot>? documentList = snapshot.data?[1].docs;
+                //   return userList(documentList, ref);
+                // }
 
                 return const Text("There's no one to chat with");
               },
@@ -118,43 +118,43 @@ class PeopleScreen extends HookConsumerWidget {
     );
   }
 
-  Widget userList(List<DocumentSnapshot>? documentList, WidgetRef ref) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: documentList!.length,
-        itemBuilder: (BuildContext context, int index) {
-          UserModel userModel = UserModel.fromDocument(documentList[index]);
-          return userTile(userModel, context, ref);
-        },
-      ),
-    );
-  }
+  // Widget userList(List<DocumentSnapshot>? documentList, WidgetRef ref) {
+  //   return Expanded(
+  //     child: ListView.builder(
+  //       itemCount: documentList!.length,
+  //       itemBuilder: (BuildContext context, int index) {
+  //         UserModel userModel = UserModel.fromDocument(documentList[index]);
+  //         return userTile(userModel, context, ref);
+  //       },
+  //     ),
+  //   );
+  // }
 
-  Widget userTile(UserModel userModel, BuildContext context, WidgetRef ref) {
-    return ListTile(
-      onTap: () => createChat(context, userModel, ref),
-      leading: CircleAvatar(
-        backgroundImage: CachedNetworkImageProvider(userModel.pfpUrl!),
-        radius: 24,
-      ),
-      title: Text(userModel.name!),
-    );
-  }
+  // Widget userTile(UserModel userModel, BuildContext context, WidgetRef ref) {
+  //   return ListTile(
+  //     onTap: () => createChat(context, userModel, ref),
+  //     leading: CircleAvatar(
+  //       backgroundImage: CachedNetworkImageProvider(userModel.pfpUrl!),
+  //       radius: 24,
+  //     ),
+  //     title: Text(userModel.name!),
+  //   );
+  // }
 
-  void createChat(BuildContext context, UserModel userModel, WidgetRef ref) {
-    var chatRoomId =
-        getChatRoomIdByUsernames(chatterUsername!, userModel.username!);
-    Map<String, dynamic> chatRoomInfoMap = {
-      "users": [chatterUsername, userModel.username]
-    };
-    DatabaseMethods().createChatRoom(chatRoomId, chatRoomInfoMap);
+  // void createChat(BuildContext context, UserModel userModel, WidgetRef ref) {
+  //   var chatRoomId =
+  //       getChatRoomIdByUsernames(chatterUsername!, userModel.username!);
+  //   Map<String, dynamic> chatRoomInfoMap = {
+  //     "users": [chatterUsername, userModel.username]
+  //   };
+  //   DatabaseMethods().createChatRoom(chatRoomId, chatRoomInfoMap);
 
-    ref.read(userProvider.notifier).copyUserModel(userModel);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const MessagesScreen(),
-      ),
-    );
-  }
+  //   ref.read(userProvider.notifier).copyUserModel(userModel);
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => const MessagesScreen(),
+  //     ),
+  //   );
+  // }
 }

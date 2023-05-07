@@ -2,16 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/routes/strings.dart';
-import '../../../home/models/user_model.dart';
 
-AppBar buildAppBar(UserModel userModel) {
+AppBar buildAppBar() {
   return AppBar(
     title: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         ClipOval(
           child: CachedNetworkImage(
-            imageUrl: userModel.pfpUrl ?? noImage,
+            imageUrl: noImage,
             width: 40,
             height: 40,
             fit: BoxFit.cover,
@@ -23,12 +22,14 @@ AppBar buildAppBar(UserModel userModel) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                userModel.name!,
+                // TODO: add name
+                "userModel.name!",
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 16),
               ),
               Text(
-                "Active ${userModel.dateToString()}",
+                // TODO: add last seen
+                "Active ",
                 overflow: TextOverflow.visible,
                 style: const TextStyle(fontSize: 12),
               ),

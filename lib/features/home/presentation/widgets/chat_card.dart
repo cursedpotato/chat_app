@@ -8,7 +8,6 @@ import '../../../../core/routes/strings.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/theme/sizes.dart';
 import '../../../../core/utils/get_chatroom_id_util.dart';
-import '../../models/user_model.dart';
 import '../../providers/user_provider.dart';
 import '../../services/database_methods.dart';
 
@@ -28,7 +27,6 @@ class ChatCard extends HookConsumerWidget {
     late final DateTime fiveMinAgo =
         DateTime.now().subtract(const Duration(minutes: 5));
 
-    UserModel userModel = UserModel();
     bool isActive = false;
     bool isOnlyActive = false;
 
@@ -41,8 +39,6 @@ class ChatCard extends HookConsumerWidget {
     bool isComplete = userFuture.hasData &&
         userFuture.connectionState == ConnectionState.done;
     if (isComplete) {
-      userModel = UserModel.fromDocument(userFuture.requireData.docs[0]);
-      isActive = userModel.lastSeenDate!.isAfter(fiveMinAgo);
       isOnlyActive = ((showOnlyActive && isActive) || (!showOnlyActive));
     }
 
@@ -50,9 +46,6 @@ class ChatCard extends HookConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        ref.read(userProvider.notifier).copyUserModel(userModel);
-        ref.read(chatroomId.notifier).state =
-            getChatRoomIdByUsernames(userModel.username!, chatterUsername!);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const MessagesScreen()),
@@ -70,7 +63,8 @@ class ChatCard extends HookConsumerWidget {
                 CircleAvatar(
                   radius: 24,
                   backgroundImage:
-                      CachedNetworkImageProvider(userModel.pfpUrl!),
+                      // TODO: add profile pic
+                      CachedNetworkImageProvider(noImage),
                 ),
                 isActive ? activityDot(context) : const SizedBox(),
               ],
@@ -83,7 +77,8 @@ class ChatCard extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      userModel.name!,
+                      // TODO: add name
+                      "TODO",
                       style: const TextStyle(
                           fontSize: 15, fontWeight: FontWeight.w500),
                     ),

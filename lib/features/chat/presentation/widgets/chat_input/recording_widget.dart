@@ -97,7 +97,6 @@ class ControlRecordingWidget extends HookConsumerWidget {
         await ref.read(recController.notifier).state.record();
     pauseRecording() async =>
         await ref.read(recController.notifier).state.pause();
-    final chatteeName = ref.watch(userProvider).userModel.name;
 
     // ------------------------------------------
     // Transform translate animation related logic
@@ -179,15 +178,7 @@ class ControlRecordingWidget extends HookConsumerWidget {
                     ? const Icon(Icons.pause)
                     : const Icon(Icons.mic),
               ),
-              IconButton(
-                icon: const Icon(Icons.send),
-                onPressed: () => MessagingMethods(
-                  chatRoomId: getChatRoomIdByUsernames(
-                    chatteeName!,
-                    chatterUsername!,
-                  ),
-                ).sendVoiceMessage(ref),
-              )
+              IconButton(icon: const Icon(Icons.send), onPressed: () {})
             ],
           ),
         ],

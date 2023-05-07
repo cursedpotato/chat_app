@@ -9,8 +9,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/theme/sizes.dart';
-
-import '../../../home/providers/user_provider.dart';
 import '../widgets/custom_appbar.dart';
 
 class MessagesScreen extends HookConsumerWidget {
@@ -19,8 +17,6 @@ class MessagesScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // we will use getChatRoomMessages method to get the messages stream, this stream will user
-
-    final usermodel = ref.watch(userProvider).userModel;
 
     final future = useMemoized(() =>
         ChatroomDatabaseServices().getChatRoomMessages(ref.watch(chatroomId)));
@@ -33,13 +29,13 @@ class MessagesScreen extends HookConsumerWidget {
 
     if (isWaiting) {
       return Scaffold(
-        appBar: buildAppBar(usermodel),
+        appBar: buildAppBar(),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      appBar: buildAppBar(usermodel),
+      appBar: buildAppBar(),
       body: Column(
         children: [
           Expanded(
