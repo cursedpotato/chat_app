@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../widgets/wave_widget.dart';
+import '../widgets/wave_animation/wave_widget.dart';
 
 class SignIn extends HookWidget {
   const SignIn({Key? key}) : super(key: key);
