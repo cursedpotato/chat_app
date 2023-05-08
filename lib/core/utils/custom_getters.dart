@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 extension CustomGetters on DocumentSnapshot {
@@ -28,14 +30,14 @@ extension CustomGetters on DocumentSnapshot {
 
 extension JsonGetters on Map<String, dynamic> {
   int getInt(key) {
-    return toString().contains(key) ? key : 0;
+    return toString().contains(key) ? this[key] : 0;
   }
 
   String getString(key) {
-    return toString().contains(key) ? key : '';
+    return toString().contains(key) ? this[key] : '';
   }
 
   bool getBool(key) {
-    return toString().contains(key) ? key : false;
+    return toString().contains(key) ? this[key] : false;
   }
 }

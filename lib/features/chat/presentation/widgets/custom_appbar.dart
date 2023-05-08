@@ -20,18 +20,18 @@ AppBar buildAppBar() {
         Flexible(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: const [
               Text(
                 // TODO: add name
                 "userModel.name!",
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16),
               ),
               Text(
                 // TODO: add last seen
                 "Active ",
                 overflow: TextOverflow.visible,
-                style: const TextStyle(fontSize: 12),
+                style: TextStyle(fontSize: 12),
               ),
             ],
           ),

@@ -1,13 +1,13 @@
-
 import 'package:chat_app/core/utils/custom_getters.dart';
 import 'package:flutter/material.dart';
 
 @immutable
 class ChatUserModel {
   const ChatUserModel({
-    required this.image,
+    required this.profilePic,
     required this.about,
     required this.name,
+    required this.username,
     required this.createdAt,
     required this.isOnline,
     required this.id,
@@ -15,9 +15,10 @@ class ChatUserModel {
     required this.email,
     required this.pushToken,
   });
-  final String image;
+  final String profilePic;
   final String about;
   final String name;
+  final String username;
   final String createdAt;
   final bool isOnline;
   final String id;
@@ -28,9 +29,10 @@ class ChatUserModel {
   // Create from json method
   factory ChatUserModel.fromJson(Map<String, dynamic> json) {
     return ChatUserModel(
-      image: json.getString('image'),
+      profilePic: json.getString('image'),
       about: json.getString('about'),
       name: json.getString('name'),
+      username: json.getString('username'),
       createdAt: json.getString('created_at'),
       isOnline: json.getBool('is_online'),
       id: json.getString('id'),
@@ -53,9 +55,10 @@ class ChatUserModel {
     String? pushToken,
   }) {
     return ChatUserModel(
-      image: image ?? this.image,
+      profilePic: image ?? this.profilePic,
       about: about ?? this.about,
       name: name ?? this.name,
+      username: username,
       createdAt: createdAt ?? this.createdAt,
       isOnline: isOnline ?? this.isOnline,
       id: id ?? this.id,
@@ -67,9 +70,10 @@ class ChatUserModel {
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
-    data['image'] = image;
+    data['image'] = profilePic;
     data['about'] = about;
     data['name'] = name;
+    data['username'] = username;
     data['created_at'] = createdAt;
     data['is_online'] = isOnline;
     data['id'] = id;

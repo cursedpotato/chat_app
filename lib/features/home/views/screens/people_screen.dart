@@ -1,15 +1,88 @@
+import 'dart:developer';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_app/core/models/chat_user_model.dart';
+import 'package:chat_app/core/widgets/progress_hud.dart';
+import 'package:chat_app/features/home/models/search_model.dart';
+import 'package:chat_app/features/home/viewmodel/search_viewmodel.dart';
 import 'package:chat_app/features/home/views/widgets/people_screen_widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class PeopleScreen extends HookConsumerWidget {
+class PeopleScreen extends ConsumerWidget {
   const PeopleScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    TextEditingController searchController = useTextEditingController();
+    final isSearching = ref.watch(searchViewModel).isSearching;
 
+    log(isSearching.toString());
+    return SafeArea(
+      child: ProgressHUD(
+        inAsyncCall: isSearching,
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: MediaQuery.of(context).size.height * 0.05,
+          ),
+          child: Column(
+            children: const [
+              _AnimatedSearchBar(),
+              SizedBox(height: 16),
+              _SearchList(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SearchList extends ConsumerWidget {
+  const _SearchList();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final resultsList = ref.watch(searchViewModel).users;
+
+    return Expanded(
+      child: ListView.builder(
+        itemCount: resultsList.length,
+        itemBuilder: (_, int index) => _CustomListTile(
+          userModel: resultsList[index],
+        ),
+      ),
+    );
+  }
+}
+
+class _CustomListTile extends StatelessWidget {
+  const _CustomListTile({
+    required this.userModel,
+  });
+
+  final ChatUserModel userModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: () {},
+      leading: CircleAvatar(
+        backgroundImage: CachedNetworkImageProvider(
+          userModel.profilePic,
+        ),
+        radius: 24,
+      ),
+      title: Text(userModel.name),
+    );
+  }
+}
+
+class _AnimatedSearchBar extends HookConsumerWidget {
+  const _AnimatedSearchBar();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     //------------
     // Animations
     //------------
@@ -27,66 +100,25 @@ class PeopleScreen extends HookConsumerWidget {
 
     animationController.forward();
 
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: MediaQuery.of(context).size.height * 0.05,
-        ),
-        child: Column(
-          children: [
-            SlideTransition(
-              position: animationOffset,
-              child: SearchBarWidget(
-                searchController: searchController,
-                onTap: () {
-                  searchController.clear();
-                  FocusScope.of(context).unfocus();
-                },
-              ),
-            ),
-          ],
-        ),
+    //------------
+    // Controllers
+    //------------
+
+    TextEditingController searchController = useTextEditingController();
+    return SlideTransition(
+      position: animationOffset,
+      child: SearchBarWidget(
+        searchController: searchController,
+        onTap: () {
+          ref.read(searchViewModel.notifier).getUsers(
+                searchController.text,
+              );
+
+          log(searchController.text.toString());
+          searchController.clear();
+          FocusScope.of(context).unfocus();
+        },
       ),
     );
   }
-
-  // Widget userList(List<DocumentSnapshot>? documentList, WidgetRef ref) {
-  //   return Expanded(
-  //     child: ListView.builder(
-  //       itemCount: documentList!.length,
-  //       itemBuilder: (BuildContext context, int index) {
-  //         UserModel userModel = UserModel.fromDocument(documentList[index]);
-  //         return userTile(userModel, context, ref);
-  //       },
-  //     ),
-  //   );
-  // }
-
-  // Widget userTile(UserModel userModel, BuildContext context, WidgetRef ref) {
-  //   return ListTile(
-  //     onTap: () => createChat(context, userModel, ref),
-  //     leading: CircleAvatar(
-  //       backgroundImage: CachedNetworkImageProvider(userModel.pfpUrl!),
-  //       radius: 24,
-  //     ),
-  //     title: Text(userModel.name!),
-  //   );
-  // }
-
-  // void createChat(BuildContext context, UserModel userModel, WidgetRef ref) {
-  //   var chatRoomId =
-  //       getChatRoomIdByUsernames(chatterUsername!, userModel.username!);
-  //   Map<String, dynamic> chatRoomInfoMap = {
-  //     "users": [chatterUsername, userModel.username]
-  //   };
-  //   DatabaseMethods().createChatRoom(chatRoomId, chatRoomInfoMap);
-
-  //   ref.read(userProvider.notifier).copyUserModel(userModel);
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => const MessagesScreen(),
-  //     ),
-  //   );
-  // }
 }

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SearchDatabaseService {
-  Future<QuerySnapshot<Map<String, dynamic>>> getUserByName(
+  static Future<QuerySnapshot<Map<String, dynamic>>> getUserByName(
       String query) async {
     return FirebaseFirestore.instance
         .collection("users")
@@ -9,7 +9,7 @@ class SearchDatabaseService {
         .get();
   }
 
-  Future<QuerySnapshot<Map<String, dynamic>>> getUserByUserName(
+  static Future<QuerySnapshot<Map<String, dynamic>>> getUserByUserName(
       String query) async {
     return FirebaseFirestore.instance
         .collection("users")

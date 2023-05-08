@@ -1,6 +1,4 @@
 import 'package:chat_app/features/chat/presentation/widgets/chat_input/recording_widget.dart';
-import 'package:chat_app/features/home/views/widgets/chat_card.dart';
-import 'package:chat_app/features/chat/services/messaging_methods.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';

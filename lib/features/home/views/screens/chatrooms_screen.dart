@@ -13,7 +13,6 @@ class ChatroomScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     useFocusNode().unfocus();
-    // TODO: find a better way to update user activity
 
     // This variable was created to filter chatroom stream data and toggle buttons
     ValueNotifier<bool> isActive = useState(false);

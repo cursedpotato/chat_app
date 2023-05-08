@@ -32,9 +32,10 @@ class AuthSignInModel {
     final time = DateTime.now().millisecondsSinceEpoch.toString();
 
     final chatUser = ChatUserModel(
-      image: user.photoURL ?? noImage,
+      profilePic: user.photoURL ?? noImage,
       about: 'Hey there! I am using Capychat 😎',
       name: user.displayName ?? username,
+      username: username,
       createdAt: time,
       isOnline: false,
       id: user.uid,

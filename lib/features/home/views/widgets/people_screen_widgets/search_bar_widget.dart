@@ -23,7 +23,7 @@ class SearchBarWidget extends StatelessWidget {
     );
   }
 
-  Expanded _searchBar() {
+  _searchBar() {
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
@@ -45,11 +45,14 @@ class SearchBarWidget extends StatelessWidget {
     );
   }
 
-  GestureDetector _searchButton() {
-    return GestureDetector(
-      onTap: onTap,
-      child: const Icon(
-        Icons.search,
+  Widget _searchButton() {
+    return Padding(
+      padding: const EdgeInsets.only(right: kDefaultPadding * 0.75),
+      child: GestureDetector(
+        onTap: onTap,
+        child: const Icon(
+          Icons.search,
+        ),
       ),
     );
   }

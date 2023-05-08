@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:chat_app/features/chat/presentation/screens/chatroom_screen.dart';
@@ -34,7 +33,7 @@ class ChatCard extends HookConsumerWidget {
           children: [
             Stack(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 24,
                   backgroundImage:
                       // TODO: add profile pic
@@ -49,14 +48,14 @@ class ChatCard extends HookConsumerWidget {
                     const EdgeInsets.symmetric(horizontal: kDefaultPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: const [
                     Text(
                       // TODO: add name
                       "TODO",
-                      style: const TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w500),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Opacity(
                       opacity: 0.64,
                       child: Text(
@@ -70,7 +69,7 @@ class ChatCard extends HookConsumerWidget {
                 ),
               ),
             ),
-            Opacity(
+            const Opacity(
               opacity: 0.64,
               // TODO: add last seen
               child: Text(""),
