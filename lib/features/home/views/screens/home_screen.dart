@@ -12,6 +12,7 @@ import '../../../../core/theme/colors.dart';
 import 'chatrooms_screen.dart';
 
 class HomeScreen extends HookWidget {
+  static const routeName = '/home';
   HomeScreen({Key? key}) : super(key: key);
 
   final List<Widget> screenList = const [
@@ -43,8 +44,9 @@ class HomeScreen extends HookWidget {
           const Icon(Icons.call),
           CircleAvatar(
             radius: 16,
-            backgroundImage:
-                CachedNetworkImageProvider(profilePicUrl ?? noImage),
+            backgroundImage: CachedNetworkImageProvider(
+              profilePicUrl ?? noImage,
+            ),
           ),
         ],
       ),

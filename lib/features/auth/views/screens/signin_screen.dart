@@ -12,6 +12,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../widgets/wave_animation/wave_widget.dart';
 
 class SignIn extends HookWidget {
+  static const routeName = 'auth/sign-in';
   const SignIn({Key? key}) : super(key: key);
 
   @override

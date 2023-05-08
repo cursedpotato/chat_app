@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../widgets/custom_appbar.dart';
 
 class MessagesScreen extends HookConsumerWidget {
+  static const routeName = 'chat/messages';
   const MessagesScreen({Key? key}) : super(key: key);
 
   @override

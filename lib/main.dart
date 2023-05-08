@@ -1,4 +1,5 @@
 import 'package:chat_app/core/theme/app_theme.dart';
+import 'package:chat_app/features/chat/presentation/screens/chatroom_screen.dart';
 import 'package:chat_app/features/home/views/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -32,6 +33,11 @@ class MyApp extends HookConsumerWidget {
       title: 'Capychat',
       debugShowCheckedModeBanner: false,
       theme: appTheme,
+      routes: {
+        SignIn.routeName: (context) => const SignIn(),
+        HomeScreen.routeName: (context) => HomeScreen(),
+        MessagesScreen.routeName: (context) => const MessagesScreen(),
+      },
       home: FutureBuilder(
         future: getCurrentUser(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {

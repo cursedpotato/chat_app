@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/core/models/chat_user_model.dart';
 import 'package:chat_app/core/widgets/progress_hud.dart';
-import 'package:chat_app/features/home/models/search_model.dart';
 import 'package:chat_app/features/home/viewmodel/search_viewmodel.dart';
 import 'package:chat_app/features/home/views/widgets/people_screen_widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';
