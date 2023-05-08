@@ -10,7 +10,10 @@ class AuthSignInModel {
   final bool isAsyncCall;
   final Either<Exception, bool> isSigningIn;
 
-  const AuthSignInModel({required this.isAsyncCall, required this.isSigningIn});
+  const AuthSignInModel({
+    required this.isAsyncCall,
+    required this.isSigningIn,
+  });
 
   // Create a copywith method to update the isSigningIn property
   AuthSignInModel copyWith({

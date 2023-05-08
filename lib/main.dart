@@ -1,5 +1,5 @@
 import 'package:chat_app/core/theme/app_theme.dart';
-import 'package:chat_app/features/home/presentation/screens/home_screen.dart';
+import 'package:chat_app/features/home/views/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:firebase_core/firebase_core.dart';

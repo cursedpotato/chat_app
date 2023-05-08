@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_app/features/home/presentation/screens/calls_screen.dart';
-import 'package:chat_app/features/home/presentation/screens/people_screen.dart';
-import 'package:chat_app/features/home/presentation/screens/profile_screen.dart';
+import 'package:chat_app/features/home/views/screens/calls_screen.dart';
+import 'package:chat_app/features/home/views/screens/people_screen.dart';
+import 'package:chat_app/features/home/views/screens/profile_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 import 'package:flutter/material.dart';

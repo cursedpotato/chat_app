@@ -10,7 +10,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/routes/strings.dart';
-import '../../home/services/database_methods.dart';
+
 import 'message_storage_services.dart';
 
 class MessagingMethods {
