@@ -8,7 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'firebase_options.dart';
 
-import 'features/auth/presentation/screens/signin_screen.dart';
+import 'features/auth/views/screens/signin_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

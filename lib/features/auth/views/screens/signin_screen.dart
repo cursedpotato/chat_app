@@ -1,12 +1,13 @@
-// ignore_for_file: use_build_context_synchronously
-
+import 'package:chat_app/features/auth/models/auth_model.dart';
 import 'package:chat_app/features/auth/services/auth_service.dart';
-import 'package:chat_app/features/auth/presentation/widgets/button_widget.dart';
-import 'package:chat_app/features/auth/presentation/widgets/textfield_widget.dart';
+import 'package:chat_app/features/auth/viewmodel/auth_viewmodel.dart';
+import 'package:chat_app/features/auth/views/widgets/button_widget.dart';
+import 'package:chat_app/features/auth/views/widgets/textfield_widget.dart';
 import 'package:chat_app/features/home/presentation/screens/home_screen.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../widgets/wave_widget.dart';
 
@@ -35,18 +36,44 @@ class SignIn extends HookWidget {
               color: Colors.white,
             ),
           ),
-          _loginBox(context),
+          const _LoginSection()
         ],
       ),
     );
   }
+}
 
-  Widget _loginBox(BuildContext context) {
+class _LoginSection extends HookConsumerWidget {
+  const _LoginSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
     final isVisible = useState(false);
     final isValid = useState<bool>(false);
-    final isMounted = useIsMounted();
+
+    ref.listen<AuthSignInModel>(
+      authProvider,
+      (previous, next) {
+        if (next.isSigningIn.getOrElse(() => true)) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
+          );
+          return;
+        }
+
+        if (next.isSigningIn.isLeft()) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Something went wrong"),
+            ),
+          );
+        }
+      },
+    );
     return Padding(
       padding: const EdgeInsets.all(30.0),
       child: Column(
@@ -77,16 +104,17 @@ class SignIn extends HookWidget {
           ButtonWidget(
             color: const Color(0xFF087949),
             title: "Sign in",
-            onTap: () async {
+            onTap: () {
               if (emailController.text.isEmpty &&
                   passwordController.text.isEmpty) return;
 
-              final isLogged = await AuthMethods().signInWithMail(
+              ref.read(authProvider.notifier).authMethod =
+                  AuthServices.signInWithMail(
                 emailController.text,
                 passwordController.text,
               );
 
-              if (isMounted()) return _navigateToHomeScreen(context, isLogged);
+              ref.read(authProvider.notifier).signIn();
             },
           ),
           const SizedBox(height: 20.0),
@@ -95,11 +123,10 @@ class SignIn extends HookWidget {
               ButtonWidget(
                 color: const Color.fromRGBO(219, 68, 55, 1),
                 title: "Google",
-                onTap: () async {
-                  final isLogged = await AuthMethods().signInWithGoogle();
-                  if (isMounted()) {
-                    return _navigateToHomeScreen(context, isLogged);
-                  }
+                onTap: () {
+                  ref.read(authProvider.notifier).authMethod =
+                      AuthServices.signInWithGoogle();
+                  ref.read(authProvider.notifier).signIn();
                 },
               ),
               const SizedBox(
@@ -109,34 +136,14 @@ class SignIn extends HookWidget {
                 color: const Color.fromRGBO(66, 103, 178, 1),
                 title: "Facebook",
                 onTap: () async {
-                  final isLogged = await AuthMethods().signInWithFacebook();
-                  if (isMounted()) {
-                    return _navigateToHomeScreen(context, isLogged);
-                  }
+                  ref.read(authProvider.notifier).authMethod =
+                      AuthServices.signInWithFacebook();
+                  ref.read(authProvider.notifier).signIn();
                 },
               )
             ],
           )
         ],
-      ),
-    );
-  }
-
-  // Navigate to home screen
-
-  void _navigateToHomeScreen(BuildContext context, bool isLogged) {
-    if (isLogged) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(),
-        ),
-      );
-      return;
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Something went wrong"),
       ),
     );
   }

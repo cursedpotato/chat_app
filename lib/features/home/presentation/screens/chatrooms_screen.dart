@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../../core/theme/sizes.dart';
-import '../../../auth/presentation/screens/signin_screen.dart';
+import '../../../auth/views/screens/signin_screen.dart';
 
 class ChatroomScreen extends HookWidget {
   const ChatroomScreen({Key? key}) : super(key: key);
