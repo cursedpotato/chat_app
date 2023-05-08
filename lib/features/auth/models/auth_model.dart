@@ -1,3 +1,4 @@
+import 'package:chat_app/core/models/chat_user_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,14 +23,23 @@ class AuthSignInModel {
     );
   }
 
-  static Map<String, dynamic> createUserInfoMap(User userDetails) {
-    String? email = userDetails.email;
+  static Map<String, dynamic> createUserInfoMap(User user) {
+    String? email = user.email;
     String? username = email!.substring(0, email.indexOf('@'));
-    return {
-      "email": userDetails.email,
-      "username": username,
-      "name": userDetails.displayName ?? username,
-      "imgUrl": userDetails.photoURL ?? noImage,
-    };
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
+
+    final chatUser = ChatUserModel(
+      image: user.photoURL ?? noImage,
+      about: 'Hey there! I am using Capychat 😎',
+      name: user.displayName ?? username,
+      createdAt: time,
+      isOnline: false,
+      id: user.uid,
+      lastActive: time,
+      email: email,
+      pushToken: '',
+    );
+
+    return chatUser.toJson();
   }
 }

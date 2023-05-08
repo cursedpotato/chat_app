@@ -25,3 +25,17 @@ extension CustomGetters on DocumentSnapshot {
         : DateTime(0);
   }
 }
+
+extension JsonGetters on Map<String, dynamic> {
+  int getInt(key) {
+    return toString().contains(key) ? key : 0;
+  }
+
+  String getString(key) {
+    return toString().contains(key) ? key : '';
+  }
+
+  bool getBool(key) {
+    return toString().contains(key) ? key : false;
+  }
+}
