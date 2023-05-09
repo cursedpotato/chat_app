@@ -3,11 +3,15 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/core/models/chat_user_model.dart';
 import 'package:chat_app/core/widgets/progress_hud.dart';
+import 'package:chat_app/features/home/viewmodel/chatroom_viewmodel.dart';
+import 'package:chat_app/features/home/viewmodel/chattees_viewmodel.dart';
 import 'package:chat_app/features/home/viewmodel/search_viewmodel.dart';
 import 'package:chat_app/features/home/views/widgets/people_screen_widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../../../chat/presentation/screens/chatroom_screen.dart';
 
 class PeopleScreen extends ConsumerWidget {
   const PeopleScreen({Key? key}) : super(key: key);
@@ -55,7 +59,7 @@ class _SearchList extends ConsumerWidget {
   }
 }
 
-class _CustomListTile extends StatelessWidget {
+class _CustomListTile extends ConsumerWidget {
   const _CustomListTile({
     required this.userModel,
   });
@@ -63,9 +67,17 @@ class _CustomListTile extends StatelessWidget {
   final ChatUserModel userModel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
-      onTap: () {},
+      onTap: () {
+        ref.read(chatteesViewModel.notifier).addChattee(userModel);
+        ref
+            .read(chatRoomViewModel.notifier)
+            .createChatroom()
+            .then((value) => Navigator.of(context).pushNamed(
+                  MessagesScreen.routeName,
+                ));
+      },
       leading: CircleAvatar(
         backgroundImage: CachedNetworkImageProvider(
           userModel.profilePic,
@@ -112,8 +124,6 @@ class _AnimatedSearchBar extends HookConsumerWidget {
           ref.read(searchViewModel.notifier).getUsers(
                 searchController.text,
               );
-
-          log(searchController.text.toString());
           searchController.clear();
           FocusScope.of(context).unfocus();
         },

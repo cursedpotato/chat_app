@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/routes/strings.dart';
 
 class ChatroomDatabaseService {
-  createChatRoom(
-    String chatRoomId,
-    Map<String, dynamic> chatRoomInfoMap,
+  static createChatRoom(
+    String chatroomId,
+    Map<String, dynamic> chatroomInfoMap,
   ) async {
     final snapShot = await FirebaseFirestore.instance
         .collection("chatrooms")
-        .doc(chatRoomId)
+        .doc(chatroomId)
         .get();
 
     if (snapShot.exists) {
@@ -19,12 +19,12 @@ class ChatroomDatabaseService {
       // chatroom does not exists
       return FirebaseFirestore.instance
           .collection("chatrooms")
-          .doc(chatRoomId)
-          .set(chatRoomInfoMap);
+          .doc(chatroomId)
+          .set(chatroomInfoMap);
     }
   }
 
-  Future<Stream<QuerySnapshot>> getChatRooms() async {
+  static Future<Stream<QuerySnapshot>> getChatRooms() async {
     return FirebaseFirestore.instance
         .collection("chatrooms")
         .orderBy("lastMessageSendTs", descending: true)
