@@ -55,7 +55,7 @@ class ChatUserModel {
     String? pushToken,
   }) {
     return ChatUserModel(
-      profilePic: image ?? this.profilePic,
+      profilePic: image ?? profilePic,
       about: about ?? this.about,
       name: name ?? this.name,
       username: username,

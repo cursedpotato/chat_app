@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/routes/strings.dart';
+import '../../../core/utils/custom_typedefs.dart';
 
 class ChatroomDatabaseService {
   static createChatRoom(
@@ -24,10 +25,10 @@ class ChatroomDatabaseService {
     }
   }
 
-  static Future<Stream<QuerySnapshot>> getChatRooms() async {
+  static Future<FirebaseJsonStream> getChatRooms() async {
     return FirebaseFirestore.instance
         .collection("chatrooms")
-        .orderBy("lastMessageSendTs", descending: true)
+        .orderBy("lastMessageSendDate", descending: true)
         .where("users", arrayContains: chatterUsername)
         .snapshots();
   }

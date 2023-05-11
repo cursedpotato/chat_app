@@ -1,10 +1,12 @@
+import 'package:chat_app/core/models/chat_user_model.dart';
+
 class ChatroomModel {
   final String id;
   final String lastMessage;
   final String lastMessageSendBy;
   final String lastMessageSendDate;
   final String chatroomImage;
-  final List<String> users;
+  final List<dynamic> users;
 
   ChatroomModel({
     required this.id,
@@ -34,5 +36,5 @@ class ChatroomModel {
         lastMessageSendBy = json['lastMessageSendBy'],
         lastMessageSendDate = json['lastMessageSendDate'],
         chatroomImage = json['chatroomImage'],
-        users = List<String>.from(json['users']);
+        users = List<ChatUserModel>.from(json['users']);
 }

@@ -1,88 +1,100 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
+import 'dart:developer';
+
+import 'package:chat_app/features/home/viewmodel/chatroom_viewmodel.dart';
+import 'package:chat_app/features/home/views/widgets/chat_card.dart';
 import 'package:chat_app/features/home/views/widgets/filledout_button.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chat_app/features/home/views/widgets/home_screen_widgets/home_screen_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/theme/sizes.dart';
-import '../../../auth/views/screens/signin_screen.dart';
+import '../../models/chatroom_model.dart';
 
-class ChatroomScreen extends HookWidget {
+final chatroomStream = StreamProvider.autoDispose<ChatroomModel?>(
+  (ref) => ref.watch(chatRoomViewModel.notifier).getChatroomStream(),
+);
+
+class ChatroomScreen extends HookConsumerWidget {
   const ChatroomScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     useFocusNode().unfocus();
 
-    // This variable was created to filter chatroom stream data and toggle buttons
-    ValueNotifier<bool> isActive = useState(false);
     return Scaffold(
-      appBar: buildAppBar(context),
+      appBar: homeAppbar(context),
       body: Column(
-        children: [
-          Flexible(
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(
-                kDefaultPadding,
-                0,
-                kDefaultPadding,
-                kDefaultPadding,
-              ),
-              color: Theme.of(context).primaryColor,
-              child: Row(
-                children: [
-                  FillOutlineButton(
-                    press: () => isActive.value = !isActive.value,
-                    text: "Recent Messages",
-                    isFilled: !isActive.value,
-                  ),
-                  const SizedBox(width: kDefaultPadding),
-                  FillOutlineButton(
-                    press: () => isActive.value = !isActive.value,
-                    text: "Active",
-                    isFilled: isActive.value,
-                  ),
-                ],
-              ),
-            ),
-          ),
+        children: const [
+          _ActivityRow(),
+          _MainList(),
         ],
       ),
     );
   }
+}
 
-  AppBar buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Theme.of(context).primaryColor,
-      automaticallyImplyLeading: true,
-      title: AnimatedTextKit(
-        animatedTexts: [
-          TypewriterAnimatedText("Capychat"),
-          TypewriterAnimatedText("Connect with others"),
-          TypewriterAnimatedText("Explore"),
-          TypewriterAnimatedText("Talk with people you care about"),
-          WavyAnimatedText("Chat!")
-        ],
-        totalRepeatCount: 1,
-      ),
-      actions: [
-        InkWell(
-          onTap: () {
-            FirebaseAuth.instance.signOut().then(
-                  (value) => Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SignIn(),
-                    ),
-                  ),
-                );
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: const Icon(Icons.exit_to_app),
+class _MainList extends ConsumerWidget {
+  const _MainList();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final chatroomStreamData = ref.watch(chatroomStream);
+    final chatroomList = ref.watch(chatRoomViewModel);
+    return chatroomStreamData.when(
+      data: (_) {
+        return Expanded(
+          child: ListView.builder(
+            itemCount: chatroomList.length,
+            itemBuilder: (_, int index) {
+              final chatroom = chatroomList[index];
+              return ChatCard(chatroomModel: chatroom);
+            },
           ),
-        )
-      ],
+        );
+      },
+      error: (error, stackTrace) {
+        log(error.toString());
+        return const Text('error');
+      },
+      loading: () {
+        return const Text('loading');
+      },
+    );
+  }
+}
+
+class _ActivityRow extends HookWidget {
+  const _ActivityRow();
+
+  @override
+  Widget build(BuildContext context) {
+    final isActive = useState(false);
+    return Flexible(
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(
+          kDefaultPadding,
+          0,
+          kDefaultPadding,
+          kDefaultPadding,
+        ),
+        color: Theme.of(context).primaryColor,
+        child: Row(
+          children: [
+            FillOutlineButton(
+              press: () => isActive.value = !isActive.value,
+              text: "Recent Messages",
+              isFilled: !isActive.value,
+            ),
+            const SizedBox(width: kDefaultPadding),
+            FillOutlineButton(
+              press: () => isActive.value = !isActive.value,
+              text: "Active",
+              isFilled: isActive.value,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

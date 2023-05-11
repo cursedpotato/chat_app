@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:chat_app/features/chat/presentation/screens/chatroom_screen.dart';
+import 'package:chat_app/features/home/models/chatroom_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,7 +12,10 @@ import '../../../../core/theme/sizes.dart';
 class ChatCard extends HookConsumerWidget {
   const ChatCard({
     Key? key,
+    required this.chatroomModel,
   }) : super(key: key);
+
+  final ChatroomModel chatroomModel;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,11 +37,10 @@ class ChatCard extends HookConsumerWidget {
           children: [
             Stack(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 24,
                   backgroundImage:
-                      // TODO: add profile pic
-                      CachedNetworkImageProvider(noImage),
+                      CachedNetworkImageProvider(chatroomModel.chatroomImage),
                 ),
                 isActive ? activityDot(context) : const SizedBox(),
               ],
