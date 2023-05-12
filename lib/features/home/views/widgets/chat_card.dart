@@ -1,13 +1,25 @@
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:chat_app/features/chat/presentation/screens/chatroom_screen.dart';
 import 'package:chat_app/features/home/models/chatroom_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../../../../core/routes/strings.dart';
+
 import '../../../../core/theme/colors.dart';
-import '../../../../core/theme/sizes.dart';
+import '../../../chat/presentation/screens/chatroom_screen.dart';
+import '../../viewmodel/chattees_viewmodel.dart';
+
+final chatroomProvider = StateProvider.autoDispose<ChatroomModel>(
+  (ref) => ChatroomModel(
+    id: '',
+    lastMessage: '',
+    lastMessageSendBy: '',
+    lastMessageSendDate: '',
+    chatroomImage: '',
+    chatroomName: '',
+    users: [],
+  ),
+);
 
 class ChatCard extends HookConsumerWidget {
   const ChatCard({
@@ -19,71 +31,108 @@ class ChatCard extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool isActive = false;
+    final userInfo = chatroomModel.usersInfo;
 
-    return GestureDetector(
+    return ListTile(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const MessagesScreen()),
-        );
+        for (var user in userInfo) {
+          ref.read(chatteesViewModel.notifier).addChattee(user);
+        }
+        ref.read(chatroomProvider.notifier).state = chatroomModel;
+        Navigator.pushNamed(context, MessagesScreen.routeName);
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: kDefaultPadding,
-          vertical: kDefaultPadding * 0.75,
+      leading: _Leading(chatroomModel: chatroomModel),
+      title: _Title(chatroomModel: chatroomModel),
+      subtitle: _Subtitle(chatroomModel: chatroomModel),
+      trailing: _Trailing(chatroomModel: chatroomModel),
+    );
+  }
+}
+
+class _Leading extends StatelessWidget {
+  const _Leading({
+    required this.chatroomModel,
+  });
+
+  final ChatroomModel chatroomModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        CircleAvatar(
+          radius: 24,
+          backgroundImage:
+              CachedNetworkImageProvider(chatroomModel.chatroomImage),
         ),
-        child: Row(
-          children: [
-            Stack(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundImage:
-                      CachedNetworkImageProvider(chatroomModel.chatroomImage),
-                ),
-                isActive ? activityDot(context) : const SizedBox(),
-              ],
-            ),
-            Expanded(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      // TODO: add name
-                      "TODO",
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(height: 8),
-                    Opacity(
-                      opacity: 0.64,
-                      child: Text(
-                        // TODO: add last message
-                        '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            const Opacity(
-              opacity: 0.64,
-              // TODO: add last seen
-              child: Text(""),
-            )
-          ],
-        ),
+        const _ActivityDot()
+      ],
+    );
+  }
+}
+
+class _Title extends StatelessWidget {
+  const _Title({
+    required this.chatroomModel,
+  });
+
+  final ChatroomModel chatroomModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      chatroomModel.chatroomName,
+      style: const TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
       ),
     );
   }
+}
 
-  Positioned activityDot(BuildContext context) {
+class _Subtitle extends StatelessWidget {
+  const _Subtitle({
+    required this.chatroomModel,
+  });
+
+  final ChatroomModel chatroomModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: 0.64,
+      child: Text(
+        chatroomModel.lastMessage,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+}
+
+class _Trailing extends StatelessWidget {
+  const _Trailing({
+    required this.chatroomModel,
+  });
+
+  final ChatroomModel chatroomModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: 0.64,
+      child: Text(
+        chatroomModel.lastMessageSendDate,
+      ),
+    );
+  }
+}
+
+class _ActivityDot extends StatelessWidget {
+  const _ActivityDot();
+
+  @override
+  Widget build(BuildContext context) {
     return Positioned(
       right: 0,
       bottom: 0,

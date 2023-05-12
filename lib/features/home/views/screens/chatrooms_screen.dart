@@ -43,6 +43,9 @@ class _MainList extends ConsumerWidget {
     final chatroomList = ref.watch(chatRoomViewModel);
     return chatroomStreamData.when(
       data: (_) {
+        if (chatroomList.isEmpty) {
+          return const Text('no chatrooms');
+        }
         return Expanded(
           child: ListView.builder(
             itemCount: chatroomList.length,
