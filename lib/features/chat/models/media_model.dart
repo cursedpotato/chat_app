@@ -1,3 +1,5 @@
+import '../utils/message_models_enum_functions.dart';
+
 enum MediaType { image, video }
 
 abstract class Media {
@@ -8,6 +10,13 @@ abstract class Media {
     required this.mediaType,
     required this.mediaUrl,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'mediaType': mediaTypeToString(mediaType),
+      'mediaUrl': mediaUrl,
+    };
+  }
 }
 
 class ImageMedia extends Media {
@@ -18,6 +27,14 @@ class ImageMedia extends Media {
           mediaType: mediaType,
           mediaUrl: mediaUrl,
         );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'mediaType': mediaTypeToString(mediaType),
+      'mediaUrl': mediaUrl,
+    };
+  }
 }
 
 class VideoMedia extends Media {
@@ -31,4 +48,13 @@ class VideoMedia extends Media {
           mediaType: mediaType,
           mediaUrl: mediaUrl,
         );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'mediaType': mediaTypeToString(mediaType),
+      'mediaUrl': mediaUrl,
+      'thumbnailUrl': thumbnailUrl,
+    };
+  }
 }

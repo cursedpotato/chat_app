@@ -1,11 +1,16 @@
+import 'package:chat_app/core/routes/strings.dart';
+import 'package:chat_app/features/chat/models/message_model.dart';
 import 'package:chat_app/features/chat/views/widgets/chat_input/recording_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../../core/theme/colors.dart';
 import '../../../../../core/theme/sizes.dart';
+import '../../../viewmodel/messages_viewmodel.dart';
 import 'media_menu_widget.dart';
 
 final showMicProvider = StateProvider((ref) => true);
@@ -172,6 +177,23 @@ class CustomSendButton extends HookConsumerWidget {
       }
     });
 
+    addMessage(
+      TextEditingController messageController,
+    ) async {
+      final message = ChatMessageModel(
+        id: const Uuid().v4(),
+        message: messageController.text,
+        messageType: ChatMessageType.text,
+        messageStatus: MessageStatus.notSent,
+        isSender: true,
+        pfpUrl: noImage,
+        sendBy: chatterUsername!,
+        timestamp: Timestamp.now(),
+        mediaList: [],
+      );
+      await ref.read(messagesViewModelProvider.notifier).addMessage(message);
+    }
+
     return Listener(
       onPointerUp: fingerOff,
       onPointerDown: fingerDown,
@@ -179,7 +201,7 @@ class CustomSendButton extends HookConsumerWidget {
       child: SlideTransition(
         position: offsetAnimation,
         child: IconButton(
-          onPressed: showMic ? () {} : () {},
+          onPressed: showMic ? () {} : () => addMessage(textEditingController!),
           icon: Icon(icon.value),
         ),
       ),

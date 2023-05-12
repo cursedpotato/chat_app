@@ -8,7 +8,7 @@ import 'media_model.dart';
 
 enum ChatMessageType { text, audio, gallery, media }
 
-enum MessageStatus { notSent, sent, viewed }
+enum MessageStatus { notSent, sent, viewed, error }
 
 class ChatMessageModel {
   late final String id;
@@ -50,13 +50,13 @@ class ChatMessageModel {
     return {
       'id': id,
       'message': message,
-      'messageType': messageType,
-      'messageStatus': messageStatus,
+      'messageType': messageTypeToString(messageType),
+      'messageStatus': messageStatusToString(messageStatus),
       'isSender': isSender,
       'pfpUrl': pfpUrl,
       'sendBy': sendBy,
       'timestamp': timestamp,
-      'mediaList': mediaList,
+      'mediaList': mediaList.map((e) => e.toJson()).toList(),
     };
   }
 

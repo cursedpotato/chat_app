@@ -31,7 +31,6 @@ class ChatCard extends HookConsumerWidget {
           ref.read(chatteesViewModel.notifier).addChattee(user);
         }
         ref.read(chatroomId.notifier).state = chatroomModel.id;
-        ref.read(chatroomId.notifier).state = chatroomModel.chatroomImage;
 
         Navigator.pushNamed(context, MessagesScreen.routeName);
       },

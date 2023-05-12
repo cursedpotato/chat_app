@@ -35,3 +35,39 @@ MessageStatus messageStatus(String documentType) {
 
   return status;
 }
+
+String messageTypeToString(ChatMessageType chatMessageType) {
+  const map = {
+    ChatMessageType.text: 'text',
+    ChatMessageType.audio: 'audio',
+    ChatMessageType.gallery: 'gallery',
+    ChatMessageType.media: 'media',
+  };
+
+  String type = map[chatMessageType] ?? 'text';
+
+  return type;
+}
+
+String messageStatusToString(MessageStatus messageStatus) {
+  const map = {
+    MessageStatus.notSent: 'not-send',
+    MessageStatus.sent: 'not_viewed',
+    MessageStatus.viewed: 'viewed',
+  };
+
+  String status = map[messageStatus] ?? 'not-send';
+
+  return status;
+}
+
+String mediaTypeToString(MediaType mediaType) {
+  const map = {
+    MediaType.image: 'image',
+    MediaType.video: 'video',
+  };
+
+  String type = map[mediaType] ?? 'image';
+
+  return type;
+}

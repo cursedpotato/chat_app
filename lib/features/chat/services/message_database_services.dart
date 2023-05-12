@@ -1,28 +1,39 @@
 import 'package:chat_app/features/chat/models/message_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../../../core/utils/custom_typedefs.dart';
+import 'package:dartz/dartz.dart';
 
 class MessageDatabaseService {
-  static Future<FirebaseJsonStream> getChatRoomMessages(chatRoomId) async {
-    return FirebaseFirestore.instance
+  static Future<Stream<QuerySnapshot<Map<String, dynamic>>>>
+      getChatRoomMessages(chatRoomId) async {
+    final db = FirebaseFirestore.instance;
+    db.settings = const Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: 10000000,
+    );
+    return db
         .collection("chatrooms")
         .doc(chatRoomId)
         .collection("chats")
         .orderBy("ts", descending: true)
-        .snapshots();
+        .snapshots(includeMetadataChanges: true);
   }
 
-  static Future<void> addMessage(
+  static Future<Either<Exception, Unit>> addMessage(
     String chatRoomId,
     ChatMessageModel message,
   ) async {
-    return FirebaseFirestore.instance
-        .collection("chatrooms")
-        .doc(chatRoomId)
-        .collection("chats")
-        .doc(message.id)
-        .set(message.toJson());
+    final map = message.toJson();
+    try {
+      await FirebaseFirestore.instance
+          .collection("chatrooms")
+          .doc(chatRoomId)
+          .collection("chats")
+          .doc(message.id)
+          .set(map);
+      return right(unit);
+    } on Exception catch (e) {
+      return left(e);
+    }
   }
 
   Future<void> updateMessage(
