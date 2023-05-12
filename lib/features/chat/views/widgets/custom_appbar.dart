@@ -1,9 +1,13 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_app/features/home/views/widgets/chat_card.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/routes/strings.dart';
 
-AppBar buildAppBar() {
+AppBar buildChatroomAppbar(WidgetRef ref) {
   return AppBar(
     title: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -22,7 +26,6 @@ AppBar buildAppBar() {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
               Text(
-                // TODO: add name
                 "userModel.name!",
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 16),

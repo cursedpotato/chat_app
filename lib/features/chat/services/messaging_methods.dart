@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chat_app/features/chat/presentation/widgets/chat_input/recording_widget.dart';
+import 'package:chat_app/features/chat/views/widgets/chat_input/recording_widget.dart';
 import 'package:chat_app/features/chat/services/message_database_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

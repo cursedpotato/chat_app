@@ -1,6 +1,6 @@
 import 'package:chat_app/features/chat/models/message_model.dart';
-import 'package:chat_app/features/chat/presentation/widgets/message_types/media_message/count_images_widget.dart';
-import 'package:chat_app/features/chat/presentation/widgets/message_types/media_message/rouded_corder_image.dart';
+import 'package:chat_app/features/chat/views/widgets/message_types/media_message/count_images_widget.dart';
+import 'package:chat_app/features/chat/views/widgets/message_types/media_message/rouded_corder_image.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

@@ -6,20 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../core/theme/colors.dart';
-import '../../../chat/presentation/screens/chatroom_screen.dart';
+import '../../../chat/views/screens/messages_screen.dart';
 import '../../viewmodel/chattees_viewmodel.dart';
 
-final chatroomProvider = StateProvider.autoDispose<ChatroomModel>(
-  (ref) => ChatroomModel(
-    id: '',
-    lastMessage: '',
-    lastMessageSendBy: '',
-    lastMessageSendDate: '',
-    chatroomImage: '',
-    chatroomName: '',
-    users: [],
-  ),
-);
+final chatroomId = StateProvider<String>((ref) => '');
+final chatroomImage = StateProvider<String>((ref) => '');
 
 class ChatCard extends HookConsumerWidget {
   const ChatCard({
@@ -38,7 +29,9 @@ class ChatCard extends HookConsumerWidget {
         for (var user in userInfo) {
           ref.read(chatteesViewModel.notifier).addChattee(user);
         }
-        ref.read(chatroomProvider.notifier).state = chatroomModel;
+        ref.read(chatroomId.notifier).state = chatroomModel.id;
+        ref.read(chatroomId.notifier).state = chatroomModel.chatroomImage;
+
         Navigator.pushNamed(context, MessagesScreen.routeName);
       },
       leading: _Leading(chatroomModel: chatroomModel),

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'dart:math' as math;
-import 'package:chat_app/features/chat/presentation/widgets/chat_input/camera_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -175,9 +174,6 @@ class MediaMenu extends HookWidget {
         child: IconButton(
             onPressed: () async {
               overlayEntry.value?.remove();
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const CameraScreen(),
-              ));
             },
             icon: const Icon(Icons.camera_alt_outlined)),
       ),

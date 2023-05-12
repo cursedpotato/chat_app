@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../chat/presentation/screens/chatroom_screen.dart';
+import '../../../chat/views/screens/messages_screen.dart';
 
 class PeopleScreen extends ConsumerWidget {
   const PeopleScreen({Key? key}) : super(key: key);
