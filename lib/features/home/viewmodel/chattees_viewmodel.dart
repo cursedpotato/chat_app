@@ -19,4 +19,9 @@ class ChatteesViewModel extends StateNotifier<ChattesModel> {
   void addChattee(ChatUserModel chattee) {
     state = state.copyWith(chattes: [...state.chattes, chattee]);
   }
+
+  // remove all chattees
+  void removeAllChattees() {
+    state = state.copyWith(chattes: []);
+  }
 }

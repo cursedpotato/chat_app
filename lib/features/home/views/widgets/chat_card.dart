@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_app/core/utils/chatroom_image_util.dart';
 
 import 'package:chat_app/features/home/models/chatroom_model.dart';
 import 'package:flutter/material.dart';
@@ -55,8 +56,9 @@ class _Leading extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 24,
-          backgroundImage:
-              CachedNetworkImageProvider(chatroomModel.chatroomImage),
+          backgroundImage: CachedNetworkImageProvider(
+            chatroomImageUtil(chatroomModel),
+          ),
         ),
         const _ActivityDot()
       ],
