@@ -17,7 +17,7 @@ class AudioMessage extends HookWidget {
     Key? key,
   }) : super(key: key);
 
-  final ChatMesssageModel message;
+  final ChatMessageModel message;
   @override
   Widget build(BuildContext context) {
     final player = AudioPlayer();

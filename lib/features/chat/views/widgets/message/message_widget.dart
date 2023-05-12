@@ -8,7 +8,7 @@ import '../message_types/export_message_types.dart';
 import 'message_status_dot_widget.dart';
 
 class Message extends HookWidget {
-  final ChatMesssageModel message;
+  final ChatMessageModel message;
   const Message({
     Key? key,
     required this.message,
@@ -16,7 +16,7 @@ class Message extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget messageContent(ChatMesssageModel message) {
+    Widget messageContent(ChatMessageModel message) {
       final map = {
         ChatMessageType.text: TextMessage(message),
         ChatMessageType.audio: AudioMessage(message),

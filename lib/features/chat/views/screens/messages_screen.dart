@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../home/viewmodel/chattees_viewmodel.dart';
-import '../../../home/views/widgets/chat_card.dart';
 import '../widgets/custom_appbar.dart';
 
 class MessagesScreen extends HookConsumerWidget {
@@ -14,8 +13,6 @@ class MessagesScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final idChatroom = ref.watch(chatroomId);
-
     return Scaffold(
       appBar: buildChatroomAppbar(ref),
       body: WillPopScope(

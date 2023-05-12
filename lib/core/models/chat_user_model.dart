@@ -1,4 +1,4 @@
-import 'package:chat_app/core/utils/custom_getters.dart';
+import 'package:chat_app/core/utils/custom_extensions.dart';
 import 'package:flutter/material.dart';
 
 @immutable

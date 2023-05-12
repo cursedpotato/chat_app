@@ -11,7 +11,7 @@ import '../../../../models/media_model.dart';
 class GalleryMessageWidget extends HookConsumerWidget {
   const GalleryMessageWidget(this.messageModel, {Key? key}) : super(key: key);
 
-  final ChatMesssageModel messageModel;
+  final ChatMessageModel messageModel;
 
   String? _thumnailOrImage(int index) {
     if (messageModel.mediaList.isEmpty) return null;

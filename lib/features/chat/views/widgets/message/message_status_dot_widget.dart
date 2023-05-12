@@ -13,7 +13,7 @@ class MessageStatusDot extends StatelessWidget {
     Color dotColor(MessageStatus status) {
       final map = {
         MessageStatus.notSent: kErrorColor,
-        MessageStatus.notViewed:
+        MessageStatus.sent:
             Theme.of(context).textTheme.bodyLarge?.color?.withOpacity(0.1),
         MessageStatus.viewed: kPrimaryColor,
       };

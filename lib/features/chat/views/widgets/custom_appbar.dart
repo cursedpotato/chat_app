@@ -3,8 +3,6 @@ import 'package:chat_app/features/home/viewmodel/chattees_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../../core/routes/strings.dart';
-
 AppBar buildChatroomAppbar(WidgetRef ref) {
   // TODO: appbar for chatroom with multiple people
   final userModel = ref.watch(chatteesViewModel).chattes.first;

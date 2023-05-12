@@ -7,7 +7,7 @@ import '../../../../../core/theme/colors.dart';
 class TextMessage extends StatelessWidget {
   const TextMessage(this.message, {Key? key}) : super(key: key);
 
-  final ChatMesssageModel message;
+  final ChatMessageModel message;
 
   @override
   Widget build(BuildContext context) {
