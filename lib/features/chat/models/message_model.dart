@@ -1,4 +1,4 @@
-import 'package:chat_app/core/utils/custom_getters.dart';
+import 'package:chat_app/core/utils/custom_extensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/routes/strings.dart';
@@ -8,9 +8,9 @@ import 'media_model.dart';
 
 enum ChatMessageType { text, audio, gallery, media }
 
-enum MessageStatus { notSent, notViewed, viewed }
+enum MessageStatus { notSent, sent, viewed, error }
 
-class ChatMesssageModel {
+class ChatMessageModel {
   late final String id;
   late final String message;
   late final ChatMessageType messageType;
@@ -21,7 +21,7 @@ class ChatMesssageModel {
   late final Timestamp timestamp;
   late final List<Media> mediaList;
 
-  ChatMesssageModel({
+  ChatMessageModel({
     required this.id,
     required this.message,
     required this.messageType,
@@ -33,7 +33,7 @@ class ChatMesssageModel {
     required this.mediaList,
   });
 
-  ChatMesssageModel.fromDocument(DocumentSnapshot document) {
+  ChatMessageModel.fromDocument(DocumentSnapshot document) {
     id = document.id;
     message = document.getString('message');
     messageType = whatMessageType(document.getString('messageType'));
@@ -43,5 +43,45 @@ class ChatMesssageModel {
     sendBy = document.getString('sendBy');
     timestamp = document.getTimeStamp('ts');
     mediaList = mediaListFromDocument(document);
+  }
+
+  // create to json method
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'message': message,
+      'messageType': messageTypeToString(messageType),
+      'messageStatus': messageStatusToString(messageStatus),
+      'isSender': isSender,
+      'pfpUrl': pfpUrl,
+      'sendBy': sendBy,
+      'timestamp': timestamp,
+      'mediaList': mediaList.map((e) => e.toJson()).toList(),
+    };
+  }
+
+  // create copywith method
+  ChatMessageModel copyWith({
+    String? id,
+    String? message,
+    ChatMessageType? messageType,
+    MessageStatus? messageStatus,
+    bool? isSender,
+    String? pfpUrl,
+    String? sendBy,
+    Timestamp? timestamp,
+    List<Media>? mediaList,
+  }) {
+    return ChatMessageModel(
+      id: id ?? this.id,
+      message: message ?? this.message,
+      messageType: messageType ?? this.messageType,
+      messageStatus: messageStatus ?? this.messageStatus,
+      isSender: isSender ?? this.isSender,
+      pfpUrl: pfpUrl ?? this.pfpUrl,
+      sendBy: sendBy ?? this.sendBy,
+      timestamp: timestamp ?? this.timestamp,
+      mediaList: mediaList ?? this.mediaList,
+    );
   }
 }

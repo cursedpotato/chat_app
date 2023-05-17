@@ -1,36 +1,72 @@
-import 'package:chat_app/core/utils/custom_getters.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:timeago/timeago.dart' as timeago;
+import 'package:chat_app/core/models/chat_user_model.dart';
 
 class ChatroomModel {
-  String? id;
-  String? lastMessage;
-  String? lastMessageSendBy;
-  Timestamp? lastMessageSendTs;
-  DateTime? lastMessageSendDate;
-  List<String>? users;
-
-  String dateToString() {
-    final format = timeago.format(lastMessageSendDate!);
-    return format;
-  }
+  final String id;
+  final String lastMessage;
+  final String lastMessageSendBy;
+  final String lastMessageSendDate;
+  final String chatroomImage;
+  final String chatroomName;
+  final List<String> users;
+  final List<ChatUserModel> usersInfo;
 
   ChatroomModel({
-    this.id,
-    this.lastMessage,
-    this.lastMessageSendBy,
-    this.lastMessageSendTs,
-    this.lastMessageSendDate,
-    this.users,
+    required this.id,
+    required this.lastMessage,
+    required this.lastMessageSendBy,
+    required this.lastMessageSendDate,
+    required this.chatroomImage,
+    required this.chatroomName,
+    required this.users,
+    this.usersInfo = const [],
   });
 
-  ChatroomModel.fromDocument(DocumentSnapshot document) {
-    id = document.id;
-    lastMessage = document.getString('lastMessage');
-    lastMessageSendBy = document.getString('lastMessageSendBy');
-    lastMessageSendTs = document.getTimeStamp('lastMessageSendTs');
-    lastMessageSendDate = document.getDateFromTs('lastMessageSendTs');
-    users = document['users'].cast<String>();
+  // create copyWith method
+  ChatroomModel copyWith({
+    String? id,
+    String? lastMessage,
+    String? lastMessageSendBy,
+    String? lastMessageSendDate,
+    String? chatroomImage,
+    String? chatroomName,
+    List<String>? users,
+    List<ChatUserModel>? usersInfo,
+  }) {
+    return ChatroomModel(
+      id: id ?? this.id,
+      lastMessage: lastMessage ?? this.lastMessage,
+      lastMessageSendBy: lastMessageSendBy ?? this.lastMessageSendBy,
+      lastMessageSendDate: lastMessageSendDate ?? this.lastMessageSendDate,
+      chatroomImage: chatroomImage ?? this.chatroomImage,
+      chatroomName: chatroomName ?? this.chatroomName,
+      users: users ?? this.users,
+      usersInfo: usersInfo ?? this.usersInfo,
+    );
+  }
+
+  // create toJson method
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "lastMessage": lastMessage,
+      "lastMessageSendBy": lastMessageSendBy,
+      "lastMessageSendDate": lastMessageSendDate,
+      "chatroomImage": chatroomImage,
+      "chatroomName": chatroomName,
+      "users": users,
+    };
+  }
+
+  // create fromJson method
+  factory ChatroomModel.fromJson(Map<String, dynamic> json) {
+    return ChatroomModel(
+      id: json["id"],
+      lastMessage: json["lastMessage"],
+      lastMessageSendBy: json["lastMessageSendBy"],
+      lastMessageSendDate: json["lastMessageSendDate"],
+      chatroomImage: json["chatroomImage"],
+      chatroomName: json["chatroomName"],
+      users: List<String>.from(json["users"].map((x) => x)),
+    );
   }
 }
