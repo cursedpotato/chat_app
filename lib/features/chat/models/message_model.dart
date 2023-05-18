@@ -84,4 +84,45 @@ class ChatMessageModel {
       mediaList: mediaList ?? this.mediaList,
     );
   }
+
+  // TextMessage factory
+  factory ChatMessageModel.textMessage({
+    required String id,
+    required String message,
+  }) {
+    return ChatMessageModel(
+      id: id,
+      message: message,
+      messageType: ChatMessageType.text,
+      messageStatus: MessageStatus.notSent,
+      isSender: true,
+      pfpUrl: profilePicUrl!,
+      sendBy: chatterUsername!,
+      timestamp: Timestamp.now(),
+      mediaList: [],
+    );
+  }
+
+  // AudioMessage factory
+  factory ChatMessageModel.audioMessage({
+    required String id,
+    required String audioUrl,
+  }) {
+    return ChatMessageModel(
+      id: id,
+      message: '',
+      messageType: ChatMessageType.audio,
+      messageStatus: MessageStatus.notSent,
+      isSender: true,
+      pfpUrl: profilePicUrl!,
+      sendBy: chatterUsername!,
+      timestamp: Timestamp.now(),
+      mediaList: [
+        AudioMedia(
+          mediaType: MediaType.audio,
+          mediaUrl: audioUrl,
+        ),
+      ],
+    );
+  }
 }

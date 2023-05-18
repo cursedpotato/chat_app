@@ -1,5 +1,8 @@
 import '../models/media_model.dart';
 import '../models/message_model.dart';
+// -------------------
+// MessageType utils
+// -------------------
 
 ChatMessageType whatMessageType(String documentType) {
   const map = {
@@ -11,29 +14,6 @@ ChatMessageType whatMessageType(String documentType) {
   ChatMessageType type = map[documentType] ?? ChatMessageType.text;
 
   return type;
-}
-
-MediaType whatMediaType(String documentType) {
-  const map = {
-    'image': MediaType.image,
-    'video': MediaType.video,
-  };
-
-  MediaType type = map[documentType] ?? MediaType.image;
-
-  return type;
-}
-
-MessageStatus messageStatusUtil(String documentType) {
-  const map = {
-    'not-send': MessageStatus.notSent,
-    'not_viewed': MessageStatus.sent,
-    'viewed': MessageStatus.viewed,
-  };
-
-  MessageStatus status = map[documentType] ?? MessageStatus.notSent;
-
-  return status;
 }
 
 String messageTypeToString(ChatMessageType chatMessageType) {
@@ -49,6 +29,21 @@ String messageTypeToString(ChatMessageType chatMessageType) {
   return type;
 }
 
+// -------------------
+// MessageStatus utils
+// -------------------
+MessageStatus messageStatusUtil(String documentType) {
+  const map = {
+    'not-send': MessageStatus.notSent,
+    'not_viewed': MessageStatus.sent,
+    'viewed': MessageStatus.viewed,
+  };
+
+  MessageStatus status = map[documentType] ?? MessageStatus.notSent;
+
+  return status;
+}
+
 String messageStatusToString(MessageStatus messageStatus) {
   const map = {
     MessageStatus.notSent: 'not-send',
@@ -61,10 +56,27 @@ String messageStatusToString(MessageStatus messageStatus) {
   return status;
 }
 
+// -------------------
+// MediaType utils
+// -------------------
+
+MediaType whatMediaType(String documentType) {
+  const map = {
+    'image': MediaType.image,
+    'video': MediaType.video,
+    'audio': MediaType.audio,
+  };
+
+  MediaType type = map[documentType] ?? MediaType.image;
+
+  return type;
+}
+
 String mediaTypeToString(MediaType mediaType) {
   const map = {
     MediaType.image: 'image',
     MediaType.video: 'video',
+    MediaType.audio: 'audio',
   };
 
   String type = map[mediaType] ?? 'image';

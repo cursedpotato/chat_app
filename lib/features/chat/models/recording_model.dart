@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class RecordingModel {
   final Duration duration;
   final bool isRecording;
-  final RecorderController recorderController;
+  final RecorderController? recorderController;
 
   const RecordingModel({
     required this.duration,

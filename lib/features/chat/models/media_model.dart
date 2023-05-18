@@ -1,6 +1,6 @@
 import '../utils/message_models_enum_functions.dart';
 
-enum MediaType { image, video }
+enum MediaType { image, video, audio }
 
 abstract class Media {
   MediaType mediaType;
@@ -55,6 +55,24 @@ class VideoMedia extends Media {
       'mediaType': mediaTypeToString(mediaType),
       'mediaUrl': mediaUrl,
       'thumbnailUrl': thumbnailUrl,
+    };
+  }
+}
+
+class AudioMedia extends Media {
+  AudioMedia({
+    required MediaType mediaType,
+    required String mediaUrl,
+  }) : super(
+          mediaType: mediaType,
+          mediaUrl: mediaUrl,
+        );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'mediaType': mediaTypeToString(mediaType),
+      'mediaUrl': mediaUrl,
     };
   }
 }
