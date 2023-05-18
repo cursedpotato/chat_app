@@ -3,6 +3,7 @@
 //----------------
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 class MeasureSizeRenderObject extends RenderProxyBox {
   MeasureSizeRenderObject(this.onChange);
@@ -27,4 +28,21 @@ class MeasurableWidget extends SingleChildRenderObjectWidget {
   @override
   RenderObject createRenderObject(BuildContext context) =>
       MeasureSizeRenderObject(onChange);
+}
+
+// Flutter hasn't implemented yet the option to open the keyboard without the need of a textfield
+class PreventKeyboardClosing extends HookWidget {
+  const PreventKeyboardClosing({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final focusNode = useFocusNode()..requestFocus();
+    return SizedBox.shrink(
+      child: TextField(
+        focusNode: focusNode,
+        showCursor: false,
+        decoration: const InputDecoration(border: InputBorder.none),
+      ),
+    );
+  }
 }

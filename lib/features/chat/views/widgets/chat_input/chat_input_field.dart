@@ -1,6 +1,7 @@
 import 'package:chat_app/core/routes/strings.dart';
 import 'package:chat_app/features/chat/models/message_model.dart';
-import 'package:chat_app/features/chat/views/widgets/chat_input/recording_widget.dart';
+import 'package:chat_app/features/chat/views/widgets/chat_input/audio_input/recording_widget.dart';
+import 'package:chat_app/features/chat/views/widgets/chat_input/text_input/text_input_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
@@ -8,10 +9,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../../core/theme/colors.dart';
 import '../../../../../core/theme/sizes.dart';
 import '../../../viewmodel/messages_viewmodel.dart';
-import 'media_menu_widget.dart';
+import 'functions_menu/media_menu_widget.dart';
 
 final showMicProvider = StateProvider((ref) => true);
 final canAnimateProvider = StateProvider((ref) => false);
@@ -91,7 +91,7 @@ class ChatInputField extends HookConsumerWidget {
       if (ref.watch(showAudioWidget)) {
         return [
           const RecordingWidget(),
-          CustomSendButton(
+          _CustomSendButton(
             fingerDown: fingerDown,
             fingerOff: fingerOff,
             updateLocation: updateLocation,
@@ -101,7 +101,7 @@ class ChatInputField extends HookConsumerWidget {
       return [
         const MediaMenu(),
         ChatRoomTextField(messageController: messageController),
-        CustomSendButton(
+        _CustomSendButton(
           textEditingController: messageController,
           fingerDown: fingerDown,
           fingerOff: fingerOff,
@@ -133,8 +133,8 @@ class ChatInputField extends HookConsumerWidget {
   }
 }
 
-class CustomSendButton extends HookConsumerWidget {
-  const CustomSendButton({
+class _CustomSendButton extends HookConsumerWidget {
+  const _CustomSendButton({
     Key? key,
     this.textEditingController,
     this.updateLocation,
@@ -153,6 +153,9 @@ class CustomSendButton extends HookConsumerWidget {
     final icon = useState(Icons.mic);
     final showMic = ref.watch(showMicProvider);
 
+    // -----------------------
+    // Animation related logic
+    // -----------------------
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 180));
 
@@ -176,6 +179,8 @@ class CustomSendButton extends HookConsumerWidget {
         animationController.reverse();
       }
     });
+
+    // ---------------------------------------------
 
     addMessage(
       TextEditingController messageController,
@@ -204,62 +209,6 @@ class CustomSendButton extends HookConsumerWidget {
         child: IconButton(
           onPressed: showMic ? () {} : () => addMessage(textEditingController!),
           icon: Icon(icon.value),
-        ),
-      ),
-    );
-  }
-}
-
-class ChatRoomTextField extends HookConsumerWidget {
-  const ChatRoomTextField({
-    Key? key,
-    required this.messageController,
-  }) : super(key: key);
-
-  final TextEditingController messageController;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Everytime the user writes we want to switch between the mic and the send button
-    void toggle() {
-      // The animation triggers when the user types, but also when the widget gets drawn
-      // it looks kind of annoying when the animation triggers everytime, so we set the canAnimateProvider when the user types to prevent,
-      // this annoying behaviorf
-      ref.read(canAnimateProvider.notifier).state = true;
-      if (messageController.text.isEmpty) {
-        ref.read(showMicProvider.notifier).state = true;
-      }
-      if (messageController.text.isNotEmpty) {
-        ref.read(showMicProvider.notifier).state = false;
-      }
-    }
-
-    // We listen input to toggle the mic
-    useEffect(() {
-      messageController.addListener(toggle);
-      return () => messageController.removeListener(toggle);
-    });
-
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding * 0.75),
-        decoration: BoxDecoration(
-          color: kPrimaryColor.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(40),
-        ),
-        child: TextField(
-          autofocus: true,
-          controller: messageController,
-          maxLength: 800,
-          minLines: 1,
-          maxLines: 5, // This way the textfield grows
-          keyboardType: TextInputType.multiline,
-          decoration: const InputDecoration(
-            // This hides the counter that appears when you set a chat limit
-            counterText: "",
-            hintText: "Aa",
-            border: InputBorder.none,
-          ),
         ),
       ),
     );

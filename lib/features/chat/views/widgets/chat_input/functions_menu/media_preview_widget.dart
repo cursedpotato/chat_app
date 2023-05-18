@@ -10,7 +10,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 
 import 'package:video_player/video_player.dart';
 
-import '../../../../../core/theme/sizes.dart';
+import '../../../../../../core/theme/sizes.dart';
 
 import 'package:video_compress/video_compress.dart';
 
