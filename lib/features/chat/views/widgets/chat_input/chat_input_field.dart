@@ -1,8 +1,6 @@
-import 'package:chat_app/core/routes/strings.dart';
 import 'package:chat_app/features/chat/models/message_model.dart';
 import 'package:chat_app/features/chat/views/widgets/chat_input/audio_input/recording_widget.dart';
 import 'package:chat_app/features/chat/views/widgets/chat_input/text_input/text_input_widget.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -67,7 +65,7 @@ class ChatInputField extends HookConsumerWidget {
       ref.read(sliderPosition.notifier).state = details.position.dx;
       // This conditional gives functionality to the slidable widget that is found in the recording widget file
       if (details.position.dx < screenWidth * 0.5) {
-        // This will stop the recorder
+        // This will stop the recorderz
         ref.read(recController.notifier).state.stop();
         ref.read(isRecording.notifier).state = false;
         ref.read(wasAudioDiscarted.notifier).state = true;
@@ -180,21 +178,12 @@ class _CustomSendButton extends HookConsumerWidget {
       }
     });
 
-    // ---------------------------------------------
-
     addMessage(
       TextEditingController messageController,
     ) async {
-      final message = ChatMessageModel(
-        id: const Uuid().v4(),
+      final message = ChatMessageModel.textMessage(
+        id: const Uuid().v1(),
         message: messageController.text,
-        messageType: ChatMessageType.text,
-        messageStatus: MessageStatus.notSent,
-        isSender: true,
-        pfpUrl: noImage,
-        sendBy: chatterUsername!,
-        timestamp: Timestamp.now(),
-        mediaList: [],
       );
       messageController.clear();
       await ref.read(messagesViewModelProvider.notifier).uploadMessage(message);
