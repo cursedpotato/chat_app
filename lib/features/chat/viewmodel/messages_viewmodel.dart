@@ -32,6 +32,12 @@ class MessagesViewModel extends StateNotifier<List<ChatMessageModel>> {
     final idChatroom = ref.watch(chatroomId);
     _addMessageToList(message);
 
+    scrollController.animateTo(
+      0.0,
+      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 300),
+    );
+
     // uplaod message to firebase
     final status = await MessageDatabaseService.addMessage(idChatroom, message);
     // update message status
