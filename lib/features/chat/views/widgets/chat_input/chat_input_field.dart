@@ -191,7 +191,8 @@ class CustomSendButton extends HookConsumerWidget {
         timestamp: Timestamp.now(),
         mediaList: [],
       );
-      await ref.read(messagesViewModelProvider.notifier).addMessage(message);
+      messageController.clear();
+      await ref.read(messagesViewModelProvider.notifier).uploadMessage(message);
     }
 
     return Listener(

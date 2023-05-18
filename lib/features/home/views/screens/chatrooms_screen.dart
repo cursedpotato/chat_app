@@ -41,6 +41,7 @@ class _MainList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chatroomStreamData = ref.watch(chatroomStream);
     final chatroomList = ref.watch(chatRoomViewModel);
+
     return chatroomStreamData.when(
       data: (_) {
         if (chatroomList.isEmpty) {
@@ -49,10 +50,9 @@ class _MainList extends ConsumerWidget {
         return Expanded(
           child: ListView.builder(
             itemCount: chatroomList.length,
-            itemBuilder: (_, int index) {
-              final chatroom = chatroomList[index];
-              return ChatCard(chatroomModel: chatroom);
-            },
+            itemBuilder: (_, int index) => ChatCard(
+              chatroomModel: chatroomList[index],
+            ),
           ),
         );
       },

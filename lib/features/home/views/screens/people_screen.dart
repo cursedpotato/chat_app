@@ -1,15 +1,15 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/core/models/chat_user_model.dart';
 import 'package:chat_app/core/widgets/progress_hud.dart';
 import 'package:chat_app/features/home/viewmodel/chatroom_viewmodel.dart';
 import 'package:chat_app/features/home/viewmodel/chattees_viewmodel.dart';
 import 'package:chat_app/features/home/viewmodel/search_viewmodel.dart';
+import 'package:chat_app/features/home/views/widgets/chat_card.dart';
 import 'package:chat_app/features/home/views/widgets/people_screen_widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../chat/views/screens/messages_screen.dart';
 
@@ -19,8 +19,6 @@ class PeopleScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isSearching = ref.watch(searchViewModel).isSearching;
-
-    log(isSearching.toString());
     return SafeArea(
       child: ProgressHUD(
         inAsyncCall: isSearching,
@@ -70,10 +68,12 @@ class _CustomListTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
       onTap: () {
+        final roomchatId = const Uuid().v4();
+        ref.read(chatroomId.notifier).state = roomchatId;
         ref.read(chatteesViewModel.notifier).addChattee(userModel);
         ref
             .read(chatRoomViewModel.notifier)
-            .createChatroom()
+            .createChatroom(roomchatId)
             .then((value) => Navigator.of(context).pushNamed(
                   MessagesScreen.routeName,
                 ));
