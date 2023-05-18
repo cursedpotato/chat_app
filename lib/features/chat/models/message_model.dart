@@ -37,7 +37,7 @@ class ChatMessageModel {
     id = document.id;
     message = document.getString('message');
     messageType = whatMessageType(document.getString('messageType'));
-    messageStatus = MessageStatus.viewed;
+    messageStatus = messageStatusUtil(document.getString('messageStatus'));
     isSender = chatterUsername == document['sendBy'];
     pfpUrl = document.getString('imgUrl');
     sendBy = document.getString('sendBy');

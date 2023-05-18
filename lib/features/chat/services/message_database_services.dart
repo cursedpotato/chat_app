@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 
 class MessageDatabaseService {
-  static Future<Stream<QuerySnapshot<Map<String, dynamic>>>>
-      getChatRoomMessages(chatRoomId) async {
+  static Future<Stream<QuerySnapshot<Map<String, dynamic>>>> getMessages(
+      chatRoomId) async {
     final db = FirebaseFirestore.instance;
     db.settings = const Settings(
       persistenceEnabled: true,
@@ -14,7 +14,7 @@ class MessageDatabaseService {
         .collection("chatrooms")
         .doc(chatRoomId)
         .collection("chats")
-        .orderBy("ts", descending: true)
+        .orderBy("timestamp", descending: true)
         .snapshots(includeMetadataChanges: true);
   }
 
@@ -36,7 +36,7 @@ class MessageDatabaseService {
     }
   }
 
-  Future<void> updateMessage(
+  static Future<void> updateMessage(
     String chatRoomId,
     ChatMessageModel message,
   ) async {

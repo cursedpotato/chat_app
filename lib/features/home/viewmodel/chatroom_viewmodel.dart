@@ -3,7 +3,6 @@ import 'package:chat_app/features/home/models/chatroom_model.dart';
 import 'package:chat_app/features/home/services/chatroom_database_services.dart';
 import 'package:chat_app/features/home/services/user_database_services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../core/models/chat_user_model.dart';
 import 'chattees_viewmodel.dart';
@@ -45,6 +44,9 @@ class ChatRoomViewModel extends StateNotifier<List<ChatroomModel>> {
             usersInfo: [...model.usersInfo, chatteInfo],
           );
 
+          // if the chatroom already exists we remove it from the state
+          state.removeWhere((element) => element.id == completeModel.id);
+
           // We add the chatroom to the state
           state = [...state, completeModel];
         }
@@ -52,10 +54,8 @@ class ChatRoomViewModel extends StateNotifier<List<ChatroomModel>> {
     }
   }
 
-  Future<void> createChatroom() async {
+  Future<void> createChatroom(String chatroomId) async {
     List<ChatUserModel> chatteesList = ref.watch(chatteesViewModel).chattes;
-
-    final chatroomId = const Uuid().v4();
 
     final chatroomInfoMap = ChatroomModel(
       id: chatroomId,

@@ -1,5 +1,7 @@
 import 'package:chat_app/core/models/chat_user_model.dart';
+import 'package:flutter/foundation.dart';
 
+@immutable
 class ChatroomModel {
   final String id;
   final String lastMessage;
@@ -10,7 +12,7 @@ class ChatroomModel {
   final List<String> users;
   final List<ChatUserModel> usersInfo;
 
-  ChatroomModel({
+  const ChatroomModel({
     required this.id,
     required this.lastMessage,
     required this.lastMessageSendBy,

@@ -26,30 +26,34 @@ class Message extends HookWidget {
       return type;
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 4),
-      child: Row(
-        crossAxisAlignment: message.isSender
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.center,
-        mainAxisAlignment:
-            message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: [
-          if (!message.isSender) ...[
-            Container(
-              margin: const EdgeInsets.only(right: kDefaultPadding / 2),
-              child: CircleAvatar(
-                radius: 12,
-                backgroundImage: CachedNetworkImageProvider(message.pfpUrl),
+    return Focus(
+      autofocus: true,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: kDefaultPadding / 4),
+        child: Row(
+          crossAxisAlignment: message.isSender
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.center,
+          mainAxisAlignment: message.isSender
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
+          children: [
+            if (!message.isSender) ...[
+              Container(
+                margin: const EdgeInsets.only(right: kDefaultPadding / 2),
+                child: CircleAvatar(
+                  radius: 12,
+                  backgroundImage: CachedNetworkImageProvider(message.pfpUrl),
+                ),
+              )
+            ],
+            messageContent(message),
+            if (message.isSender)
+              MessageStatusDot(
+                status: message.messageStatus,
               ),
-            )
           ],
-          messageContent(message),
-          if (message.isSender)
-            MessageStatusDot(
-              status: message.messageStatus,
-            ),
-        ],
+        ),
       ),
     );
   }

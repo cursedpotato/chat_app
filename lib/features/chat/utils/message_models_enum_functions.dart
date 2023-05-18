@@ -24,7 +24,7 @@ MediaType whatMediaType(String documentType) {
   return type;
 }
 
-MessageStatus messageStatus(String documentType) {
+MessageStatus messageStatusUtil(String documentType) {
   const map = {
     'not-send': MessageStatus.notSent,
     'not_viewed': MessageStatus.sent,
