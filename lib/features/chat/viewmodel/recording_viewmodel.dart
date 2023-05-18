@@ -37,6 +37,7 @@ class RecorderViewModel extends StateNotifier<RecordingModel> {
     });
 
     _ref.onDispose(() {
+      state.recorderController!.dispose();
       sub.cancel();
     });
   }
