@@ -67,7 +67,7 @@ class ChatInputField extends HookConsumerWidget {
       ref.read(sliderPosition.notifier).state = details.position.dx;
       // This conditional gives functionality to the slidable widget that is found in the recording widget file
       if (details.position.dx < screenWidth * 0.5) {
-        // This will stop the recorderz
+        // This will stop the recorder
         ref.read(recController.notifier).state.stop();
         ref.read(isRecording.notifier).state = false;
         ref.read(wasAudioDiscarted.notifier).state = true;

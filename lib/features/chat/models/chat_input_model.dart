@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 @immutable
 class ChatInputModel {
-  final int sliderPosition;
-  final int stackSize;
+  final double sliderPosition;
+  final double stackSize;
   final bool showRecordingWidget;
   final bool showControlRec;
   final bool showMicIcon;
   final bool canAnimate;
-  final PointerEvent details;
+  final PointerEvent? details;
 
   const ChatInputModel({
     required this.sliderPosition,
@@ -22,8 +22,8 @@ class ChatInputModel {
 
   // create copywith method
   ChatInputModel copyWith({
-    int? sliderPosition,
-    int? stackSize,
+    double? sliderPosition,
+    double? stackSize,
     bool? showRecordingWidget,
     bool? showControlRec,
     bool? showMicIcon,
