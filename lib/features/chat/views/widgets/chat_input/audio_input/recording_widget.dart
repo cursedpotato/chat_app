@@ -1,4 +1,7 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:chat_app/features/chat/utils/format_duration_util.dart';
+import 'package:chat_app/features/chat/viewmodel/chat_input_viewmodel.dart';
+import 'package:chat_app/features/chat/viewmodel/recording_viewmodel.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -9,48 +12,22 @@ import 'mic_animation.dart';
 import 'slide_to_dismiss_widget.dart';
 import 'trash_animation.dart';
 
-// Recording widget related variables
-
-// TODO: Plug this into a viewmodel
-
-final recordDuration = StateProvider((ref) => '0:00');
-
-final sliderPosition = StateProvider.autoDispose((ref) => 0.0);
-
-final stackSize = StateProvider((ref) => 0.0);
-
-final showAudioWidget = StateProvider.autoDispose((ref) => false);
-
-final wasAudioDiscarted = StateProvider.autoDispose((ref) => false);
-
-final showControlRec = StateProvider.autoDispose((ref) => false);
-
-final isRecording = StateProvider((ref) => false);
-
-final recController = StateProvider(
-  (ref) => RecorderController()
-    ..androidEncoder = AndroidEncoder.aac
-    ..androidOutputFormat = AndroidOutputFormat.mpeg4
-    ..iosEncoder = IosEncoder.kAudioFormatMPEG4AAC
-    ..sampleRate = 16000
-    ..bitRate = 64000,
-);
-
 class RecordingWidget extends HookConsumerWidget {
   const RecordingWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // This function was created because nesting ternary oparators within the Stack list is not very readable
+    final inputCtrl = ref.watch(chatInputViewModelProvider);
     List<Widget> stackList() {
-      if (ref.watch(wasAudioDiscarted)) {
+      if (inputCtrl.wasRecoringDismissed) {
         return const [
           PreventKeyboardClosing(),
           AnimatedMic(),
           AnimatedTrash(),
         ];
       }
-      if (!ref.watch(wasAudioDiscarted) && !ref.watch(showControlRec)) {
+      if (inputCtrl.wasRecoringDismissed && !inputCtrl.showControlRec) {
         return const [
           SlideToDisposeWidget(),
           RecordingCounter(),
@@ -63,8 +40,9 @@ class RecordingWidget extends HookConsumerWidget {
 
     return Expanded(
       child: MeasurableWidget(
-        onChange: (Size size) =>
-            ref.read(stackSize.notifier).state = size.width,
+        onChange: (Size size) => ref
+            .read(chatInputViewModelProvider.notifier)
+            .updateStackSize(size.width),
         child: Stack(children: stackList()),
       ),
     );
@@ -77,10 +55,13 @@ class ControlRecordingWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final toggleRec = useState(true);
-    resumeRecording() async =>
-        await ref.read(recController.notifier).state.record();
-    pauseRecording() async =>
-        await ref.read(recController.notifier).state.pause();
+    final recorderCtrl = ref.watch(recorderViewModelProvider);
+    final recorderCtrlRead = ref.read(recorderViewModelProvider.notifier);
+
+    final inputCtrl = ref.watch(chatInputViewModelProvider);
+
+    resumeRecording() async => await recorderCtrlRead.startRecording();
+    pauseRecording() async => await recorderCtrlRead.pauseRecording();
 
     // ------------------------------------------
     // Transform translate animation related logic
@@ -95,7 +76,9 @@ class ControlRecordingWidget extends HookConsumerWidget {
     );
     animationController.addStatusListener((AnimationStatus status) {
       if (status == AnimationStatus.dismissed) {
-        ref.read(showControlRec.notifier).state = false;
+        ref
+            .read(chatInputViewModelProvider.notifier)
+            .updateShowControlRec(false);
       }
     });
 
@@ -117,7 +100,9 @@ class ControlRecordingWidget extends HookConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(ref.watch(recordDuration)),
+              Text(
+                formatDuration(recorderCtrl.duration),
+              ),
               const PreventKeyboardClosing(),
               SingleChildScrollView(
                 physics: const NeverScrollableScrollPhysics(),
@@ -129,8 +114,8 @@ class ControlRecordingWidget extends HookConsumerWidget {
                     extendWaveform: true,
                     showMiddleLine: false,
                   ),
-                  size: Size(ref.watch(stackSize) * 0.90, 24),
-                  recorderController: ref.watch(recController),
+                  size: Size(inputCtrl.stackSize * 0.90, 24),
+                  recorderController: recorderCtrl.recorderController!,
                 ),
               ),
             ],
@@ -142,20 +127,20 @@ class ControlRecordingWidget extends HookConsumerWidget {
                 onPressed: () {
                   // When the reverse ends we have a listener that will set the showControlRec provider to false
                   animationController.reverse();
-                  ref.read(recController.notifier).state.stop();
+                  recorderCtrlRead.stopRecording();
                 },
                 icon: const Icon(Icons.delete),
               ),
               IconButton(
                 onPressed: () {
                   toggleRec.value = !toggleRec.value;
-                  if (ref.watch(isRecording)) {
+                  if (recorderCtrl.isRecording) {
                     pauseRecording().then(
-                      (value) => ref.read(isRecording.notifier).state = false,
+                      (value) => recorderCtrlRead.updateIsRecording(false),
                     );
                   }
                   resumeRecording().then(
-                    (value) => ref.read(isRecording.notifier).state = true,
+                    (value) => recorderCtrlRead.updateIsRecording(true),
                   );
                 },
                 icon: toggleRec.value
@@ -184,6 +169,8 @@ class RecordingCounter extends HookConsumerWidget {
         useAnimationController(duration: const Duration(milliseconds: 800))
           ..repeat(reverse: true);
 
+    final recorderCtrl = ref.watch(recorderViewModelProvider);
+
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Row(
@@ -205,7 +192,11 @@ class RecordingCounter extends HookConsumerWidget {
             width: 10,
             height: 48,
           ),
-          Flexible(child: Text(ref.watch(recordDuration))),
+          Flexible(
+            child: Text(
+              formatDuration(recorderCtrl.duration),
+            ),
+          ),
           const SizedBox(width: 10)
         ],
       ),

@@ -5,11 +5,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 const initialState = ChatInputModel(
   sliderPosition: 0.0,
   stackSize: 0.0,
+  wasRecoringDismissed: false,
   showRecordingWidget: false,
   showControlRec: false,
   showMicIcon: false,
   canAnimate: false,
   details: null,
+);
+
+final chatInputViewModelProvider =
+    StateNotifierProvider.autoDispose<ChatInputViewModel, ChatInputModel>(
+  (ref) => ChatInputViewModel(ref),
 );
 
 class ChatInputViewModel extends StateNotifier<ChatInputModel> {
@@ -23,6 +29,10 @@ class ChatInputViewModel extends StateNotifier<ChatInputModel> {
 
   void updateStackSize(double value) {
     state = state.copyWith(stackSize: value);
+  }
+
+  void updateWasRecordingDismissed(bool value) {
+    state = state.copyWith(wasRecoringDismissed: value);
   }
 
   void updateShowRecordingWidget(bool value) {

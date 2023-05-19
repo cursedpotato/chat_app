@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class ChatInputModel {
   final double sliderPosition;
   final double stackSize;
+  final bool wasRecoringDismissed;
   final bool showRecordingWidget;
   final bool showControlRec;
   final bool showMicIcon;
@@ -13,6 +14,7 @@ class ChatInputModel {
   const ChatInputModel({
     required this.sliderPosition,
     required this.stackSize,
+    required this.wasRecoringDismissed,
     required this.showRecordingWidget,
     required this.showControlRec,
     required this.showMicIcon,
@@ -24,6 +26,7 @@ class ChatInputModel {
   ChatInputModel copyWith({
     double? sliderPosition,
     double? stackSize,
+    bool? wasRecoringDismissed,
     bool? showRecordingWidget,
     bool? showControlRec,
     bool? showMicIcon,
@@ -33,6 +36,7 @@ class ChatInputModel {
     return ChatInputModel(
       sliderPosition: sliderPosition ?? this.sliderPosition,
       stackSize: stackSize ?? this.stackSize,
+      wasRecoringDismissed: wasRecoringDismissed ?? this.wasRecoringDismissed,
       showRecordingWidget: showRecordingWidget ?? this.showRecordingWidget,
       showControlRec: showControlRec ?? this.showControlRec,
       showMicIcon: showMicIcon ?? this.showMicIcon,

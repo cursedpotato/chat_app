@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../../../core/theme/colors.dart';
-import '../chat_input_field.dart';
+import '../../../../viewmodel/chat_input_viewmodel.dart';
 
 class ChatRoomTextField extends HookConsumerWidget {
   const ChatRoomTextField({
@@ -21,12 +21,14 @@ class ChatRoomTextField extends HookConsumerWidget {
       // The animation triggers when the user types, but also when the widget gets drawn
       // it looks kind of annoying when the animation triggers everytime, so we set the canAnimateProvider when the user types to prevent,
       // this annoying behaviorf
-      ref.read(canAnimateProvider.notifier).state = true;
+      final inputCtrl = ref.read(chatInputViewModelProvider.notifier);
+      inputCtrl.updateCanAnimate(true);
+
       if (messageController.text.isEmpty) {
-        ref.read(showMicProvider.notifier).state = true;
+        inputCtrl.updateShowMicIcon(true);
       }
       if (messageController.text.isNotEmpty) {
-        ref.read(showMicProvider.notifier).state = false;
+        inputCtrl.updateShowMicIcon(false);
       }
     }
 

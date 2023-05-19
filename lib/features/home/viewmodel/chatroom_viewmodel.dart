@@ -2,6 +2,7 @@ import 'package:chat_app/core/routes/strings.dart';
 import 'package:chat_app/features/home/models/chatroom_model.dart';
 import 'package:chat_app/features/home/services/chatroom_database_services.dart';
 import 'package:chat_app/features/home/services/user_database_services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../core/models/chat_user_model.dart';
@@ -14,13 +15,7 @@ final chatRoomViewModel =
 
 class ChatRoomViewModel extends StateNotifier<List<ChatroomModel>> {
   final Ref ref;
-  ChatRoomViewModel(this.ref) : super([]) {
-    final sub = getChatroomStream().listen((model) async {
-      await _addChatroom(model);
-    });
-
-    ref.onDispose(() => sub.cancel());
-  }
+  ChatRoomViewModel(this.ref) : super([]);
 
   Future<void> _addChatroom(ChatroomModel? model) async {
     if (model != null) {
@@ -76,18 +71,20 @@ class ChatRoomViewModel extends StateNotifier<List<ChatroomModel>> {
     );
   }
 
-  Stream<ChatroomModel?> getChatroomStream() async* {
+  Stream<List<ChatroomModel>> getChatroomStream() async* {
     final stream = await ChatroomDatabaseService.getChatRooms();
 
-    final snapshot = stream.asyncMap((event) {
-      for (var element in event.docs) {
-        if (element.data().isEmpty) {
-          return null;
-        }
-        return ChatroomModel.fromJson(element.data());
-      }
-    });
+    yield* stream.map((snapshot) => _addChatrooms(snapshot));
+  }
 
-    yield* snapshot;
+  List<ChatroomModel> _addChatrooms(QuerySnapshot snapshot) {
+    List<ChatroomModel> chatrooms = [];
+    for (final chatroom in snapshot.docs) {
+      final model = ChatroomModel.fromDocument(chatroom);
+      _addChatroom(model);
+      chatrooms.add(model);
+    }
+
+    return state = chatrooms;
   }
 }

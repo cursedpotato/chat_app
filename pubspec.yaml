@@ -62,7 +62,7 @@ dependencies:
   # Media related packages
   camera: ^0.10.0+5
   # Audio Recorder
-  audio_waveforms: ^1.0.4
+  audio_waveforms: ^1.0.1
   # audio waveforms player lacks some features
   just_audio: ^0.9.30
   just_waveform: ^0.0.3

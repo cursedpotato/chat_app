@@ -2,7 +2,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'recording_widget.dart';
+import '../../../../viewmodel/chat_input_viewmodel.dart';
 
 class SlideToDisposeWidget extends ConsumerWidget {
   const SlideToDisposeWidget({
@@ -12,7 +12,8 @@ class SlideToDisposeWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // References
-    late final double pointerPosition = ref.watch(sliderPosition);
+    final inputCtrl = ref.watch(chatInputViewModelProvider);
+    late final double pointerPosition = inputCtrl.sliderPosition;
     late final double screenWidth = MediaQuery.of(context).size.width;
     late final double centerPosition = screenWidth * 0.333;
     /* We use a ternary operator because

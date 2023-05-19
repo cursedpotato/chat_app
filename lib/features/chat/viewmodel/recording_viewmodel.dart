@@ -14,6 +14,11 @@ const initalState = RecordingModel(
   recorderController: null,
 );
 
+final recorderViewModelProvider =
+    StateNotifierProvider.autoDispose<RecorderViewModel, RecordingModel>(
+  (ref) => RecorderViewModel(ref),
+);
+
 class RecorderViewModel extends StateNotifier<RecordingModel> {
   final Ref _ref;
   RecorderViewModel(this._ref) : super(initalState) {
@@ -42,21 +47,27 @@ class RecorderViewModel extends StateNotifier<RecordingModel> {
     });
   }
 
-  void startRecording() async {
+  void updateIsRecording(bool value) {
+    state = state.copyWith(
+      isRecording: value,
+    );
+  }
+
+  Future<void> startRecording() async {
     await state.recorderController!.record();
     state = state.copyWith(
       isRecording: true,
     );
   }
 
-  void pauseRecording() async {
+  Future<void> pauseRecording() async {
     await state.recorderController!.pause();
     state = state.copyWith(
       isRecording: false,
     );
   }
 
-  void stopRecording() async {
+  Future<void> stopRecording() async {
     final messageId = const Uuid().v1();
     final filePath = await state.recorderController!.stop();
 

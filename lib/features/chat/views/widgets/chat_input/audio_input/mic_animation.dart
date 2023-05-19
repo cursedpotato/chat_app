@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'recording_widget.dart';
+import '../../../../viewmodel/chat_input_viewmodel.dart';
 
 class AnimatedMic extends HookConsumerWidget {
   const AnimatedMic({Key? key}) : super(key: key);
@@ -17,12 +17,14 @@ class AnimatedMic extends HookConsumerWidget {
 
     animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        ref.read(showAudioWidget.notifier).state = false;
-        ref.read(wasAudioDiscarted.notifier).state = false;
+        final inputCtrl = ref.read(chatInputViewModelProvider.notifier);
+        inputCtrl.updateShowRecordingWidget(false);
+        inputCtrl.updateWasRecordingDismissed(false);
       }
     });
 
-    late final double screenWidth = ref.watch(stackSize);
+    late final double screenWidth =
+        ref.watch(chatInputViewModelProvider).stackSize;
 
     useEffect(() {
       animationController.forward();
