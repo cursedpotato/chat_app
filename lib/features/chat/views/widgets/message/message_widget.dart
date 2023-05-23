@@ -43,7 +43,9 @@ class Message extends HookWidget {
                 margin: const EdgeInsets.only(right: kDefaultPadding / 2),
                 child: CircleAvatar(
                   radius: 12,
-                  backgroundImage: CachedNetworkImageProvider(message.pfpUrl),
+                  backgroundImage: CachedNetworkImageProvider(
+                    message.pfpUrl,
+                  ),
                 ),
               )
             ],

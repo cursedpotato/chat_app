@@ -39,7 +39,7 @@ class ChatMessageModel {
     messageType = whatMessageType(document.getString('messageType'));
     messageStatus = messageStatusUtil(document.getString('messageStatus'));
     isSender = chatterUsername == document['sendBy'];
-    pfpUrl = document.getString('imgUrl');
+    pfpUrl = document.getString('pfpUrl');
     sendBy = document.getString('sendBy');
     timestamp = document.getTimeStamp('ts');
     mediaList = mediaListFromDocument(document);
