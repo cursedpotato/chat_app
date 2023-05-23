@@ -2,7 +2,6 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/features/chat/models/message_model.dart';
 import 'package:chat_app/features/chat/models/recording_model.dart';
 import 'package:chat_app/features/chat/services/message_storage_services.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 

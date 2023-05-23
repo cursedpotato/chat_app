@@ -1,20 +1,15 @@
 part of 'control_recording_widget.dart';
 
-class _Controls extends StatelessWidget {
-  const _Controls({
-    required this.animationController,
-    required this.recorderCtrlRead,
-    required this.toggleRec,
-    required this.recorderCtrl,
-  });
+class _Controls extends HookConsumerWidget {
+  const _Controls(this.animationController);
 
   final AnimationController animationController;
-  final RecorderViewModel recorderCtrlRead;
-  final ValueNotifier<bool> toggleRec;
-  final RecordingModel recorderCtrl;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final recorderCtrl = ref.watch(recorderViewModelProvider);
+    final recorderCtrlRead = ref.read(recorderViewModelProvider.notifier);
+    final toggleRec = useState(true);
     resumeRecording() async => await recorderCtrlRead.startRecording();
     pauseRecording() async => await recorderCtrlRead.pauseRecording();
     return Row(
@@ -24,7 +19,7 @@ class _Controls extends StatelessWidget {
           onPressed: () {
             // When the reverse ends we have a listener that will set the showControlRec provider to false
             animationController.reverse();
-            recorderCtrlRead.stopRecording();
+            recorderCtrlRead.deleteRecording();
           },
           icon: const Icon(Icons.delete),
         ),
@@ -43,7 +38,13 @@ class _Controls extends StatelessWidget {
           icon:
               toggleRec.value ? const Icon(Icons.pause) : const Icon(Icons.mic),
         ),
-        IconButton(icon: const Icon(Icons.send), onPressed: () {})
+        IconButton(
+          icon: const Icon(Icons.send),
+          onPressed: () {
+            animationController.reverse();
+            recorderCtrlRead.stopRecording();
+          },
+        )
       ],
     );
   }

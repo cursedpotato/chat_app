@@ -1,23 +1,18 @@
 part of 'control_recording_widget.dart';
 
-class _WaveAndDuration extends StatelessWidget {
-  const _WaveAndDuration({
-    required this.recorderCtrl,
-    required this.inputCtrl,
-  });
-
-  final RecordingModel recorderCtrl;
-  final ChatInputModel inputCtrl;
+class _WaveAndDuration extends ConsumerWidget {
+  const _WaveAndDuration();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final width = MediaQuery.of(context).size.width;
+    final recorderCtrl = ref.watch(recorderViewModelProvider);
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Text(
           formatDuration(recorderCtrl.duration),
         ),
-        const PreventKeyboardClosing(),
         SingleChildScrollView(
           physics: const NeverScrollableScrollPhysics(),
           child: AudioWaveforms(
@@ -28,7 +23,7 @@ class _WaveAndDuration extends StatelessWidget {
               extendWaveform: true,
               showMiddleLine: false,
             ),
-            size: Size(inputCtrl.stackSize * 0.90, 24),
+            size: Size(width * 0.8, 24),
             recorderController: recorderCtrl.recorderController!,
           ),
         ),

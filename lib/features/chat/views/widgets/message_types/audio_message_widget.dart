@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:chat_app/core/theme/colors.dart';
 import 'package:chat_app/core/theme/sizes.dart';
 import 'package:chat_app/features/chat/models/message_model.dart';
+import 'package:dio/dio.dart';
 
 import 'package:flutter/material.dart';
 
@@ -22,20 +24,22 @@ class AudioMessage extends HookWidget {
   Widget build(BuildContext context) {
     final player = AudioPlayer();
 
-    // TODO: Fix this
-
     preparePlayer() async {
       try {
         final path = await getTemporaryDirectory();
         final fullPath = '${path.path}/${message.id}';
 
-        // if (!hasFile) {
-        //   debugPrint("Downloading audio file");
-        //   final response = await Dio().download(message.resUrls![0], fullPath);
-        //   if (response.statusMessage == "OK") {
-        //     await player.setFilePath(fullPath);
-        //   }
-        // }
+        bool hasFile = (await File(fullPath).exists());
+        if (!hasFile) {
+          debugPrint("Downloading audio file");
+          final response = await Dio().download(
+            message.mediaList[0].mediaUrl,
+            fullPath,
+          );
+          if (response.statusMessage == "OK") {
+            await player.setFilePath(fullPath);
+          }
+        }
         await player.setFilePath(fullPath);
       } catch (e) {
         debugPrint("Error loading audio source: $e");

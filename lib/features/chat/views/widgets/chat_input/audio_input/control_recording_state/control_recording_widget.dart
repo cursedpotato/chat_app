@@ -19,11 +19,6 @@ class ControlRecordingWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final toggleRec = useState(true);
-    final recorderCtrl = ref.watch(recorderViewModelProvider);
-    final recorderCtrlRead = ref.read(recorderViewModelProvider.notifier);
-
-    final inputCtrl = ref.watch(chatInputViewModelProvider);
-
     // ------------------------------------------
     // Transform translate animation related logic
     // ------------------------------------------
@@ -47,24 +42,21 @@ class ControlRecordingWidget extends HookConsumerWidget {
       return;
     });
 
-    return AnimatedBuilder(
-      animation: offsetAnimation,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: offsetAnimation.value,
-          child: child,
-        );
-      },
-      child: Column(
-        children: [
-          _WaveAndDuration(recorderCtrl: recorderCtrl, inputCtrl: inputCtrl),
-          _Controls(
-            animationController: animationController,
-            recorderCtrlRead: recorderCtrlRead,
-            toggleRec: toggleRec,
-            recorderCtrl: recorderCtrl,
-          ),
-        ],
+    return Expanded(
+      child: AnimatedBuilder(
+        animation: offsetAnimation,
+        builder: (context, child) {
+          return Transform.translate(
+            offset: offsetAnimation.value,
+            child: child,
+          );
+        },
+        child: Column(
+          children: [
+            const _WaveAndDuration(),
+            _Controls(animationController),
+          ],
+        ),
       ),
     );
   }

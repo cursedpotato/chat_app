@@ -46,7 +46,6 @@ class ChatInputViewModel extends StateNotifier<ChatInputModel> {
   }
 
   void fingerDown(PointerEvent details) {
-    log('fingerDown', name: 'chat_input_viewmodel.dart');
     if (!state.showMicIcon) return;
     updateCanAnimate(false);
     ref.read(recorderViewModelProvider.notifier).startRecording().then((value) {
@@ -55,9 +54,10 @@ class ChatInputViewModel extends StateNotifier<ChatInputModel> {
   }
 
   void fingerOff(PointerEvent details) {
-    log('fingerOff', name: 'chat_input_viewmodel.dart');
     if (!state.showMicIcon) return;
     if (state.inputState == ChatInputState.audioDismissedState) return;
+    if (state.inputState == ChatInputState.controlRecordingState) return;
+
     ref.read(recorderViewModelProvider.notifier).stopRecording().then((value) {
       updateInputState(ChatInputState.defaultState);
     });
