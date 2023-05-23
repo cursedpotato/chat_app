@@ -15,7 +15,7 @@ const initalState = RecordingModel(
 );
 
 final recorderViewModelProvider =
-    StateNotifierProvider.autoDispose<RecorderViewModel, RecordingModel>(
+    StateNotifierProvider<RecorderViewModel, RecordingModel>(
   (ref) => RecorderViewModel(ref),
 );
 

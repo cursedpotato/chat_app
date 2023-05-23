@@ -1,10 +1,8 @@
 import 'package:chat_app/core/theme/sizes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../../../core/theme/colors.dart';
-import '../../../../viewmodel/chat_input_viewmodel.dart';
 
 class ChatRoomTextField extends HookConsumerWidget {
   const ChatRoomTextField({
@@ -17,26 +15,6 @@ class ChatRoomTextField extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Everytime the user writes we want to switch between the mic and the send button
-    void toggle() {
-      // The animation triggers when the user types, but also when the widget gets drawn
-      // it looks kind of annoying when the animation triggers everytime, so we set the canAnimateProvider when the user types to prevent,
-      // this annoying behaviorf
-      final inputCtrl = ref.read(chatInputViewModelProvider.notifier);
-      inputCtrl.updateCanAnimate(true);
-
-      if (messageController.text.isEmpty) {
-        inputCtrl.updateShowMicIcon(true);
-      }
-      if (messageController.text.isNotEmpty) {
-        inputCtrl.updateShowMicIcon(false);
-      }
-    }
-
-    // We listen input to toggle the mic
-    useEffect(() {
-      messageController.addListener(toggle);
-      return () => messageController.removeListener(toggle);
-    });
 
     return Expanded(
       child: Container(

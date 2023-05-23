@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+enum ChatInputState {
+  defaultState,
+  dismissibleAudioState,
+  controlRecordingState,
+  audioDismissedState
+}
+
 @immutable
 class ChatInputModel {
   final double sliderPosition;
@@ -8,7 +15,7 @@ class ChatInputModel {
   final bool showRecordingWidget;
   final bool showControlRec;
   final bool showMicIcon;
-  final bool canAnimate;
+  final bool canButtonAnimate;
   final PointerEvent? details;
 
   const ChatInputModel({
@@ -18,7 +25,7 @@ class ChatInputModel {
     required this.showRecordingWidget,
     required this.showControlRec,
     required this.showMicIcon,
-    required this.canAnimate,
+    required this.canButtonAnimate,
     required this.details,
   });
 
@@ -40,7 +47,7 @@ class ChatInputModel {
       showRecordingWidget: showRecordingWidget ?? this.showRecordingWidget,
       showControlRec: showControlRec ?? this.showControlRec,
       showMicIcon: showMicIcon ?? this.showMicIcon,
-      canAnimate: canAnimate ?? this.canAnimate,
+      canButtonAnimate: canAnimate ?? canButtonAnimate,
       details: details ?? this.details,
     );
   }
