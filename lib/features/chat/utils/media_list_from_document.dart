@@ -9,7 +9,7 @@ List<Media> mediaListFromDocument(DocumentSnapshot<Object?> document) {
   for (var element in mediaListFromDocument) {
     final mediaType = whatMediaType(element['mediaType']);
     final mediaUrl = element['mediaUrl'] as String;
-    if (mediaType == MediaType.image) {
+    if (mediaType == MediaType.image || mediaType == MediaType.audio) {
       mediaList.add(ImageMedia(
         mediaType: mediaType,
         mediaUrl: mediaUrl,

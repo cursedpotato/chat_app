@@ -71,24 +71,25 @@ class RecorderViewModel extends StateNotifier<RecordingModel> {
     final messageId = const Uuid().v1();
     final filePath = await state.recorderController!.stop();
 
-    state = state.copyWith(
-      isRecording: false,
-    );
+    state = state.copyWith(isRecording: false);
 
     if (filePath == null || filePath.isEmpty) return;
 
     final audioUrl =
         await MessageStorageServices().uploadFileToStorage(filePath, messageId);
 
-    FirebaseStorage.instance
-        .refFromURL(audioUrl)
-        .updateMetadata(SettableMetadata(
-          contentType: "audio/m4a",
-        ));
+    await MessageStorageServices().updateMetadata(audioUrl);
 
-    final message =
-        ChatMessageModel.audioMessage(id: messageId, audioUrl: audioUrl);
+    final message = ChatMessageModel.audioMessage(
+      id: messageId,
+      audioUrl: audioUrl,
+    );
 
     _ref.read(messagesViewModelProvider.notifier).uploadMessage(message);
+  }
+
+  Future<void> deleteRecording() async {
+    await state.recorderController!.stop();
+    state = state.copyWith(isRecording: false);
   }
 }

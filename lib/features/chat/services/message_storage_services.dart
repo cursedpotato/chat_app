@@ -51,4 +51,12 @@ class MessageStorageServices {
 
     return downloadUrl;
   }
+
+  Future<FullMetadata> updateMetadata(String audioUrl) {
+    return FirebaseStorage.instance.refFromURL(audioUrl).updateMetadata(
+          SettableMetadata(
+            contentType: "audio/m4a",
+          ),
+        );
+  }
 }

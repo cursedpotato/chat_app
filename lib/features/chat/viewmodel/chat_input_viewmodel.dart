@@ -4,6 +4,8 @@ import 'package:chat_app/features/chat/models/chat_input_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'recording_viewmodel.dart';
+
 const initialState = ChatInputModel(
   sliderPosition: 0.0,
   stackSize: 0.0,
@@ -47,31 +49,31 @@ class ChatInputViewModel extends StateNotifier<ChatInputModel> {
     log('fingerDown', name: 'chat_input_viewmodel.dart');
     if (!state.showMicIcon) return;
     updateCanAnimate(false);
-    updateInputState(ChatInputState.dismissibleAudioState);
+    ref.read(recorderViewModelProvider.notifier).startRecording().then((value) {
+      updateInputState(ChatInputState.dismissibleAudioState);
+    });
   }
 
   void fingerOff(PointerEvent details) {
     log('fingerOff', name: 'chat_input_viewmodel.dart');
     if (!state.showMicIcon) return;
     if (state.inputState == ChatInputState.audioDismissedState) return;
-    updateInputState(ChatInputState.defaultState);
+    ref.read(recorderViewModelProvider.notifier).stopRecording().then((value) {
+      updateInputState(ChatInputState.defaultState);
+    });
     updateCanAnimate(true);
   }
 
   void updateLocation(PointerEvent details, Size screenSize) {
     updateSliderPosition(details.position.dx);
 
-    log(
-      'updateLocation: ${details.position.dx} / ${screenSize.width}',
-      name: 'chat_input_viewmodel.dart',
-    );
-
     final screenHeight = screenSize.height;
     final screenWidth = screenSize.width;
     if (details.position.dx < screenWidth * 0.5) {
-      log('Im triggeredfinal inputCtrl = ref.watch(chatInputViewModelProvider);');
       updateInputState(ChatInputState.audioDismissedState);
     }
-    if (details.position.dy < screenHeight * 0.55) {}
+    if (details.position.dy < screenHeight * 0.55) {
+      updateInputState(ChatInputState.controlRecordingState);
+    }
   }
 }
