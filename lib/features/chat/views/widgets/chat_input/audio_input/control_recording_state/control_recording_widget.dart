@@ -37,9 +37,8 @@ class ControlRecordingWidget extends HookConsumerWidget {
     );
     animationController.addStatusListener((AnimationStatus status) {
       if (status == AnimationStatus.dismissed) {
-        ref
-            .read(chatInputViewModelProvider.notifier)
-            .updateShowControlRec(false);
+        final inputCtrlRead = ref.read(chatInputViewModelProvider.notifier);
+        inputCtrlRead.updateInputState(ChatInputState.defaultState);
       }
     });
 

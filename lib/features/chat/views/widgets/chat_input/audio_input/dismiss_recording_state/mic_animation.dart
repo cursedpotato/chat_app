@@ -8,13 +8,14 @@ class _AnimatedMic extends HookConsumerWidget {
     AnimationController animationController =
         useAnimationController(duration: animationDuration);
 
-    animationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        final inputCtrl = ref.read(chatInputViewModelProvider.notifier);
-        inputCtrl.updateShowRecordingWidget(false);
-        inputCtrl.updateWasRecordingDismissed(false);
-      }
-    });
+    animationController.addStatusListener(
+      (status) {
+        if (status == AnimationStatus.completed) {
+          final inputCtrl = ref.read(chatInputViewModelProvider.notifier);
+          inputCtrl.updateInputState(ChatInputState.defaultState);
+        }
+      },
+    );
 
     late final double screenWidth = MediaQuery.of(context).size.width * 0.9;
 

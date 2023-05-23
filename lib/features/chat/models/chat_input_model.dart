@@ -11,20 +11,16 @@ enum ChatInputState {
 class ChatInputModel {
   final double sliderPosition;
   final double stackSize;
-  final bool wasRecoringDismissed;
-  final bool showRecordingWidget;
-  final bool showControlRec;
   final bool showMicIcon;
   final bool canButtonAnimate;
+  final ChatInputState inputState;
   final PointerEvent? details;
 
   const ChatInputModel({
     required this.sliderPosition,
     required this.stackSize,
-    required this.wasRecoringDismissed,
-    required this.showRecordingWidget,
-    required this.showControlRec,
     required this.showMicIcon,
+    required this.inputState,
     required this.canButtonAnimate,
     required this.details,
   });
@@ -33,9 +29,7 @@ class ChatInputModel {
   ChatInputModel copyWith({
     double? sliderPosition,
     double? stackSize,
-    bool? wasRecoringDismissed,
-    bool? showRecordingWidget,
-    bool? showControlRec,
+    ChatInputState? inputState,
     bool? showMicIcon,
     bool? canAnimate,
     PointerEvent? details,
@@ -43,10 +37,8 @@ class ChatInputModel {
     return ChatInputModel(
       sliderPosition: sliderPosition ?? this.sliderPosition,
       stackSize: stackSize ?? this.stackSize,
-      wasRecoringDismissed: wasRecoringDismissed ?? this.wasRecoringDismissed,
-      showRecordingWidget: showRecordingWidget ?? this.showRecordingWidget,
-      showControlRec: showControlRec ?? this.showControlRec,
       showMicIcon: showMicIcon ?? this.showMicIcon,
+      inputState: inputState ?? this.inputState,
       canButtonAnimate: canAnimate ?? canButtonAnimate,
       details: details ?? this.details,
     );

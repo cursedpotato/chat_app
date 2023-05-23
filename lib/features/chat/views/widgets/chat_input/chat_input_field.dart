@@ -1,3 +1,4 @@
+import 'package:chat_app/features/chat/models/chat_input_model.dart';
 import 'package:chat_app/features/chat/viewmodel/chat_input_viewmodel.dart';
 import 'package:chat_app/features/chat/views/widgets/chat_input/custom_send_button.dart';
 import 'package:chat_app/features/chat/views/widgets/chat_input/text_input/text_input_widget.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../../core/theme/sizes.dart';
+import 'audio_input/export_audio_input.dart';
 import 'functions_menu/media_menu_widget.dart';
 
 class ChatInputField extends HookConsumerWidget {
@@ -23,24 +25,35 @@ class ChatInputField extends HookConsumerWidget {
     // ------------------------------------------------------------
     // Fuction that displays different widgets as app state changes
     // ------------------------------------------------------------
-    final screenSize = MediaQuery.of(context).size;
-    List<Widget> rowList() {
-      // if (inputCtrl.wasRecoringDismissed || inputCtrl.showControlRec) {
-      //   return [const RecordingWidget()];
-      // }
 
-      // if (inputCtrl.showRecordingWidget) {
-      //   return [
-      //     const RecordingWidget(),
-      //     _listenButton(ref, screenSize, messageController),
-      //   ];
-      // }
+    final defaultList = useMemoized(() => <Widget>[
+          const MediaMenu(),
+          ChatRoomTextField(messageController: messageController),
+          _listenButton(ref, MediaQuery.of(context).size, messageController),
+        ]);
 
-      return [
-        const MediaMenu(),
-        ChatRoomTextField(messageController: messageController),
-        _listenButton(ref, screenSize, messageController),
-      ];
+    final dismissableAudioList = useMemoized(() => <Widget>[
+          const DismissibleAudioWidget(),
+          _listenButton(ref, MediaQuery.of(context).size, messageController),
+        ]);
+
+    final controlRecordingList = useMemoized(() => <Widget>[
+          const ControlRecordingWidget(),
+        ]);
+
+    final audioDismissedList = useMemoized(() => <Widget>[
+          const DismissAnimation(),
+        ]);
+
+    List<Widget> rowList(ChatInputState state) {
+      final map = {
+        ChatInputState.defaultState: defaultList,
+        ChatInputState.dismissibleAudioState: dismissableAudioList,
+        ChatInputState.controlRecordingState: controlRecordingList,
+        ChatInputState.audioDismissedState: audioDismissedList,
+      };
+
+      return map[state] ?? defaultList;
     }
 
     return Container(
@@ -60,7 +73,7 @@ class ChatInputField extends HookConsumerWidget {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
-        children: rowList(),
+        children: rowList(inputCtrl.inputState),
       ),
     );
   }

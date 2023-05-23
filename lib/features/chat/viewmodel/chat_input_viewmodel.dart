@@ -7,9 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 const initialState = ChatInputModel(
   sliderPosition: 0.0,
   stackSize: 0.0,
-  wasRecoringDismissed: false,
-  showRecordingWidget: false,
-  showControlRec: false,
+  inputState: ChatInputState.defaultState,
   showMicIcon: false,
   canButtonAnimate: false,
   details: null,
@@ -33,16 +31,8 @@ class ChatInputViewModel extends StateNotifier<ChatInputModel> {
     state = state.copyWith(stackSize: value);
   }
 
-  void updateWasRecordingDismissed(bool value) {
-    state = state.copyWith(wasRecoringDismissed: value);
-  }
-
-  void updateShowRecordingWidget(bool value) {
-    state = state.copyWith(showRecordingWidget: value);
-  }
-
-  void updateShowControlRec(bool value) {
-    state = state.copyWith(showControlRec: value);
+  void updateInputState(ChatInputState value) {
+    state = state.copyWith(inputState: value);
   }
 
   void updateShowMicIcon(bool value) {
@@ -56,29 +46,32 @@ class ChatInputViewModel extends StateNotifier<ChatInputModel> {
   void fingerDown(PointerEvent details) {
     log('fingerDown', name: 'chat_input_viewmodel.dart');
     if (!state.showMicIcon) return;
-    updateShowRecordingWidget(true);
     updateCanAnimate(false);
+    updateInputState(ChatInputState.dismissibleAudioState);
   }
 
   void fingerOff(PointerEvent details) {
     log('fingerOff', name: 'chat_input_viewmodel.dart');
     if (!state.showMicIcon) return;
-    // If the animation is in progress we don't want to show everything else yet
-    if (!state.wasRecoringDismissed) return;
-    updateShowRecordingWidget(false);
+    if (state.inputState == ChatInputState.audioDismissedState) return;
+    updateInputState(ChatInputState.defaultState);
     updateCanAnimate(true);
   }
 
   void updateLocation(PointerEvent details, Size screenSize) {
     updateSliderPosition(details.position.dx);
 
+    log(
+      'updateLocation: ${details.position.dx} / ${screenSize.width}',
+      name: 'chat_input_viewmodel.dart',
+    );
+
     final screenHeight = screenSize.height;
     final screenWidth = screenSize.width;
     if (details.position.dx < screenWidth * 0.5) {
-      // ref.read(recController.notifier).state.stop();
-      updateWasRecordingDismissed(true);
+      log('Im triggeredfinal inputCtrl = ref.watch(chatInputViewModelProvider);');
+      updateInputState(ChatInputState.audioDismissedState);
     }
-    // If position.dy is greater than 0.25 of screenHeight, we want to toggle the the playable recording widget
     if (details.position.dy < screenHeight * 0.55) {}
   }
 }
