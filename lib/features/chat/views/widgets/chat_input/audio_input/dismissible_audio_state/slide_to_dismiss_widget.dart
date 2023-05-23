@@ -1,7 +1,7 @@
 part of 'dismissible_audio_widget.dart';
 
-class SlideToDisposeWidget extends ConsumerWidget {
-  const SlideToDisposeWidget({
+class _SlideToDisposeWidget extends ConsumerWidget {
+  const _SlideToDisposeWidget({
     Key? key,
   }) : super(key: key);
 

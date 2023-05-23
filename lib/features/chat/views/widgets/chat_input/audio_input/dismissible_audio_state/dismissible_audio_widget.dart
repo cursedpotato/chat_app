@@ -21,6 +21,7 @@ class DismissibleAudioWidget extends StatelessWidget {
       child: Stack(
         children: const [
           PreventKeyboardClosing(),
+          _SlideToDisposeWidget(),
           _RecordingCounter(),
         ],
       ),
