@@ -107,6 +107,7 @@ class ChatMessageModel {
   factory ChatMessageModel.audioMessage({
     required String id,
     required String audioUrl,
+    required String localPath,
   }) {
     return ChatMessageModel(
       id: id,
@@ -121,6 +122,24 @@ class ChatMessageModel {
         AudioMedia(
           mediaType: MediaType.audio,
           mediaUrl: audioUrl,
+          localPath: localPath,
+        ),
+      ],
+    );
+  }
+
+  // Update AudioMessage factory
+  ChatMessageModel updateAudioMessage({
+    required String audioUrl,
+    required String localPath,
+  }) {
+    return copyWith(
+      messageStatus: MessageStatus.sent,
+      mediaList: [
+        AudioMedia(
+          mediaType: MediaType.audio,
+          mediaUrl: audioUrl,
+          localPath: localPath,
         ),
       ],
     );

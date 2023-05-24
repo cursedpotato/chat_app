@@ -58,9 +58,8 @@ class ChatInputViewModel extends StateNotifier<ChatInputModel> {
     if (state.inputState == ChatInputState.audioDismissedState) return;
     if (state.inputState == ChatInputState.controlRecordingState) return;
 
-    ref.read(recorderViewModelProvider.notifier).stopRecording().then((value) {
-      updateInputState(ChatInputState.defaultState);
-    });
+    updateInputState(ChatInputState.defaultState);
+    ref.read(recorderViewModelProvider.notifier).stopRecording();
     updateCanAnimate(true);
   }
 

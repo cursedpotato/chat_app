@@ -1,10 +1,12 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/features/chat/models/message_model.dart';
 import 'package:chat_app/features/chat/models/recording_model.dart';
+import 'package:chat_app/features/chat/services/message_database_services.dart';
 import 'package:chat_app/features/chat/services/message_storage_services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../home/views/widgets/chat_card.dart';
 import 'messages_viewmodel.dart';
 
 const initalState = RecordingModel(
@@ -74,17 +76,25 @@ class RecorderViewModel extends StateNotifier<RecordingModel> {
 
     if (filePath == null || filePath.isEmpty) return;
 
+    final message = ChatMessageModel.audioMessage(
+      id: messageId,
+      audioUrl: "",
+      localPath: filePath,
+    );
+    _ref.read(messagesViewModelProvider.notifier).uploadMessage(message);
+
     final audioUrl =
         await MessageStorageServices().uploadFileToStorage(filePath, messageId);
 
     await MessageStorageServices().updateMetadata(audioUrl);
 
-    final message = ChatMessageModel.audioMessage(
-      id: messageId,
-      audioUrl: audioUrl,
+    MessageDatabaseService.updateMessage(
+      _ref.read(chatroomId),
+      message.updateAudioMessage(
+        audioUrl: audioUrl,
+        localPath: filePath,
+      ),
     );
-
-    _ref.read(messagesViewModelProvider.notifier).uploadMessage(message);
   }
 
   Future<void> deleteRecording() async {
