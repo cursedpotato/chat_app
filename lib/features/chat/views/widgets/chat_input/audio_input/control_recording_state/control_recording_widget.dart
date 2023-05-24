@@ -1,12 +1,10 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
-import 'package:chat_app/features/chat/models/recording_model.dart';
 import 'package:chat_app/features/chat/models/chat_input_model.dart';
 import 'package:chat_app/features/chat/viewmodel/recording_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../../../../../core/utils/utility_widgets.dart';
 import '../../../../../utils/format_duration_util.dart';
 import '../../../../../viewmodel/chat_input_viewmodel.dart';
 
@@ -18,7 +16,6 @@ class ControlRecordingWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final toggleRec = useState(true);
     // ------------------------------------------
     // Transform translate animation related logic
     // ------------------------------------------
@@ -33,6 +30,7 @@ class ControlRecordingWidget extends HookConsumerWidget {
     animationController.addStatusListener((AnimationStatus status) {
       if (status == AnimationStatus.dismissed) {
         final inputCtrlRead = ref.read(chatInputViewModelProvider.notifier);
+        inputCtrlRead.updateCanAnimate(true);
         inputCtrlRead.updateInputState(ChatInputState.defaultState);
       }
     });
