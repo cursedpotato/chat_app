@@ -53,12 +53,12 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerModel> {
       );
     });
 
-    // _ref.onDispose(() {
-    //   audioPlayer.dispose();
-    //   processSub.cancel();
-    //   durationSub.cancel();
-    //   positionStream.cancel();
-    // });
+    _ref.onDispose(() {
+      audioPlayer.dispose();
+      processSub.cancel();
+      durationSub.cancel();
+      positionStream.cancel();
+    });
   }
 
   Future<void> preparePlayer(ChatMessageModel model) async {
