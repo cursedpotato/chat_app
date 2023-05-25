@@ -9,7 +9,8 @@ class AudioPlayerModel {
   final double volume;
   final double speed;
   final double percentage;
-  final AudioPlayer audioPlayer;
+  final double bufferPercentage;
+  final AudioPlayer? audioPlayer;
   final ProcessingState processingState;
 
   const AudioPlayerModel({
@@ -19,6 +20,7 @@ class AudioPlayerModel {
     required this.volume,
     required this.speed,
     required this.percentage,
+    required this.bufferPercentage,
     required this.audioPlayer,
     required this.processingState,
   });
@@ -31,6 +33,7 @@ class AudioPlayerModel {
     double? volume,
     double? speed,
     double? percentage,
+    double? bufferPercentage,
     AudioPlayer? audioPlayer,
     ProcessingState? processingState,
   }) {
@@ -41,6 +44,7 @@ class AudioPlayerModel {
       volume: volume ?? this.volume,
       speed: speed ?? this.speed,
       percentage: percentage ?? this.percentage,
+      bufferPercentage: bufferPercentage ?? this.bufferPercentage,
       audioPlayer: audioPlayer ?? this.audioPlayer,
       processingState: processingState ?? this.processingState,
     );

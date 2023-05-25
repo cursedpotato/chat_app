@@ -1,26 +1,15 @@
 part of 'audio_message_widget.dart';
 
 class _SeekBar extends HookWidget {
-  const _SeekBar({Key? key, required this.audioPlayer}) : super(key: key);
+  const _SeekBar(this.id);
 
-  final AudioPlayer audioPlayer;
+  final String id;
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width * 0.33;
-
-    final state = useStream(audioPlayer.playerStateStream);
-    final duration = useStream(audioPlayer.durationStream).data?.inMilliseconds;
-    final position = useStream(audioPlayer.positionStream).data?.inMilliseconds;
-
-    if (!state.hasData) return const SizedBox();
-
-    bool isNull = position == null || duration == null;
     // We use the ternary operator because the position sometimes can be greater
     // than the duration and that leads to divisions between zero
-    double percentage = isNull
-        ? 0.0
-        : ((position > duration ? duration : position * 100.0) / duration) /
-            100;
+    double percentage = 0;
 
     return Stack(
       alignment: Alignment.center,

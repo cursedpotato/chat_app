@@ -9,18 +9,34 @@ List<Media> mediaListFromDocument(DocumentSnapshot<Object?> document) {
   for (var element in mediaListFromDocument) {
     final mediaType = whatMediaType(element['mediaType']);
     final mediaUrl = element['mediaUrl'] as String;
-    if (mediaType == MediaType.image || mediaType == MediaType.audio) {
-      mediaList.add(ImageMedia(
-        mediaType: mediaType,
-        mediaUrl: mediaUrl,
-      ));
-    } else {
+
+    if (mediaType == MediaType.audio) {
+      final localPath = element['localPath'] as String;
+      mediaList.add(
+        AudioMedia(
+          mediaType: mediaType,
+          mediaUrl: mediaUrl,
+          localPath: localPath,
+        ),
+      );
+    }
+    if (mediaType == MediaType.image) {
+      mediaList.add(
+        ImageMedia(
+          mediaType: mediaType,
+          mediaUrl: mediaUrl,
+        ),
+      );
+    }
+    if (mediaType == MediaType.video) {
       final thumbnailUrl = element['thumbnailUrl'] as String;
-      mediaList.add(VideoMedia(
-        mediaType: mediaType,
-        mediaUrl: mediaUrl,
-        thumbnailUrl: thumbnailUrl,
-      ));
+      mediaList.add(
+        VideoMedia(
+          thumbnailUrl: thumbnailUrl,
+          mediaType: mediaType,
+          mediaUrl: mediaUrl,
+        ),
+      );
     }
   }
   return mediaList;
