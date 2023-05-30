@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -23,7 +24,7 @@ class GalleryWidget extends StatelessWidget {
             return videoMedia();
           }
 
-          return imageMedia();
+          return imageMedia(mediaList[index]);
         },
         loadingBuilder: (_, __) => const Center(
           child: CircularProgressIndicator(),
@@ -41,12 +42,12 @@ class GalleryWidget extends StatelessWidget {
     );
   }
 
-  PhotoViewGalleryPageOptions imageMedia() {
+  PhotoViewGalleryPageOptions imageMedia(Media media) {
     return PhotoViewGalleryPageOptions.customChild(
       initialScale: PhotoViewComputedScale.contained * 0.8,
       minScale: PhotoViewComputedScale.contained * 0.8,
       maxScale: PhotoViewComputedScale.covered * 1.1,
-      child: const SizedBox(),
+      child: CachedNetworkImage(imageUrl: media.mediaUrl),
     );
   }
 }

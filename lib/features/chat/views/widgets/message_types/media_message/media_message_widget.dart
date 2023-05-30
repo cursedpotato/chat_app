@@ -1,5 +1,6 @@
 import 'package:chat_app/features/chat/models/message_model.dart';
 import 'package:chat_app/features/chat/views/widgets/message_types/media_message/count_images_widget.dart';
+import 'package:chat_app/features/chat/views/widgets/message_types/media_message/gallery_widget.dart';
 import 'package:chat_app/features/chat/views/widgets/message_types/media_message/rouded_corder_image.dart';
 
 import 'package:flutter/material.dart';
@@ -36,7 +37,13 @@ class GalleryMessageWidget extends HookConsumerWidget {
             bottom: 25,
           ),
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => GalleryWidget(
+                  mediaList: messageModel.mediaList,
+                ),
+              ));
+            },
             child: _displayGrid(context),
           ),
         ),
