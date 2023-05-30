@@ -1,22 +1,22 @@
 part of 'audio_message_widget.dart';
 
 class _PlayButton extends HookConsumerWidget {
-  const _PlayButton(this.id);
+  const _PlayButton(this.model);
 
-  final String id;
+  final ChatMessageModel model;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final audioPlayerVMW = ref.watch(audioPlayerVM(id));
+    final audioPlayerVMW = ref.watch(audioPlayerVM(model.id));
     final ProcessingState processingState = ref.watch(
-      audioPlayerVM(id).select((value) => value.processingState),
+      audioPlayerVM(model.id).select((value) => value.processingState),
     );
 
     if (processingState == ProcessingState.completed) {
       return IconButton(
         icon: const Icon(Icons.replay),
         onPressed: () {
-          ref.read(audioPlayerVM(id).notifier).replay();
+          ref.read(audioPlayerVM(model.id).notifier).replay();
         },
       );
     }
@@ -26,7 +26,7 @@ class _PlayButton extends HookConsumerWidget {
         audioPlayerVMW.isPlaying ? Icons.pause : Icons.play_arrow,
       ),
       onPressed: () {
-        ref.read(audioPlayerVM(id).notifier).togglePlay();
+        ref.read(audioPlayerVM(model.id).notifier).togglePlay(model);
       },
     );
   }

@@ -8,8 +8,8 @@ import 'package:just_audio/just_audio.dart';
 
 const initalState = AudioPlayerModel(
   isPlaying: false,
-  duration: 0,
-  position: 0,
+  duration: Duration.zero,
+  position: Duration.zero,
   volume: 0.5,
   speed: 1.0,
   bufferPercentage: 0.0,
@@ -26,12 +26,16 @@ final audioPlayerVM =
 class AudioPlayerNotifier extends StateNotifier<AudioPlayerModel> {
   final Ref _ref;
   AudioPlayerNotifier(this._ref) : super(initalState) {
-    // Init audio player
     state = state.copyWith(
       audioPlayer: AudioPlayer(),
     );
+    init();
+  }
 
+  init() {
     final audioPlayer = state.audioPlayer;
+
+    audioPlayer?.setAutomaticallyWaitsToMinimizeStalling(true);
 
     // Init listeners
     final processSub = audioPlayer!.playerStateStream.listen((event) {
@@ -42,14 +46,13 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerModel> {
 
     final durationSub = audioPlayer.durationStream.listen((event) {
       state = state.copyWith(
-        duration: event != null ? event.inMilliseconds : 0,
+        duration: event ?? Duration.zero,
       );
     });
 
     final positionStream = audioPlayer.positionStream.listen((event) {
       state = state.copyWith(
-        position: event.inMilliseconds,
-        percentage: event.inMilliseconds / state.duration,
+        position: event,
       );
     });
 
@@ -67,16 +70,26 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerModel> {
 
     final doesFileExists = await File(media.localPath).exists();
 
+    if (audioPlayer == null) {
+      init();
+    }
+
     if (model.isSender && doesFileExists) {
-      await audioPlayer!.setAudioSource(AudioSource.file(media.localPath));
+      await audioPlayer?.setAudioSource(AudioSource.file(media.localPath));
     }
     if (!doesFileExists) {
-      await audioPlayer!.setUrl(media.mediaUrl);
+      await audioPlayer?.setUrl(media.mediaUrl);
     }
   }
 
-  Future<void> togglePlay() {
+  Future<void> togglePlay(ChatMessageModel model) async {
     final audioPlayer = state.audioPlayer;
+    if (state.processingState == ProcessingState.idle) {
+      await preparePlayer(model);
+      _updateIsPlaying(true);
+      return audioPlayer!.play();
+    }
+
     if (state.isPlaying) {
       _updateIsPlaying(false);
       return audioPlayer!.pause();
@@ -85,16 +98,24 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerModel> {
     return audioPlayer!.play();
   }
 
-  void updateVolume(double value) {
-    state = state.copyWith(volume: value);
+  Future<void> replay() {
+    final audioPlayer = state.audioPlayer;
+    return audioPlayer!.seek(const Duration(seconds: 0));
   }
 
   void _updateIsPlaying(bool value) {
     state = state.copyWith(isPlaying: value);
   }
 
-  Future<void> replay() {
-    final audioPlayer = state.audioPlayer;
-    return audioPlayer!.seek(const Duration(seconds: 0));
+  void updateVolume(double value) {
+    state = state.copyWith(volume: value);
+  }
+
+  void stopAudioPlayer() {
+    state.audioPlayer!.stop();
+  }
+
+  void disposeAudioPlayer() {
+    state.audioPlayer!.dispose();
   }
 }

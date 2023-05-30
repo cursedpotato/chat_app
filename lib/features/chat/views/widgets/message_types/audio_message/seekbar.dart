@@ -1,26 +1,39 @@
 part of 'audio_message_widget.dart';
 
-class _SeekBar extends HookWidget {
+class _SeekBar extends HookConsumerWidget {
   const _SeekBar(this.id);
 
   final String id;
   @override
-  Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width * 0.33;
+  Widget build(BuildContext context, WidgetRef ref) {
     // We use the ternary operator because the position sometimes can be greater
     // than the duration and that leads to divisions between zero
-    double percentage = 0;
+    final width = useState(0.0);
+    final Duration position = ref.watch(
+      audioPlayerVM(id).select((value) => value.position),
+    );
 
+    final Duration duration = ref.watch(
+      audioPlayerVM(id).select((value) => value.duration),
+    );
+
+    final double percentage = duration.inMilliseconds == 0
+        ? 0.0
+        : position.inMilliseconds / duration.inMilliseconds;
     return Stack(
       alignment: Alignment.center,
       children: [
-        Container(
-          height: 1,
-          width: width,
-          color: Colors.black,
+        MeasurableWidget(
+          onChange: (size) {
+            width.value = size.width;
+          },
+          child: Container(
+            height: 1,
+            color: Colors.black,
+          ),
         ),
         Transform.translate(
-          offset: Offset(-width / 2 + width * percentage, 0.0),
+          offset: Offset(-width.value / 2 + width.value * percentage, 0.0),
           child: Container(
             height: 10,
             width: 10,

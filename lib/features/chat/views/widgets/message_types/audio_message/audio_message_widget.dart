@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:chat_app/core/theme/colors.dart';
 import 'package:chat_app/core/theme/sizes.dart';
+import 'package:chat_app/core/utils/utility_widgets.dart';
 import 'package:chat_app/features/chat/models/message_model.dart';
 import 'package:chat_app/features/chat/utils/format_duration_util.dart';
 
@@ -29,40 +30,23 @@ class AudioMessage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final String id = message.id;
+    AudioPlayerNotifier audioPlayerNotifier;
+    final isMouted = useIsMounted()();
     final ProcessingState processingState =
         ref.watch(audioPlayerVM(id).select((value) => value.processingState));
-
     useEffect(() {
-      ref.read(audioPlayerVM(id).notifier).preparePlayer(message);
-      return;
+      audioPlayerNotifier = ref.read(audioPlayerVM(id).notifier);
+      audioPlayerNotifier.init();
+      audioPlayerNotifier.preparePlayer(message);
+
+      return () {
+        if (isMouted) {
+          audioPlayerNotifier.stopAudioPlayer();
+        }
+      };
     }, []);
 
-    if (processingState == ProcessingState.idle) {
-      return GestureDetector(
-        onTap: () {
-          ref.read(audioPlayerVM(id).notifier).preparePlayer(message);
-        },
-        child: const SizedBox(
-          height: 50,
-          width: 50,
-          child: Center(
-            child: Icon(Icons.escalator_rounded),
-          ),
-        ),
-      );
-    }
-
     if (processingState == ProcessingState.loading) {
-      return const SizedBox(
-        height: 50,
-        width: 50,
-        child: Center(
-          child: LinearProgressIndicator(),
-        ),
-      );
-    }
-
-    if (processingState == ProcessingState.buffering) {
       return const SizedBox(
         height: 50,
         width: 50,
@@ -75,19 +59,40 @@ class AudioMessage extends HookConsumerWidget {
     return Container(
       width: MediaQuery.of(context).size.width * 0.66,
       padding: const EdgeInsets.symmetric(
-        horizontal: kDefaultPadding * 0.75,
         vertical: kDefaultPadding * 0.4,
       ),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: kPrimaryColor.withOpacity(message.isSender ? 1 : 0.1)),
-      child: Row(
-        children: [
-          _PlayButton(id),
-          _SeekBar(id),
-          _SpeedButton(id),
-          _Counter(id),
-        ],
+        borderRadius: BorderRadius.circular(5),
+        color: kPrimaryColor.withOpacity(message.isSender ? 1 : 0.1),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(message.pfpUrl),
+              ),
+              _PlayButton(message),
+              Expanded(
+                child: SizedBox(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(''),
+                      _SeekBar(id),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [_Counter(id), const Text("time")],
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

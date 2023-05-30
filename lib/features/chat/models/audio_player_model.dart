@@ -4,8 +4,8 @@ import 'package:just_audio/just_audio.dart';
 @immutable
 class AudioPlayerModel {
   final bool isPlaying;
-  final int duration;
-  final int position;
+  final Duration duration;
+  final Duration position;
   final double volume;
   final double speed;
   final double percentage;
@@ -28,8 +28,8 @@ class AudioPlayerModel {
   // create copywith method
   AudioPlayerModel copyWith({
     bool? isPlaying,
-    int? duration,
-    int? position,
+    Duration? duration,
+    Duration? position,
     double? volume,
     double? speed,
     double? percentage,

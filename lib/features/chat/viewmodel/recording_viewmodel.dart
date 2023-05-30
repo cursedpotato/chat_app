@@ -4,11 +4,9 @@ import 'package:chat_app/features/chat/models/recording_model.dart';
 import 'package:chat_app/features/chat/services/message_database_services.dart';
 import 'package:chat_app/features/chat/services/message_storage_services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../home/views/widgets/chat_card.dart';
-import 'audio_player_viewmodel.dart';
 import 'messages_viewmodel.dart';
 
 const initalState = RecordingModel(
@@ -84,7 +82,6 @@ class RecorderViewModel extends StateNotifier<RecordingModel> {
       localPath: filePath,
     );
     // This is to prepare the player for the audio message
-    _ref.read(audioPlayerVM(messageId).notifier).preparePlayer(message);
     _ref.read(messagesViewModelProvider.notifier).uploadMessage(message);
 
     final audioUrl =
