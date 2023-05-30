@@ -12,7 +12,7 @@ import '../widgets/message/message_widget.dart';
 
 final messagesStreamProvider =
     StreamProvider.autoDispose<List<ChatMessageModel>>(
-  (ref) => ref.watch(messagesViewModelProvider.notifier).getMessages(),
+  (ref) => ref.watch(messagesVMProvider.notifier).getMessages(),
 );
 
 class MessagesScreen extends HookConsumerWidget {
@@ -58,8 +58,8 @@ class MessageList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scrollController =
-        ref.watch(messagesViewModelProvider.notifier).scrollController;
-    final messages = ref.watch(messagesViewModelProvider);
+        ref.watch(messagesVMProvider.notifier).scrollController;
+    final messages = ref.watch(messagesVMProvider);
     return ListView.builder(
       controller: scrollController,
       itemCount: messages.length,

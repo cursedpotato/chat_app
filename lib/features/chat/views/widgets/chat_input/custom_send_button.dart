@@ -99,5 +99,5 @@ addMessage(
     message: messageController.text,
   );
   messageController.clear();
-  await ref.read(messagesViewModelProvider.notifier).uploadMessage(message);
+  await ref.read(messagesVMProvider.notifier).uploadMessage(message);
 }

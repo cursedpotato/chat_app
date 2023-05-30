@@ -129,7 +129,7 @@ class ChatMessageModel {
   }
 
   // Update AudioMessage factory
-  ChatMessageModel updateAudioMessage({
+  ChatMessageModel updateVoiceNote({
     required String audioUrl,
     required String localPath,
   }) {
@@ -142,6 +142,32 @@ class ChatMessageModel {
           localPath: localPath,
         ),
       ],
+    );
+  }
+
+  // MediaFile factory
+  factory ChatMessageModel.mediaMessage({
+    required String id,
+    required String message,
+    required List<Media> mediaList,
+  }) {
+    return ChatMessageModel(
+      id: id,
+      message: message,
+      messageType: ChatMessageType.gallery,
+      messageStatus: MessageStatus.notSent,
+      isSender: true,
+      pfpUrl: profilePicUrl!,
+      sendBy: chatterUsername!,
+      timestamp: Timestamp.now(),
+      mediaList: mediaList,
+    );
+  }
+
+  ChatMessageModel updateMediaList({required List<Media> mediaList}) {
+    return copyWith(
+      messageStatus: MessageStatus.sent,
+      mediaList: mediaList,
     );
   }
 }

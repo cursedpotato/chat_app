@@ -82,7 +82,7 @@ class RecorderViewModel extends StateNotifier<RecordingModel> {
       localPath: filePath,
     );
     // This is to prepare the player for the audio message
-    _ref.read(messagesViewModelProvider.notifier).uploadMessage(message);
+    _ref.read(messagesVMProvider.notifier).uploadMessage(message);
 
     final audioUrl =
         await MessageStorageServices().uploadFileToStorage(filePath, messageId);
@@ -91,7 +91,7 @@ class RecorderViewModel extends StateNotifier<RecordingModel> {
 
     await MessageDatabaseService.updateMessage(
       _ref.read(chatroomId),
-      message.updateAudioMessage(
+      message.updateVoiceNote(
         audioUrl: audioUrl,
         localPath: filePath,
       ),

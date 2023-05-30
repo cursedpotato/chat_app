@@ -2,6 +2,8 @@ import 'package:chat_app/features/chat/models/message_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 
+import '../models/media_model.dart';
+
 class MessageDatabaseService {
   static Future<Stream<QuerySnapshot<Map<String, dynamic>>>> getMessages(
       chatRoomId) async {
@@ -46,5 +48,22 @@ class MessageDatabaseService {
         .collection("chats")
         .doc(message.id)
         .update(message.toJson());
+  }
+
+  static Future<void> updateMediaMessageList(
+    String messageId,
+    String chatRoomId,
+    Media media,
+  ) {
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatRoomId)
+        .collection("chats")
+        .doc(messageId)
+        .update(
+      {
+        "mediaList": FieldValue.arrayUnion([media.toJson()])
+      },
+    );
   }
 }
