@@ -1,1 +1,0 @@
-# Recording widget parts

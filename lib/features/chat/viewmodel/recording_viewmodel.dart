@@ -1,17 +1,23 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chat_app/features/chat/models/message_model.dart';
 import 'package:chat_app/features/chat/models/recording_model.dart';
+import 'package:chat_app/features/chat/services/message_database_services.dart';
 import 'package:chat_app/features/chat/services/message_storage_services.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../home/views/widgets/chat_card.dart';
 import 'messages_viewmodel.dart';
 
 const initalState = RecordingModel(
   duration: Duration.zero,
   isRecording: false,
   recorderController: null,
+);
+
+final recorderViewModelProvider =
+    StateNotifierProvider<RecorderViewModel, RecordingModel>(
+  (ref) => RecorderViewModel(ref),
 );
 
 class RecorderViewModel extends StateNotifier<RecordingModel> {
@@ -42,42 +48,58 @@ class RecorderViewModel extends StateNotifier<RecordingModel> {
     });
   }
 
-  void startRecording() async {
+  void updateIsRecording(bool value) {
+    state = state.copyWith(
+      isRecording: value,
+    );
+  }
+
+  Future<void> startRecording() async {
     await state.recorderController!.record();
     state = state.copyWith(
       isRecording: true,
     );
   }
 
-  void pauseRecording() async {
+  Future<void> pauseRecording() async {
     await state.recorderController!.pause();
     state = state.copyWith(
       isRecording: false,
     );
   }
 
-  void stopRecording() async {
+  Future<void> stopRecording() async {
     final messageId = const Uuid().v1();
     final filePath = await state.recorderController!.stop();
 
-    state = state.copyWith(
-      isRecording: false,
-    );
+    state = state.copyWith(isRecording: false);
 
     if (filePath == null || filePath.isEmpty) return;
+
+    final message = ChatMessageModel.audioMessage(
+      id: messageId,
+      audioUrl: "",
+      localPath: filePath,
+    );
+    // This is to prepare the player for the audio message
+    _ref.read(messagesVMProvider.notifier).uploadMessage(message);
 
     final audioUrl =
         await MessageStorageServices().uploadFileToStorage(filePath, messageId);
 
-    FirebaseStorage.instance
-        .refFromURL(audioUrl)
-        .updateMetadata(SettableMetadata(
-          contentType: "audio/m4a",
-        ));
+    await MessageStorageServices().updateMetadata(audioUrl);
 
-    final message =
-        ChatMessageModel.audioMessage(id: messageId, audioUrl: audioUrl);
+    await MessageDatabaseService.updateMessage(
+      _ref.read(chatroomId),
+      message.updateVoiceNote(
+        audioUrl: audioUrl,
+        localPath: filePath,
+      ),
+    );
+  }
 
-    _ref.read(messagesViewModelProvider.notifier).uploadMessage(message);
+  Future<void> deleteRecording() async {
+    await state.recorderController!.stop();
+    state = state.copyWith(isRecording: false);
   }
 }

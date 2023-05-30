@@ -60,9 +60,11 @@ class VideoMedia extends Media {
 }
 
 class AudioMedia extends Media {
+  String localPath;
   AudioMedia({
     required MediaType mediaType,
     required String mediaUrl,
+    this.localPath = "",
   }) : super(
           mediaType: mediaType,
           mediaUrl: mediaUrl,
@@ -73,6 +75,7 @@ class AudioMedia extends Media {
     return {
       'mediaType': mediaTypeToString(mediaType),
       'mediaUrl': mediaUrl,
+      'localPath': localPath,
     };
   }
 }

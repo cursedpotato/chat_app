@@ -39,7 +39,7 @@ class ChatMessageModel {
     messageType = whatMessageType(document.getString('messageType'));
     messageStatus = messageStatusUtil(document.getString('messageStatus'));
     isSender = chatterUsername == document['sendBy'];
-    pfpUrl = document.getString('imgUrl');
+    pfpUrl = document.getString('pfpUrl');
     sendBy = document.getString('sendBy');
     timestamp = document.getTimeStamp('ts');
     mediaList = mediaListFromDocument(document);
@@ -107,6 +107,7 @@ class ChatMessageModel {
   factory ChatMessageModel.audioMessage({
     required String id,
     required String audioUrl,
+    required String localPath,
   }) {
     return ChatMessageModel(
       id: id,
@@ -121,8 +122,52 @@ class ChatMessageModel {
         AudioMedia(
           mediaType: MediaType.audio,
           mediaUrl: audioUrl,
+          localPath: localPath,
         ),
       ],
+    );
+  }
+
+  // Update AudioMessage factory
+  ChatMessageModel updateVoiceNote({
+    required String audioUrl,
+    required String localPath,
+  }) {
+    return copyWith(
+      messageStatus: MessageStatus.sent,
+      mediaList: [
+        AudioMedia(
+          mediaType: MediaType.audio,
+          mediaUrl: audioUrl,
+          localPath: localPath,
+        ),
+      ],
+    );
+  }
+
+  // MediaFile factory
+  factory ChatMessageModel.mediaMessage({
+    required String id,
+    required String message,
+    required List<Media> mediaList,
+  }) {
+    return ChatMessageModel(
+      id: id,
+      message: message,
+      messageType: ChatMessageType.gallery,
+      messageStatus: MessageStatus.notSent,
+      isSender: true,
+      pfpUrl: profilePicUrl!,
+      sendBy: chatterUsername!,
+      timestamp: Timestamp.now(),
+      mediaList: mediaList,
+    );
+  }
+
+  ChatMessageModel updateMediaList({required List<Media> mediaList}) {
+    return copyWith(
+      messageStatus: MessageStatus.sent,
+      mediaList: mediaList,
     );
   }
 }

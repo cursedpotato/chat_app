@@ -62,7 +62,7 @@ dependencies:
   # Media related packages
   camera: ^0.10.0+5
   # Audio Recorder
-  audio_waveforms: ^1.0.4
+  audio_waveforms: ^1.0.1
   # audio waveforms player lacks some features
   just_audio: ^0.9.30
   just_waveform: ^0.0.3
@@ -71,8 +71,7 @@ dependencies:
   video_compress: ^3.1.2
   photo_view: ^0.14.0
   # Notifications
-  awesome_notifications: ^0.7.4+1
-  awesome_notifications_fcm: ^0.7.4+1
+
   dartz: ^0.10.1
   equatable: ^2.0.5
   
@@ -81,12 +80,10 @@ dependencies:
   
 
 dev_dependencies:
-  build_runner: ^2.3.2
   flutter_launcher_icons: ^0.11.0
   flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
-  freezed: ^2.2.1
 
 flutter_icons:
   android: "launcher_icon"

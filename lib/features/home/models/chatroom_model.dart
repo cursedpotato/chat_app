@@ -1,4 +1,6 @@
 import 'package:chat_app/core/models/chat_user_model.dart';
+import 'package:chat_app/core/utils/custom_extensions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -57,6 +59,18 @@ class ChatroomModel {
       "chatroomName": chatroomName,
       "users": users,
     };
+  }
+
+  factory ChatroomModel.fromDocument(DocumentSnapshot snapshot) {
+    return ChatroomModel(
+      id: snapshot.getString("id"),
+      lastMessage: snapshot.getString("lastMessage"),
+      lastMessageSendBy: snapshot.getString("lastMessageSendBy"),
+      lastMessageSendDate: snapshot.getString("lastMessageSendDate"),
+      chatroomImage: snapshot.getString("chatroomImage"),
+      chatroomName: snapshot.getString("chatroomName"),
+      users: snapshot.getList("users"),
+    );
   }
 
   // create fromJson method

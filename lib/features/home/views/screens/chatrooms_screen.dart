@@ -11,7 +11,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/theme/sizes.dart';
 import '../../models/chatroom_model.dart';
 
-final chatroomStream = StreamProvider.autoDispose<ChatroomModel?>(
+final chatroomStream = StreamProvider.autoDispose<List<ChatroomModel>?>(
   (ref) => ref.watch(chatRoomViewModel.notifier).getChatroomStream(),
 );
 

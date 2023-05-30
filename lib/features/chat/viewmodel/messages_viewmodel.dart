@@ -1,14 +1,19 @@
+import 'dart:io';
+
 import 'package:chat_app/features/chat/services/message_database_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../home/views/widgets/chat_card.dart';
+import '../models/media_model.dart';
 import '../models/message_model.dart';
 import '../services/roomchat_database_services.dart';
+import '../utils/file_upload_utils.dart';
 
-final messagesViewModelProvider = StateNotifierProvider.autoDispose<
-    MessagesViewModel, List<ChatMessageModel>>(
+final messagesVMProvider = StateNotifierProvider.autoDispose<MessagesViewModel,
+    List<ChatMessageModel>>(
   (ref) => MessagesViewModel(ref),
 );
 
@@ -54,6 +59,44 @@ class MessagesViewModel extends StateNotifier<List<ChatMessageModel>> {
       );
     } else {
       _updateMessageStatus(message, MessageStatus.error);
+    }
+  }
+
+  void sendMediaMessage(
+    BuildContext context,
+    List<File> fileList,
+    String text,
+  ) async {
+    Navigator.of(context).pop();
+
+    final idChatroom = ref.read(chatroomId);
+    final messageId = const Uuid().v4();
+
+    for (File file in fileList) {
+      final media = await mediaTypeToModel(
+        fileMediaType(file),
+        file,
+        idChatroom,
+      );
+
+      final message = ChatMessageModel.mediaMessage(
+        id: messageId,
+        message: text,
+        mediaList: [media],
+      );
+
+      final isFirst = file.path == fileList.first.path;
+      if (isFirst) {
+        uploadMessage(message);
+      }
+
+      if (!isFirst) {
+        MessageDatabaseService.updateMediaMessageList(
+          messageId,
+          idChatroom,
+          media,
+        );
+      }
     }
   }
 

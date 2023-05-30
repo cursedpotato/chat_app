@@ -2,14 +2,20 @@ import 'package:chat_app/features/chat/models/chat_input_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'recording_viewmodel.dart';
+
 const initialState = ChatInputModel(
   sliderPosition: 0.0,
   stackSize: 0.0,
-  showRecordingWidget: false,
-  showControlRec: false,
+  inputState: ChatInputState.defaultState,
   showMicIcon: false,
-  canAnimate: false,
+  canButtonAnimate: false,
   details: null,
+);
+
+final chatInputViewModelProvider =
+    StateNotifierProvider.autoDispose<ChatInputViewModel, ChatInputModel>(
+  (ref) => ChatInputViewModel(ref),
 );
 
 class ChatInputViewModel extends StateNotifier<ChatInputModel> {
@@ -25,12 +31,8 @@ class ChatInputViewModel extends StateNotifier<ChatInputModel> {
     state = state.copyWith(stackSize: value);
   }
 
-  void updateShowRecordingWidget(bool value) {
-    state = state.copyWith(showRecordingWidget: value);
-  }
-
-  void updateShowControlRec(bool value) {
-    state = state.copyWith(showControlRec: value);
+  void updateInputState(ChatInputState value) {
+    state = state.copyWith(inputState: value);
   }
 
   void updateShowMicIcon(bool value) {
@@ -43,37 +45,32 @@ class ChatInputViewModel extends StateNotifier<ChatInputModel> {
 
   void fingerDown(PointerEvent details) {
     if (!state.showMicIcon) return;
-    updateShowRecordingWidget(true);
     updateCanAnimate(false);
-    // startRecording().then((value) {
-    //   updateShowControlRec(true);
-    //   updateShowRecordingWidget(true);
-    // });
+    ref.read(recorderViewModelProvider.notifier).startRecording().then((value) {
+      updateInputState(ChatInputState.dismissibleAudioState);
+    });
   }
 
   void fingerOff(PointerEvent details) {
-    // if (!showMic) return;
-    //   // If the animation is in progress we don't want to show everything else yet
-    //   if (ref.watch(wasAudioDiscarted)) return;
-    //   ref.read(showAudioWidget.notifier).state = false;
-    //   if (!ref.watch(isRecording)) return;
-    //   if (!ref.watch(showControlRec)) {
-    //     ref.read(isRecording.notifier).state = false;
-    //   }
+    if (!state.showMicIcon) return;
+    if (state.inputState == ChatInputState.audioDismissedState) return;
+    if (state.inputState == ChatInputState.controlRecordingState) return;
+
+    updateInputState(ChatInputState.defaultState);
+    ref.read(recorderViewModelProvider.notifier).stopRecording();
+    updateCanAnimate(true);
   }
 
-  void updateLocation(PointerEvent details) {
-    // ref.read(sliderPosition.notifier).state = details.position.dx;
-    // // This conditional gives functionality to the slidable widget that is found in the recording widget file
-    // if (details.position.dx < screenWidth * 0.5) {
-    //   // This will stop the recorder
-    //   ref.read(recController.notifier).state.stop();
-    //   ref.read(isRecording.notifier).state = false;
-    //   ref.read(wasAudioDiscarted.notifier).state = true;
-    // }
-    // // If position.dy is greater than 0.25 of screenHeight, we want to toggle the the playable recording widget
-    // if (details.position.dy < screenHeight * 0.55) {
-    //   ref.read(showControlRec.notifier).state = true;
-    // }
+  void updateLocation(PointerEvent details, Size screenSize) {
+    updateSliderPosition(details.position.dx);
+
+    final screenHeight = screenSize.height;
+    final screenWidth = screenSize.width;
+    if (details.position.dx < screenWidth * 0.5) {
+      updateInputState(ChatInputState.audioDismissedState);
+    }
+    if (details.position.dy < screenHeight * 0.55) {
+      updateInputState(ChatInputState.controlRecordingState);
+    }
   }
 }
